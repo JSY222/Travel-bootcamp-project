@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>대한민국 관광지도</title>
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <!-- 내가 작성한 CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+    <header>
+        <h1>대한민국 관광지도</h1>
+        <p>원하는 지역을 선택해 보세요.</p>
+    </header>
+
+    <main>
+        <section class="map-section">
+
+            <div class="map-toolbar">
+                <h2 id="mapTitle">대한민국 전체</h2>
+
+                <button id="backBtn" type="button" hidden>
+                    전체 지도
+                </button>
+            </div>
+
+            <div id="map"></div>
+
+            <p id="statusMessage">
+                지역 정보를 불러오는 중입니다.
+            </p>
+
+        </section>
+
+        <aside class="region-panel">
+
+            <h2 id="listTitle">지역 목록</h2>
+
+            <div id="regionList"></div>
+
+            <div id="divisionList"></div>
+
+        </aside>
+    </main>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- 내가 작성한 JavaScript -->
+    <script
+        src="{{ url_for('static', filename='js/map.js') }}">
+    </script>
+
+</body>
+</html>
