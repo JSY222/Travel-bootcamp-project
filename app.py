@@ -1,101 +1,86 @@
-from flask import Flask, render_template, jsonify
+"""Cityname travel map — run: python app.py"""
+import os
+from flask import Flask, jsonify, render_template, request
 import pymysql
+from dotenv import load_dotenv
+
+load_dotenv()
 from pymysql.cursors import DictCursor
 
 app = Flask(__name__)
 
-# MariaDB 연결 설정
 DB_CONFIG = {
-    "host": "127.0.0.1",
-    "port": 3306,
-    "user": "root",
-    "password": "123",  # 본인의 MariaDB 비밀번호 입력
-    "database": "cityname",
-    "charset": "utf8mb4",
-    "cursorclass": DictCursor
+    'host': os.getenv('DB_HOST', '127.0.0.1'),
+    'port': int(os.getenv('DB_PORT', '3306')),
+    'user': os.getenv('DB_USER', 'root'),
+    'password': os.getenv('DB_PASSWORD', '123'),
+    'database': 'cityname',
+    'charset': 'utf8mb4',
+    'cursorclass': DictCursor,
+    'connect_timeout': 5,
 }
 
+# 표 이름을 입력값으로 직접 사용하면 SQL 인젝션이 생기므로 화이트리스트로 제한
+TABLES = {'tourism': 'tourist_landmarks', 'food': 'food_landmarks', 'event': 'event_landmarks'}
 
-def get_conn():
-    return pymysql.connect(**DB_CONFIG)
+
+def fetch_all(sql, args=()):
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql, args)
+            return cur.fetchall()
+    finally:
+        conn.close()
 
 
-# 메인 웹페이지
-@app.get("/")
+@app.get('/')
 def index():
-    return render_template("index.html")
+    return render_template('index.html')
 
 
-# 14개 시도 조회
-@app.get("/api/regions")
+@app.get('/api/regions')
 def get_regions():
-    conn = None
-
     try:
-        conn = get_conn()
-
-        with conn.cursor() as cursor:
-            sql = """
-                SELECT id, name, official_name
-                FROM regions
-                ORDER BY id
-            """
-            cursor.execute(sql)
-            rows = cursor.fetchall()
-
-        return jsonify({
-            "ok": True,
-            "regions": rows
-        })
-
-    except Exception as e:
-        app.logger.exception("지역 조회 오류")
-        return jsonify({
-            "ok": False,
-            "error": str(e)
-        }), 500
-
-    finally:
-        if conn:
-            conn.close()
+        rows = fetch_all('SELECT code, name, region_type FROM regions ORDER BY display_order')
+        return jsonify({'ok': True, 'regions': rows})
+    except pymysql.MySQLError:
+        app.logger.exception('regions query failed')
+        return jsonify({'ok': False, 'error': 'DB 연결 실패. DB 설정과 SQL 초기화를 확인하세요.'}), 500
 
 
-# 선택한 지역의 시군구 조회
-@app.get("/api/regions/<int:region_id>/divisions")
-def get_divisions(region_id):
-    conn = None
+@app.get('/api/landmarks')
+def get_landmarks():
+    region = request.args.get('region', '').strip()
+    locality = request.args.get('locality', '').strip()
+    category = request.args.get('category', 'all').strip()
 
+    if not (len(region) == 2 and region.isdigit()) or not (1 <= len(locality) <= 50):
+        return jsonify({'ok': False, 'error': '올바른 지역과 시·군·구를 선택하세요.'}), 400
+    if category not in {'all', *TABLES}:
+        return jsonify({'ok': False, 'error': '올바르지 않은 카테고리입니다.'}), 400
+
+    chosen = [category] if category != 'all' else list(TABLES)
+    results = []
     try:
-        conn = get_conn()
-
-        with conn.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT id, name
-                FROM administrative_divisions
-                WHERE region_id = %s
-                ORDER BY name
-                """,
-                (region_id,)
+        # 테이블 이름은 검증된 코드 상수만 삽입, 사용자가 전달한 값은 바인딩
+        for kind in chosen:
+            rows = fetch_all(
+                f'SELECT id, title, description, latitude, longitude, location_url, source_name '
+                f'FROM `{TABLES[kind]}` WHERE region_code=%s AND locality_name=%s '
+                'ORDER BY id LIMIT 200',
+                (region, locality)
             )
-            rows = cursor.fetchall()
-
-        return jsonify({
-            "ok": True,
-            "divisions": rows
-        })
-
-    except Exception as e:
-        app.logger.exception("시군구 조회 오류")
-        return jsonify({
-            "ok": False,
-            "error": str(e)
-        }), 500
-
-    finally:
-        if conn:
-            conn.close()
+            for row in rows:
+                row['category'] = kind
+                row['latitude'] = float(row['latitude'])
+                row['longitude'] = float(row['longitude'])
+                results.append(row)
+        return jsonify({'ok': True, 'landmarks': results})
+    except pymysql.MySQLError:
+        app.logger.exception('landmarks query failed')
+        return jsonify({'ok': False, 'error': '랜드마크를 조회할 수 없습니다.'}), 500
 
 
-if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+if __name__ == '__main__':
+    app.run(host='127.0.0.1', port=5000, debug=True)

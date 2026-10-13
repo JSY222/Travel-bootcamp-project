@@ -1,434 +1,323 @@
-// HTML 요소 선택
+'use strict';
+
+// 지도는 Leaflet, 경계선은 공개 GeoJSON, 장소는 Flask API에서 불러옵니다.
+const GEO_BASES = [
+  '/static/geo/',
+  'https://cdn.jsdelivr.net/gh/KnellBalm/kr-admin-geojson@main/',
+  'https://raw.githubusercontent.com/KnellBalm/kr-admin-geojson/main/'
+];
+const CATEGORIES = {
+  tourism: {emoji: '🏞️', label: '관광지'},
+  food: {emoji: '🍜', label: '맛집'},
+  event: {emoji: '🎉', label: '행사'}
+};
 const $ = (selector) => document.querySelector(selector);
 
-// 대한민국 지도 생성
-const map = L.map("map", {
-    center: [36.3, 127.8],
-    zoom: 7,
-    minZoom: 6,
-    maxZoom: 13
-});
+const map = L.map('map', {zoomControl: false, preferCanvas: true})
+  .setView([36.4, 127.9], 7);
+L.control.zoom({position: 'bottomright'}).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18,
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
 
-// 지도 배경
-L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-        attribution: "&copy; OpenStreetMap contributors"
-    }
-).addTo(map);
-
-
-// 사용할 14개 지역
-const TARGET_REGIONS = [
-    "경상북도", "경상남도",
-    "전라북도", "전라남도",
-    "제주특별자치도", "강원도",
-    "충청북도", "충청남도",
-    "경기도", "서울특별시",
-    "대구광역시", "부산광역시",
-    "광주광역시", "인천광역시"
-];
-
-// 지역별 지도 중심점
-const REGION_CENTERS = {
-    "경상북도": [36.4, 128.7],
-    "경상남도": [35.35, 128.2],
-    "전라북도": [35.7, 127.1],
-    "전라남도": [34.9, 126.9],
-    "제주특별자치도": [33.4, 126.55],
-    "강원도": [37.7, 128.2],
-    "충청북도": [36.7, 127.7],
-    "충청남도": [36.5, 126.9],
-    "경기도": [37.4, 127.1],
-    "서울특별시": [37.5665, 126.978],
-    "대구광역시": [35.8714, 128.6014],
-    "부산광역시": [35.1796, 129.0756],
-    "광주광역시": [35.1595, 126.8526],
-    "인천광역시": [37.4563, 126.7052]
+const state = {
+  regions: [], provinceFeatures: [], districtFeatures: [],
+  selectedRegion: null, selectedCity: null, selectedCategory: 'all',
+  geoLayer: null, markerLayer: L.layerGroup().addTo(map),
+  cityFeatures: [], fetchToken: 0
 };
 
-// 옛 이름과 현재 이름을 비교하기 위한 함수
-function normalizeName(name) {
-    const aliases = {
-        "전북특별자치도": "전라북도",
-        "강원특별자치도": "강원도",
-        "제주도": "제주특별자치도"
-    };
-
-    return aliases[name] || name;
+async function fetchJSON(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  if (data.ok === false) throw new Error(data.error || '데이터 요청 오류');
+  return data;
 }
 
-// 지도에 표시할 데이터
-let regions = [];
-let regionLayer = null;
-let divisionLayer = null;
-let selectedRegion = null;
-
-// 외부 행정구역 GeoJSON
-const PROVINCE_GEOJSON =
-    "https://raw.githubusercontent.com/southkorea/southkorea-maps/master/gadm/json/skorea-provinces-geo.json";
-
-const MUNICIPALITY_GEOJSON =
-    "https://raw.githubusercontent.com/southkorea/southkorea-maps/master/gadm/json/skorea-municipalities-geo.json";
-
-let provinceGeojson = null;
-let municipalityGeojson = null;
-
-
-// 상태 메시지
-function setStatus(message) {
-    $("#statusMessage").textContent = message;
-}
-
-
-// Flask API에서 JSON 데이터 받기
-async function getJSON(url) {
-    const response = await fetch(url);
-
-    if (!response.ok) {
-        throw new Error(`HTTP 오류: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    if (data.ok === false) {
-        throw new Error(data.error || "데이터 조회 실패");
-    }
-
-    return data;
-}
-
-
-// 지역 이름을 GeoJSON과 연결
-function getProvinceName(feature) {
-    const p = feature.properties || {};
-
-    const names = {
-        "Seoul": "서울특별시",
-        "Busan": "부산광역시",
-        "Daegu": "대구광역시",
-        "Incheon": "인천광역시",
-        "Gwangju": "광주광역시",
-        "Daejeon": "대전광역시",
-        "Ulsan": "울산광역시",
-        "Gyeonggi-do": "경기도",
-        "Gangwon-do": "강원도",
-        "Chungcheongbuk-do": "충청북도",
-        "Chungcheongnam-do": "충청남도",
-        "Jeollabuk-do": "전라북도",
-        "Jeollanam-do": "전라남도",
-        "Gyeongsangbuk-do": "경상북도",
-        "Gyeongsangnam-do": "경상남도",
-        "Jeju-do": "제주특별자치도"
-    };
-
-    const raw = p.NAME_1 || p.name || p.NAME || "";
-
-    return names[raw] || normalizeName(raw);
-}
-
-
-// 1. 처음 지역 데이터 불러오기
-async function loadRegions() {
+async function fetchGeo(filename) {
+  let lastError;
+  for (const base of GEO_BASES) {
     try {
-        setStatus("지역 정보를 불러오는 중...");
-
-        const [dbData, geoData] = await Promise.all([
-            getJSON("/api/regions"),
-            fetch(PROVINCE_GEOJSON).then(res => {
-                if (!res.ok) {
-                    throw new Error("지도 경계 데이터 로드 실패");
-                }
-                return res.json();
-            })
-        ]);
-
-        regions = dbData.regions.filter(region =>
-            TARGET_REGIONS.includes(
-                normalizeName(region.name)
-            )
-        );
-
-        provinceGeojson = geoData;
-
-        drawRegions();
-        createRegionButtons();
-
-        setStatus("지도에서 원하는 지역을 클릭하세요.");
-
-    } catch (error) {
-        console.error(error);
-        setStatus("오류: " + error.message);
-    }
+      const data = await fetchJSON(base + filename);
+      if (data.type !== 'FeatureCollection' || !Array.isArray(data.features)) {
+        throw new Error('GeoJSON 형식이 올바르지 않습니다.');
+      }
+      return data.features;
+    } catch (err) { lastError = err; }
+  }
+  throw lastError || new Error('지도 경계 데이터를 불러올 수 없습니다.');
 }
 
-
-// 2. 대한민국 지도에 지역 표시
-function drawRegions() {
-    if (regionLayer) {
-        map.removeLayer(regionLayer);
+function toast(message) {
+  const el = $('#toast');
+  el.textContent = message;
+  el.classList.remove('hidden');
+}
+function hideToast() { $('#toast').classList.add('hidden'); }
+function clearMap() {
+  if (state.geoLayer) map.removeLayer(state.geoLayer);
+  state.geoLayer = null;
+  state.markerLayer.clearLayers();
+}
+function fit(layer, maxZoom = 10) {
+  if (layer && layer.getBounds().isValid()) {
+    map.fitBounds(layer.getBounds(), {padding: [28, 28], maxZoom, animate: true});
+  }
+}
+function colorFor(index) {
+  return ['#abd8b2','#b8dfc5','#c9e8b6','#afddcb','#d5e9bc','#bbe2d7'][index % 6];
+}
+function addGeoLayer(features, onClick) {
+  state.geoLayer = L.geoJSON(features, {
+    style: () => ({color: '#ffffff', weight: 2.1, fillColor: colorFor(2), fillOpacity: .65, className: 'geo-shape'}),
+    onEachFeature: (feature, layer) => {
+      const name = feature.properties.displayName;
+      layer.setStyle({fillColor: colorFor(feature.properties.colorIndex || 0)});
+      layer.on({
+        click: () => onClick(feature),
+        mouseover: () => layer.setStyle({fillColor: '#79c8a0', weight: 3, fillOpacity: .9}),
+        mouseout: () => state.geoLayer && state.geoLayer.resetStyle(layer)
+      });
+      layer.bindTooltip(name, {permanent: true, direction: 'center', className: 'place-tooltip', opacity: .94});
     }
-
-    regionLayer = L.geoJSON(provinceGeojson, {
-        filter: function(feature) {
-            const name = getProvinceName(feature);
-
-            return regions.some(
-                region =>
-                    normalizeName(region.name) === name
-            );
-        },
-
-        style: {
-            color: "#ffffff",
-            weight: 2,
-            fillColor: "#71a5d8",
-            fillOpacity: 0.45
-        },
-
-        onEachFeature: function(feature, layer) {
-            const name = getProvinceName(feature);
-
-            const region = regions.find(
-                r => normalizeName(r.name) === name
-            );
-
-            if (!region) return;
-
-            layer.bindTooltip(region.name, {
-                permanent: true,
-                direction: "center",
-                className: "region-label"
-            });
-
-            layer.on("mouseover", function() {
-                layer.setStyle({
-                    fillColor: "#2478c5",
-                    fillOpacity: 0.65
-                });
-            });
-
-            layer.on("mouseout", function() {
-                regionLayer.resetStyle(layer);
-            });
-
-            layer.on("click", function() {
-                selectRegion(region, layer);
-            });
-        }
-    }).addTo(map);
-
-    if (regionLayer.getLayers().length > 0) {
-        map.fitBounds(regionLayer.getBounds(), {
-            padding: [25, 25]
-        });
-    }
+  }).addTo(map);
+  return state.geoLayer;
 }
 
+function updateStep(number, heading, detail) {
+  $('#stepNum').textContent = number;
+  $('#stepHeading').textContent = heading;
+  $('#stepDetail').textContent = detail;
+}
+function updateBreadcrumb() {
+  $('#crumbRegion').textContent = state.selectedRegion?.name || '';
+  $('#crumbCity').textContent = state.selectedCity?.properties.displayName || '';
+  $('#backBtn').classList.toggle('hidden', !state.selectedRegion);
+}
+function addRegionButton(container, label, onClick) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'region-button';
+  btn.textContent = label;
+  btn.addEventListener('click', onClick);
+  container.appendChild(btn);
+}
 
-// 3. 지역 버튼 생성
-function createRegionButtons() {
-    const container = $("#regionList");
-    container.replaceChildren();
+function goHome() {
+  state.fetchToken++;
+  state.selectedRegion = null;
+  state.selectedCity = null;
+  clearMap(); hideToast();
+  $('#selectedCard').classList.add('hidden');
+  updateStep('01', '지역을 선택하세요', '시·도 15개 지역');
+  updateBreadcrumb();
+  $('#mapTip').textContent = '👆 지도에서 시·도를 선택하면 확대됩니다.';
+  const list = $('#regionList'); list.replaceChildren();
+  state.regions.forEach(r => addRegionButton(list, r.name, () => selectRegion(r.code)));
 
-    regions.forEach(region => {
-        const button = document.createElement("button");
+  const codes = new Map(state.regions.map(r => [r.code, r]));
+  const features = state.provinceFeatures
+    .filter(f => codes.has(f.properties.CTPRVN_CD))
+    .map((f, i) => ({...f, properties: {
+      ...f.properties,
+      displayName: codes.get(f.properties.CTPRVN_CD).name,
+      colorIndex: i
+    }}));
+  if (features.length) fit(addGeoLayer(features, f => selectRegion(f.properties.CTPRVN_CD)), 8);
+  else toast('행정구역 지도 데이터를 받지 못했습니다. 인터넷 연결을 확인하세요.');
+}
 
-        button.className = "region-button";
-        button.textContent = region.name;
+// '수원시 장안구' 같은 도 소속 자치구는 '수원시' 하나로 묶습니다.
+// 광역시·특별시는 시 안의 개별 구·군을 그대로 보여 줍니다.
+function cityGroupName(feature, metro) {
+  const name = feature.properties.SIG_KOR_NM;
+  if (metro) return name;
+  const names = (feature.properties.FULL_NM || '').split(/\s+/);
+  if (names.length >= 3 && names[1].endsWith('시') && names[2].endsWith('구')) return names[1];
+  return name;
+}
+function asPolygons(geometry) {
+  if (geometry.type === 'Polygon') return [geometry.coordinates];
+  if (geometry.type === 'MultiPolygon') return geometry.coordinates;
+  return [];
+}
+function groupCities(region) {
+  const groups = new Map();
+  const metro = region.region_type === 'metro';
+  const raw = state.districtFeatures.filter(f => f.properties.CTPRVN_CD === region.code);
+  raw.forEach(f => {
+    const name = cityGroupName(f, metro);
+    if (!name) return;
+    if (!groups.has(name)) groups.set(name, {polygons: [], name});
+    groups.get(name).polygons.push(...asPolygons(f.geometry));
+  });
+  return [...groups.values()].sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+    .map((group, i) => ({
+      type: 'Feature',
+      properties: {displayName: group.name, regionCode: region.code, colorIndex: i},
+      geometry: {type: 'MultiPolygon', coordinates: group.polygons}
+    }));
+}
 
-        button.addEventListener("click", () => {
-            const layer = regionLayer.getLayers().find(
-                item =>
-                    getProvinceName(item.feature) ===
-                    normalizeName(region.name)
-            );
+function selectRegion(code) {
+  const region = state.regions.find(r => r.code === code);
+  if (!region) return;
+  state.fetchToken++;
+  state.selectedRegion = region; state.selectedCity = null;
+  clearMap(); hideToast();
+  $('#selectedCard').classList.add('hidden');
+  const cities = groupCities(region);
+  state.cityFeatures = cities;
+  const unit = region.region_type === 'metro' ? '구·군' : '시·군';
+  updateStep('02', `${unit}를 선택하세요`, `${region.name} · ${cities.length}개 지역`);
+  updateBreadcrumb();
+  $('#mapTip').textContent = `👆 ${region.name}의 ${unit}를 클릭하세요.`;
+  const list = $('#regionList'); list.replaceChildren();
+  cities.forEach(city => addRegionButton(list, city.properties.displayName,
+    () => selectCity(city.properties.displayName)));
+  if (cities.length) fit(addGeoLayer(cities, f => selectCity(f.properties.displayName)), 10);
+  else {
+    toast('이 지역의 시·군·구 경계가 없습니다. 행정구역 GeoJSON을 확인하세요.');
+    list.textContent = '하위 행정구역 데이터가 없습니다.';
+  }
+}
 
-            selectRegion(region, layer);
-        });
+async function selectCity(cityName) {
+  const city = state.cityFeatures.find(f => f.properties.displayName === cityName);
+  if (!city) return;
+  state.selectedCity = city;
+  state.selectedCategory = 'all';
+  clearMap(); hideToast();
+  const one = addGeoLayer([city], () => {});
+  fit(one, 12);
+  updateStep('03', '여행 장소를 탐색하세요', '아래 버튼으로 종류를 바꿀 수 있어요');
+  updateBreadcrumb();
+  $('#selectedName').textContent = `${state.selectedRegion.name} ${cityName}`;
+  $('#selectedCard').classList.remove('hidden');
+  $('#mapTip').textContent = `✨ ${cityName}의 여행 장소를 찾고 있어요.`;
+  $('#regionList').replaceChildren();
+  $('#filters').querySelectorAll('.filter').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.category === 'all');
+  });
+  await loadLandmarks();
+}
 
-        container.appendChild(button);
+function popupContent(p) {
+  const wrap = document.createElement('div');
+  const title = document.createElement('p'); title.className = 'popup-title';
+  title.textContent = `${CATEGORIES[p.category].emoji} ${p.title}`;
+  const desc = document.createElement('p'); desc.className = 'popup-desc';
+  desc.textContent = p.description || '자세한 사항은 방문 전에 확인하세요.';
+  wrap.append(title, desc);
+  const source = document.createElement('p');
+  source.className = 'source-meta';
+  source.textContent = `자료: ${p.source_name || '출처 정보 없음'}`;
+  wrap.append(source);
+  if (/^https?:\/\//.test(p.location_url || '')) {
+    const a = document.createElement('a');
+    a.className = 'popup-link'; a.href = p.location_url; a.target = '_blank';
+    a.rel = 'noopener noreferrer'; a.textContent = '위치 지도 열기 ↗';
+    wrap.appendChild(a);
+  }
+  return wrap;
+}
+function makeMarker(p, i) {
+  const cat = CATEGORIES[p.category];
+  const safeType = p.category;
+  const icon = L.divIcon({
+    html: `<div class="landmark-pin" style="animation-delay:${Math.min(i * 65, 700)}ms"><div class="pin-bubble pin-${safeType}"><span>${cat.emoji}</span></div></div>`,
+    className: '', iconSize: [36, 40], iconAnchor: [18, 38]
+  });
+  return L.marker([p.latitude, p.longitude], {icon}).bindPopup(popupContent(p));
+}
+function renderCards(places, markers) {
+  const container = $('#landmarkList'); container.replaceChildren();
+  $('#resultCount').textContent = String(places.length);
+  if (!places.length) {
+    const empty = document.createElement('div'); empty.className = 'empty-message';
+    empty.textContent = '등록된 장소가 없습니다. 다른 버튼을 누르거나 다른 지역을 선택해 보세요.';
+    container.append(empty); return;
+  }
+  places.forEach((p, i) => {
+    const card = document.createElement('article'); card.className = 'landmark-card';
+    const title = document.createElement('div'); title.className = 'landmark-card-title';
+    title.textContent = `${CATEGORIES[p.category].emoji} ${p.title}`;
+    const desc = document.createElement('p'); desc.textContent = p.description || '';
+    card.append(title, desc);
+    const source = document.createElement('p');
+    source.className = 'source-meta';
+    source.textContent = `자료: ${p.source_name || '출처 정보 없음'}`;
+    card.append(source);
+    if (/^https?:\/\//.test(p.location_url || '')) {
+      const a = document.createElement('a'); a.textContent = '지도에서 위치 확인 ↗';
+      a.href = p.location_url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.addEventListener('click', e => e.stopPropagation());
+      card.append(a);
+    }
+    card.addEventListener('click', () => {
+      map.flyTo([p.latitude, p.longitude], Math.max(map.getZoom(), 12));
+      markers[i].openPopup();
     });
+    container.append(card);
+  });
 }
 
-
-// 4. 지역 선택 및 확대
-async function selectRegion(region, layer) {
-    try {
-        selectedRegion = region;
-
-        $("#mapTitle").textContent = region.name;
-        $("#listTitle").textContent = region.name + " 시·군·구";
-        $("#backBtn").hidden = false;
-
-        $("#regionList").hidden = true;
-        $("#divisionList").hidden = false;
-
-        if (layer) {
-            map.fitBounds(layer.getBounds(), {
-                padding: [35, 35],
-                maxZoom: 10
-            });
-        } else {
-            const center =
-                REGION_CENTERS[normalizeName(region.name)];
-
-            if (center) {
-                map.setView(center, 9);
-            }
-        }
-
-        const data = await getJSON(
-            `/api/regions/${region.id}/divisions`
-        );
-
-        createDivisionButtons(data.divisions);
-
-        await drawDivisions(region, data.divisions);
-
-        setStatus(
-            `${region.name}: ${data.divisions.length}개 시·군·구 조회`
-        );
-
-    } catch (error) {
-        console.error(error);
-        setStatus("오류: " + error.message);
-    }
+async function loadLandmarks() {
+  if (!state.selectedCity || !state.selectedRegion) return;
+  const token = ++state.fetchToken;
+  state.markerLayer.clearLayers();
+  $('#landmarkList').textContent = '장소를 불러오는 중...';
+  $('#resultCount').textContent = '…';
+  const params = new URLSearchParams({
+    region: state.selectedRegion.code,
+    locality: state.selectedCity.properties.displayName,
+    category: state.selectedCategory
+  });
+  try {
+    const data = await fetchJSON(`/api/landmarks?${params.toString()}`);
+    if (token !== state.fetchToken) return;
+    hideToast();
+    const places = data.landmarks;
+    const markers = places.map((p, i) => makeMarker(p, i));
+    markers.forEach(m => state.markerLayer.addLayer(m));
+    renderCards(places, markers);
+    $('#mapTip').textContent = `✨ ${state.selectedCity.properties.displayName} · ${places.length}개 장소 표시 중`;
+  } catch (err) {
+    if (token !== state.fetchToken) return;
+    $('#resultCount').textContent = '0';
+    $('#landmarkList').textContent = '';
+    toast(`랜드마크 조회 실패: ${err.message}`);
+  }
 }
 
+$('#homeBtn').addEventListener('click', goHome);
+$('#backBtn').addEventListener('click', () => {
+  if (state.selectedCity) selectRegion(state.selectedRegion.code);
+  else goHome();
+});
+$('#filters').addEventListener('click', e => {
+  const btn = e.target.closest('[data-category]');
+  if (!btn || !state.selectedCity) return;
+  state.selectedCategory = btn.dataset.category;
+  $('#filters').querySelectorAll('.filter').forEach(el => {
+    el.classList.toggle('active', el === btn);
+  });
+  loadLandmarks();
+});
 
-// 5. 시군구 버튼 생성
-function createDivisionButtons(divisions) {
-    const container = $("#divisionList");
-    container.replaceChildren();
-
-    divisions.forEach(division => {
-        const button = document.createElement("button");
-
-        button.className = "division-button";
-        button.textContent = division.name;
-
-        button.addEventListener("click", () => {
-            zoomToDivision(division.name);
-        });
-
-        container.appendChild(button);
-    });
-}
-
-
-// 6. 시군구 경계 표시
-async function drawDivisions(region, divisions) {
-    if (divisionLayer) {
-        map.removeLayer(divisionLayer);
-        divisionLayer = null;
-    }
-
-    if (!municipalityGeojson) {
-        const response = await fetch(MUNICIPALITY_GEOJSON);
-
-        if (!response.ok) {
-            throw new Error("시군구 경계 자료를 가져오지 못했습니다.");
-        }
-
-        municipalityGeojson = await response.json();
-    }
-
-    const provinceName = normalizeName(region.name);
-
-    const names = new Set(
-        divisions.map(d => d.name)
-    );
-
-    // 구형 경계 자료의 지역 이름을 비교
-    divisionLayer = L.geoJSON(municipalityGeojson, {
-        filter: function(feature) {
-            const p = feature.properties || {};
-
-            const parent = getProvinceName(feature);
-            const divisionName = p.NAME_2 || p.name || "";
-
-            return parent === provinceName &&
-                   names.has(divisionName);
-        },
-
-        style: {
-            color: "#2463a0",
-            weight: 1.5,
-            fillColor: "#a9d2f2",
-            fillOpacity: 0.4
-        },
-
-        onEachFeature: function(feature, layer) {
-            const name =
-                feature.properties.NAME_2 ||
-                feature.properties.name ||
-                "";
-
-            layer.bindTooltip(name, {
-                permanent: true,
-                direction: "center",
-                className: "region-label"
-            });
-        }
-    }).addTo(map);
-}
-
-
-// 7. 시군구 버튼 클릭 시 확대
-function zoomToDivision(name) {
-    if (!divisionLayer) return;
-
-    const layer = divisionLayer.getLayers().find(
-        item =>
-            (item.feature.properties.NAME_2 ||
-             item.feature.properties.name) === name
-    );
-
-    if (layer) {
-        map.fitBounds(layer.getBounds(), {
-            padding: [40, 40],
-            maxZoom: 12
-        });
-    } else {
-        setStatus(
-            `${name}: 현재 경계 자료에서 위치를 찾지 못했습니다.`
-        );
-    }
-}
-
-
-// 8. 전체 지도로 돌아가기
-function goBack() {
-    selectedRegion = null;
-
-    $("#mapTitle").textContent = "대한민국 전체";
-    $("#listTitle").textContent = "지역 목록";
-    $("#backBtn").hidden = true;
-
-    $("#regionList").hidden = false;
-    $("#divisionList").hidden = true;
-
-    if (divisionLayer) {
-        map.removeLayer(divisionLayer);
-        divisionLayer = null;
-    }
-
-    if (regionLayer) {
-        regionLayer.addTo(map);
-
-        map.fitBounds(regionLayer.getBounds(), {
-            padding: [25, 25]
-        });
-    }
-
-    setStatus("지도에서 원하는 지역을 클릭하세요.");
-}
-
-
-// 뒤로가기 버튼 이벤트
-$("#backBtn").addEventListener("click", goBack);
-
-// 첫 실행
-$("#divisionList").hidden = true;
-loadRegions();
+(async function init() {
+  try {
+    const [regionData, provinces, districts] = await Promise.all([
+      fetchJSON('/api/regions'), fetchGeo('ctprvn.geojson'), fetchGeo('sig.geojson')
+    ]);
+    state.regions = regionData.regions;
+    state.provinceFeatures = provinces;
+    state.districtFeatures = districts;
+    goHome();
+  } catch (error) {
+    $('#regionList').textContent = '초기화 실패: ' + error.message;
+    toast('MariaDB 연결과 인터넷(지도 경계 서버)을 확인하세요.');
+  }
+})();
