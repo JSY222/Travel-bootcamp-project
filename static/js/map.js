@@ -6,6 +6,11 @@ const GEO_BASES = [
   'https://cdn.jsdelivr.net/gh/KnellBalm/kr-admin-geojson@main/',
   'https://raw.githubusercontent.com/KnellBalm/kr-admin-geojson/main/'
 ];
+// 대한민국 전국 17개 시·도: DB에 등록되지 않은 시·도도 GeoJSON 경계에서 자동 보충합니다.
+// 특별시·광역시·특별자치시는 구·군 단위, 세종은 읍·면·동 단위로 펼쳐집니다.
+const METRO_CODES = new Set(['11', '26', '27', '28', '29', '30', '31', '36']);
+let sejongEmdCache = null;
+
 const CATEGORIES = {
   tourism: {emoji: '🏞️', label: '관광지'},
   food: {emoji: '🍜', label: '맛집'},
@@ -13,18 +18,21 @@ const CATEGORIES = {
 };
 const $ = (selector) => document.querySelector(selector);
 
-const map = L.map('map', {zoomControl: false, preferCanvas: true})
-  .setView([36.4, 127.9], 7);
-L.control.zoom({position: 'bottomright'}).addTo(map);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+// 전 세계 배경 타일(OpenStreetMap)을 사용하지 않습니다.
+// 따라서 중국·일본 등 외국의 지형이나 도시가 보이지 않습니다.
+const map = L.map('map', {
+  zoomControl: false,
+  preferCanvas: true,
+  minZoom: 6,
   maxZoom: 18,
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
+  maxBoundsViscosity: 1.0
+}).setView([36.4, 127.9], 7);
+L.control.zoom({position: 'bottomright'}).addTo(map);
 
 const state = {
   regions: [], provinceFeatures: [], districtFeatures: [],
   selectedRegion: null, selectedCity: null, selectedCategory: 'all',
-  geoLayer: null, markerLayer: L.layerGroup().addTo(map),
+  geoLayer: null, countryLayer: null, markerLayer: L.layerGroup().addTo(map),
   cityFeatures: [], fetchToken: 0
 };
 
@@ -66,6 +74,47 @@ function fit(layer, maxZoom = 10) {
     map.fitBounds(layer.getBounds(), {padding: [28, 28], maxZoom, animate: true});
   }
 }
+// 전국 17개 행정구역 윤곽을 배경으로 표시합니다.
+// 클릭은 위에 별도로 올리는 선택 가능한 행정구역 레이어에서 처리합니다.
+function drawKoreaBackground() {
+  if (state.countryLayer) map.removeLayer(state.countryLayer);
+  state.countryLayer = L.geoJSON(state.provinceFeatures, {
+    interactive: false,
+    style: {
+      color: '#bdd2c3',
+      weight: 1.1,
+      fillColor: '#f5f8f2',
+      fillOpacity: 1
+    }
+  }).addTo(map);
+
+  // 한국 주변에서만 이동할 수 있도록 지도 범위를 고정합니다.
+  const bounds = state.countryLayer.getBounds();
+  if (bounds.isValid()) {
+    map.setMaxBounds(bounds.pad(0.14));
+  }
+}
+
+// DB에 시·도가 빠져 있어도 GeoJSON의 전국 17개 지역을 모두 클릭할 수 있도록 보충합니다.
+// 기존 DB에 등록된 지역 이름·유형은 우선 사용하고, 누락된 지역은 GeoJSON 이름을 사용합니다.
+function buildAllRegions(dbRows, provinces) {
+  const fromDB = new Map(dbRows.map(r => [String(r.code), r]));
+  const originalOrder = new Map(dbRows.map((r, i) => [String(r.code), i]));
+  const seen = new Set();
+  return provinces.map((feature, i) => {
+    const code = String(feature.properties.CTPRVN_CD || '');
+    if (!code || seen.has(code)) return null;
+    seen.add(code);
+    const saved = fromDB.get(code);
+    return {
+      code,
+      name: saved?.name || feature.properties.CTP_KOR_NM || code,
+      region_type: saved?.region_type || (METRO_CODES.has(code) ? 'metro' : 'province'),
+      order: originalOrder.get(code) ?? (100 + i)
+    };
+  }).filter(Boolean).sort((a, b) => a.order - b.order);
+}
+
 function colorFor(index) {
   return ['#abd8b2','#b8dfc5','#c9e8b6','#afddcb','#d5e9bc','#bbe2d7'][index % 6];
 }
@@ -111,7 +160,7 @@ function goHome() {
   state.selectedCity = null;
   clearMap(); hideToast();
   $('#selectedCard').classList.add('hidden');
-  updateStep('01', '지역을 선택하세요', '시·도 15개 지역');
+  updateStep('01', '지역을 선택하세요', `시·도 ${state.regions.length}개 지역`);
   updateBreadcrumb();
   $('#mapTip').textContent = '👆 지도에서 시·도를 선택하면 확대됩니다.';
   const list = $('#regionList'); list.replaceChildren();
@@ -161,25 +210,89 @@ function groupCities(region) {
     }));
 }
 
-function selectRegion(code) {
+// 세종은 산하 시·군·구가 없으므로, 법정 읍·면·동 GeoJSON으로 하위 지역을 구성합니다.
+function groupSejongEmd(features) {
+  const groups = new Map();
+  features.filter(f => String(f.properties.CTPRVN_CD) === '36').forEach(f => {
+    const name = f.properties.EMD_KOR_NM;
+    if (!name) return;
+    if (!groups.has(name)) groups.set(name, []);
+    groups.get(name).push(...asPolygons(f.geometry));
+  });
+  return [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0], 'ko'))
+    .map(([name, polygons], i) => ({
+      type: 'Feature',
+      properties: {displayName: name, regionCode: '36', colorIndex: i},
+      geometry: {type: 'MultiPolygon', coordinates: polygons}
+    }));
+}
+
+async function getSejongCities() {
+  if (!sejongEmdCache) {
+    sejongEmdCache = fetchGeo('emd.geojson').catch(error => {
+      sejongEmdCache = null; // 네트워크 실패 시 다시 시도할 수 있도록 캐시 초기화
+      throw error;
+    });
+  }
+  return groupSejongEmd(await sejongEmdCache);
+}
+
+async function selectRegion(code) {
   const region = state.regions.find(r => r.code === code);
   if (!region) return;
-  state.fetchToken++;
-  state.selectedRegion = region; state.selectedCity = null;
+  const token = ++state.fetchToken;
+  state.selectedRegion = region;
+  state.selectedCity = null;
   clearMap(); hideToast();
   $('#selectedCard').classList.add('hidden');
-  const cities = groupCities(region);
-  state.cityFeatures = cities;
-  const unit = region.region_type === 'metro' ? '구·군' : '시·군';
-  updateStep('02', `${unit}를 선택하세요`, `${region.name} · ${cities.length}개 지역`);
   updateBreadcrumb();
-  $('#mapTip').textContent = `👆 ${region.name}의 ${unit}를 클릭하세요.`;
-  const list = $('#regionList'); list.replaceChildren();
+
+  const isSejong = code === '36';
+  const unit = isSejong ? '읍·면·동' : (region.region_type === 'metro' ? '구·군' : '시·군');
+  const list = $('#regionList');
+  list.replaceChildren();
+  updateStep('02', `${unit}을(를) 선택하세요`, `${region.name} · 지역 불러오는 중`);
+  $('#mapTip').textContent = `👆 ${region.name}의 ${unit}을(를) 클릭하세요.`;
+
+  let cities = [];
+  if (isSejong) {
+    list.textContent = '세종특별자치시 읍·면·동 경계를 불러오는 중...';
+    try {
+      cities = await getSejongCities();
+    } catch (error) {
+      // 읍면동을 불러오지 못했을 때 시군구 레벨의 세종 전체 경계로 대체
+      cities = groupCities(region);
+      if (token === state.fetchToken) {
+        toast('세종 읍·면·동 경계 로딩 실패. 전체 지역만 표시합니다.');
+      }
+    }
+  } else {
+    cities = groupCities(region);
+  }
+  if (token !== state.fetchToken) return; // 다른 지역을 선택한 중간에 응답이 오면 폐기
+
+  // 하위 GeoJSON이 비어 있을 때도 시·도 자체 선택 화면으로 진입할 수 있게 합니다.
+  if (!cities.length) {
+    const province = state.provinceFeatures.find(
+      f => String(f.properties.CTPRVN_CD) === region.code
+    );
+    if (province) {
+      cities = [{
+        type: 'Feature',
+        properties: {displayName: `${region.name} 전체`, regionCode: region.code, colorIndex: 0},
+        geometry: province.geometry
+      }];
+    }
+  }
+
+  state.cityFeatures = cities;
+  updateStep('02', `${unit}을(를) 선택하세요`, `${region.name} · ${cities.length}개 지역`);
+  list.replaceChildren();
   cities.forEach(city => addRegionButton(list, city.properties.displayName,
     () => selectCity(city.properties.displayName)));
   if (cities.length) fit(addGeoLayer(cities, f => selectCity(f.properties.displayName)), 10);
   else {
-    toast('이 지역의 시·군·구 경계가 없습니다. 행정구역 GeoJSON을 확인하세요.');
+    toast('이 지역의 행정구역 경계가 없습니다. GeoJSON을 확인하세요.');
     list.textContent = '하위 행정구역 데이터가 없습니다.';
   }
 }
@@ -312,9 +425,10 @@ $('#filters').addEventListener('click', e => {
     const [regionData, provinces, districts] = await Promise.all([
       fetchJSON('/api/regions'), fetchGeo('ctprvn.geojson'), fetchGeo('sig.geojson')
     ]);
-    state.regions = regionData.regions;
     state.provinceFeatures = provinces;
     state.districtFeatures = districts;
+    state.regions = buildAllRegions(regionData.regions, provinces);
+    drawKoreaBackground();
     goHome();
   } catch (error) {
     $('#regionList').textContent = '초기화 실패: ' + error.message;

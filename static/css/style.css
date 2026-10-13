@@ -15,3 +15,7 @@
 @media(max-width:840px){.app-shell{display:flex;flex-direction:column}.sidebar{height:49vh;min-height:325px;width:100%}.sidebar-scroll{padding:20px}.brand{padding:12px 20px}.map-area{height:51vh;min-height:400px}.region-list{grid-template-columns:repeat(3,minmax(0,1fr))}h1{font-size:24px}.map-top{top:12px;left:12px;right:12px}.map-bottom{bottom:12px;left:12px;right:12px}.map-credit{display:none}}
 
 .source-meta{font-size:10px!important;color:#8ca19a!important;line-height:1.4!important}
+
+/* 대한민국 행정구역 전용 지도: 외국 배경 타일 대신 바다색 표시 */
+.map-area {background: #deeff2;}
+.leaflet-container {background: radial-gradient(circle at 45% 45%, #e7f4f4, #d5e9ed);}
