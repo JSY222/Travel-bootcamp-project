@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cityname | 국내 여행 지도</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <header class="brand">
+        <div class="brand-symbol">✳</div>
+        <div><div class="brand-name">cityname<span>.</span></div><div class="brand-caption">TRAVEL DISCOVERY MAP</div></div>
+      </header>
+      <div class="sidebar-scroll">
+        <p class="eyebrow">DISCOVER KOREA</p>
+        <h1>지도로 만나는<br><em>우리의 여행</em></h1>
+        <p class="intro">가고 싶은 지역을 클릭해 보세요. 숨어있는 여행 장소들이 지도 위에 나타납니다.</p>
+        <div class="breadcrumb"><button id="homeBtn" type="button">전국</button><span id="crumbRegion"></span><span id="crumbCity"></span></div>
+        <div class="step-title"><span id="stepNum">01</span><div><strong id="stepHeading">지역을 선택하세요</strong><small id="stepDetail">시·도 17개 지역</small></div></div>
+        <div class="region-list" id="regionList"><div class="loading-message">지역 목록을 불러오는 중...</div></div>
+        <div class="selected-card hidden" id="selectedCard">
+          <p class="eyebrow">YOUR DESTINATION</p>
+          <h2 id="selectedName"></h2>
+          <p class="selected-hint">어떤 여행을 찾고 있나요?</p>
+          <div class="filters" id="filters">
+            <button type="button" class="filter active" data-category="all">전체</button>
+            <button type="button" class="filter" data-category="tourism">🏞️ 관광지</button>
+            <button type="button" class="filter" data-category="food">🍜 맛집</button>
+            <button type="button" class="filter" data-category="event">🎉 행사</button>
+          </div>
+          <div class="results-head"><span>발견한 장소</span><strong id="resultCount">0</strong></div>
+          <div class="landmark-list" id="landmarkList"></div>
+          <p class="data-note">장소와 좌표는 시연용 예제입니다. 영업 여부·행사 일정은 방문 전 확인하세요.</p>
+        </div>
+      </div>
+      <footer class="sidebar-footer"><span class="status-dot"></span> Flask + MariaDB + Leaflet <span>·</span> Cityname Project</footer>
+    </aside>
+    <main class="map-area">
+      <div id="map" aria-label="대한민국 지역별 여행 지도"></div>
+      <div class="map-top"><div class="map-tag">✳ EXPLORE KOREA</div><button type="button" id="backBtn" class="back-btn hidden">← 이전 단계</button></div>
+      <div class="map-bottom"><span class="map-tip" id="mapTip">👆 지도에서 시·도를 선택하면 확대됩니다.</span><span class="map-credit">지도: 대한민국 행정구역 GeoJSON</span></div>
+      <div class="toast hidden" id="toast" role="status"></div>
+    </main>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+</body>
+</html>
