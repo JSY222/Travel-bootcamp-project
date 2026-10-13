@@ -11,6 +11,62 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+  <!-- Shared SVG lighting keeps Leaflet coordinates and hit areas intact. -->
+  <svg class="map-filter-defs" aria-hidden="true" width="0" height="0">
+    <defs>
+      <!-- One common land base supplies the height; individual regions only get a rim. -->
+      <filter id="region-surface" x="-15%" y="-15%" width="130%" height="135%" color-interpolation-filters="sRGB">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="edgeBlur"/>
+        <feOffset in="edgeBlur" dy="2" result="edgeShadow"/>
+        <feFlood flood-color="#375d75" flood-opacity=".2"/>
+        <feComposite in2="edgeShadow" operator="in" result="softShadow"/>
+        <feMorphology in="SourceAlpha" operator="erode" radius="1.5" result="inset"/>
+        <feComposite in="SourceAlpha" in2="inset" operator="out" result="rim"/>
+        <feFlood flood-color="#fffef0" flood-opacity=".65"/>
+        <feComposite in2="rim" operator="in" result="softRim"/>
+        <feOffset in="SourceAlpha" dy="2" result="lipOffset"/>
+        <feComposite in="SourceAlpha" in2="lipOffset" operator="out" result="lip"/>
+        <feFlood flood-color="#ffffff" flood-opacity=".85"/>
+        <feComposite in2="lip" operator="in" result="brightLip"/>
+        <feMerge><feMergeNode in="softShadow"/><feMergeNode in="SourceGraphic"/><feMergeNode in="softRim"/><feMergeNode in="brightLip"/></feMerge>
+      </filter>
+      <filter id="ocean-ripple" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency=".012 .025" numOctaves="1" seed="8" result="waterNoise"/>
+        <feDisplacementMap in="SourceGraphic" in2="waterNoise" scale="6" xChannelSelector="R" yChannelSelector="G">
+          <animate attributeName="scale" values="3;12;3" dur="10s" repeatCount="indefinite"/>
+        </feDisplacementMap>
+      </filter>
+      <filter id="pudding-relief" x="-35%" y="-35%" width="170%" height="190%" color-interpolation-filters="sRGB">
+        <feComponentTransfer in="SourceGraphic" result="side">
+          <feFuncR type="linear" slope=".62"/>
+          <feFuncG type="linear" slope=".66"/>
+          <feFuncB type="linear" slope=".74"/>
+        </feComponentTransfer>
+        <feOffset in="side" dy="10" result="bottom"/>
+        <feOffset in="side" dy="6" result="middle"/>
+        <feOffset in="side" dy="3" result="upper"/>
+        <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur"/>
+        <feOffset in="blur" dx="3" dy="15" result="shadowOffset"/>
+        <feFlood flood-color="#245578" flood-opacity=".28"/>
+        <feComposite in2="shadowOffset" operator="in" result="shadow"/>
+        <!-- A light upper lip and dark inner lower edge create the soft groove. -->
+        <feOffset in="SourceAlpha" dy="2" result="edgeOffset"/>
+        <feComposite in="SourceAlpha" in2="edgeOffset" operator="out" result="topEdge"/>
+        <feFlood flood-color="#ffffff" flood-opacity=".72"/>
+        <feComposite in2="topEdge" operator="in" result="highlight"/>
+        <feOffset in="SourceAlpha" dy="-2" result="innerOffset"/>
+        <feComposite in="SourceAlpha" in2="innerOffset" operator="out" result="bottomEdge"/>
+        <feFlood flood-color="#526e87" flood-opacity=".32"/>
+        <feComposite in2="bottomEdge" operator="in" result="innerShadow"/>
+        <feMerge>
+          <feMergeNode in="shadow"/><feMergeNode in="bottom"/>
+          <feMergeNode in="middle"/><feMergeNode in="upper"/>
+          <feMergeNode in="SourceGraphic"/><feMergeNode in="highlight"/>
+          <feMergeNode in="innerShadow"/>
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
   <div class="app-shell">
     <aside class="sidebar">
       <header class="brand">
@@ -42,9 +98,17 @@
       <footer class="sidebar-footer"><span class="status-dot"></span> Flask + MariaDB + Leaflet <span>·</span> Cityname Project</footer>
     </aside>
     <main class="map-area">
+      <div class="ocean-scene" aria-hidden="true">
+        <div class="ocean-grid"></div><div class="ocean-waves"></div>
+        <span class="sea-label sea-west">WEST SEA</span>
+        <span class="sea-label sea-east">EAST SEA</span>
+        <span class="sea-sparkle sparkle-one">✧</span>
+        <span class="sea-sparkle sparkle-two">✧</span>
+        <span class="sea-sparkle sparkle-three">✦</span>
+      </div>
       <div id="map" aria-label="대한민국 지역별 여행 지도"></div>
       <div class="map-top"><div class="map-tag">✳ EXPLORE KOREA</div><button type="button" id="backBtn" class="back-btn hidden">← 이전 단계</button></div>
-      <div class="map-bottom"><span class="map-tip" id="mapTip">👆 지도에서 시·도를 선택하면 확대됩니다.</span><span class="map-credit">지도: 대한민국 행정구역 GeoJSON</span></div>
+      <div class="map-bottom"><span class="map-tip" id="mapTip">👆 지도에서 시·도를 선택하면 확대됩니다.</span><span class="map-credit">행정구역 GeoJSON · 제주·울릉·독도 확대 표시</span></div>
       <div class="toast hidden" id="toast" role="status"></div>
     </main>
   </div>

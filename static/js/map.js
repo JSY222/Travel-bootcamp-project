@@ -17,22 +17,93 @@ const CATEGORIES = {
   event: {emoji: '🎉', label: '행사'}
 };
 const $ = (selector) => document.querySelector(selector);
+// Scattered, deterministic wavelets avoid an obvious repeating ocean tile.
+function decorateOcean() {
+  const ocean = $('.ocean-waves');
+  if (!ocean) return;
+  let seed = 731;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+  const fragment = document.createDocumentFragment();
+  for (let i = 0; i < 58; i++) {
+    const wave = document.createElement('span');
+    wave.className = 'ocean-wavelet';
+    const values = {
+      '--wave-x': `${random() * 100}%`, '--wave-y': `${random() * 100}%`,
+      '--wave-width': `${22 + random() * 80}px`, '--wave-height': `${7 + random() * 15}px`,
+      '--wave-opacity': (.15 + random() * .4).toFixed(2),
+      '--wave-duration': `${22 + random() * 27}s`, '--wave-delay': `${-random() * 49}s`,
+      '--wave-angle': `${-18 + random() * 30}deg`, '--wave-drift': `${15 + random() * 35}px`
+    };
+    Object.entries(values).forEach(([key, value]) => wave.style.setProperty(key, value));
+    fragment.appendChild(wave);
+  }
+  ocean.appendChild(fragment);
+}
+decorateOcean();
+const ISLAND_DISPLAYS = [
+  {name: '제주도', center: [126.55, 33.38], scale: 1.55, contains: (x, y) => x > 125.8 && x < 127.2 && y > 32.8 && y < 33.9},
+  {name: '울릉도', center: [130.9, 37.5], scale: 3, contains: (x, y) => x > 130.5 && x < 131.3 && y > 37 && y < 38},
+  {name: '독도', center: [131.87, 37.24], scale: 9, contains: (x, y) => x > 131.5 && x < 132.2 && y > 37 && y < 37.7}
+];
+function displayCoordinate(coordinate) {
+  const [x, y] = coordinate;
+  const island = ISLAND_DISPLAYS.find(item => item.contains(x, y));
+  return island ? [island.center[0] + (x - island.center[0]) * island.scale,
+    island.center[1] + (y - island.center[1]) * island.scale] : [x, y];
+}
+function displayLatLng(lat, lng) {
+  const [x, y] = displayCoordinate([lng, lat]);
+  return [y, x];
+}
+function smoothDisplayFeature(feature) {
+  const polygons = asPolygons(feature.geometry);
+  const area = ring => Math.abs(ring.reduce((sum, p, i) => {
+    const q = ring[(i + 1) % ring.length];
+    return sum + p[0] * q[1] - q[0] * p[1];
+  }, 0));
+  const largest = Math.max(...polygons.map(p => area(p[0])), 0);
+  const isProvince = Boolean(feature.properties.CTP_KOR_NM);
+  // Hide only small offshore fragments in the overview; retain district detail.
+  const kept = polygons.filter(p => !isProvince || area(p[0]) >= largest * .002 ||
+    ISLAND_DISPLAYS.some(island => island.contains(...p[0][0])));
+  const coordinates = kept.map(polygon => polygon.map(ring => {
+    const importantIsland = ISLAND_DISPLAYS.some(island => island.contains(...ring[0]));
+    const tolerance = importantIsland ? .00015 : (isProvince ? .004 : .0005);
+    const points = ring.slice(0, -1).map(([x, y]) => L.point(x, y));
+    const simplified = L.LineUtil.simplify(points, tolerance);
+    const outline = simplified.length >= 3 ? simplified.map(p => [p.x, p.y]) : ring.slice(0, -1);
+    const displayed = outline.map(displayCoordinate);
+    return [...displayed, [...displayed[0]]];
+  }));
+  return {...feature, geometry: {type: 'MultiPolygon', coordinates}};
+}
 
 // 전 세계 배경 타일(OpenStreetMap)을 사용하지 않습니다.
 // 따라서 중국·일본 등 외국의 지형이나 도시가 보이지 않습니다.
 const map = L.map('map', {
   zoomControl: false,
-  preferCanvas: true,
+  preferCanvas: false,
   minZoom: 6,
   maxZoom: 18,
   maxBoundsViscosity: 1.0
 }).setView([36.4, 127.9], 7);
 L.control.zoom({position: 'bottomright'}).addTo(map);
+map.createPane('countryRelief');
+map.getPane('countryRelief').style.zIndex = '390';
+map.getPane('countryRelief').style.pointerEvents = 'none';
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let clearRegionLift = () => {};
+let liftedRegion = null;
+map.on('zoomstart', () => clearRegionLift());
 
 const state = {
   regions: [], provinceFeatures: [], districtFeatures: [],
   selectedRegion: null, selectedCity: null, selectedCategory: 'all',
   geoLayer: null, countryLayer: null, markerLayer: L.layerGroup().addTo(map),
+  islandLabelLayer: L.layerGroup().addTo(map),
   cityFeatures: [], fetchToken: 0
 };
 
@@ -65,6 +136,7 @@ function toast(message) {
 }
 function hideToast() { $('#toast').classList.add('hidden'); }
 function clearMap() {
+  clearRegionLift();
   if (state.geoLayer) map.removeLayer(state.geoLayer);
   state.geoLayer = null;
   state.markerLayer.clearLayers();
@@ -78,15 +150,25 @@ function fit(layer, maxZoom = 10) {
 // 클릭은 위에 별도로 올리는 선택 가능한 행정구역 레이어에서 처리합니다.
 function drawKoreaBackground() {
   if (state.countryLayer) map.removeLayer(state.countryLayer);
-  state.countryLayer = L.geoJSON(state.provinceFeatures, {
+  state.islandLabelLayer.clearLayers();
+  state.countryLayer = L.geoJSON(state.provinceFeatures.map(smoothDisplayFeature), {
     interactive: false,
-    style: {
-      color: '#bdd2c3',
-      weight: 1.1,
-      fillColor: '#f5f8f2',
-      fillOpacity: 1
-    }
+    pane: 'countryRelief',
+    style: feature => ({
+      color: '#627e97', weight: 2.4,
+      fillColor: provinceColor(feature), fillOpacity: 1,
+      className: 'country-relief'
+    })
   }).addTo(map);
+  ISLAND_DISPLAYS.filter(island => island.name !== '제주도').forEach(island => {
+    const coordinates = state.provinceFeatures.flatMap(feature => asPolygons(feature.geometry))
+      .filter(polygon => island.contains(...polygon[0][0]))
+      .flatMap(polygon => polygon[0].map(displayCoordinate));
+    if (!coordinates.length) return;
+    const center = L.latLngBounds(coordinates.map(([x, y]) => [y, x])).getCenter();
+    L.tooltip({permanent: true, direction: 'bottom', offset: [0, 8], className: 'place-tooltip island-tooltip'})
+      .setLatLng(center).setContent(island.name).addTo(state.islandLabelLayer);
+  });
 
   // 한국 주변에서만 이동할 수 있도록 지도 범위를 고정합니다.
   const bounds = state.countryLayer.getBounds();
@@ -115,19 +197,152 @@ function buildAllRegions(dbRows, provinces) {
   }).filter(Boolean).sort((a, b) => a.order - b.order);
 }
 
+// Codes keep each province's color stable regardless of DB/GeoJSON ordering.
+const PROVINCE_COLORS = {
+  '11': '#ff9fb5', '26': '#ffbb73', '27': '#c2a3f4', '28': '#8ddbd0',
+  '29': '#f4a6d7', '30': '#a9c5ff', '31': '#f4d574', '36': '#daafed',
+  '41': '#b6d879', '42': '#83cbaa', '43': '#f2b788', '44': '#8fcfdf',
+  '45': '#e9b9ce', '46': '#b8c98b', '47': '#b5b4ed', '48': '#efd393',
+  '50': '#83d5bc', '51': '#83cbaa', '52': '#e9b9ce'
+};
 function colorFor(index) {
-  return ['#abd8b2','#b8dfc5','#c9e8b6','#afddcb','#d5e9bc','#bbe2d7'][index % 6];
+  const palette = Object.values(PROVINCE_COLORS).slice(0, 17);
+  return palette[index % palette.length];
+}
+function provinceColor(feature) {
+  return PROVINCE_COLORS[String(feature.properties.CTPRVN_CD)] || colorFor(feature.properties.colorIndex || 0);
+}
+function shapeStyle(feature) {
+  return {color: '#658397', weight: 2.2, fillColor: provinceColor(feature),
+    fillOpacity: 1, className: 'geo-shape'};
+}
+// Find an interior label position on the largest landmass, excluding holes.
+// A bounding-box center can fall in the sea for provinces with many islands.
+function regionLabelCenter(feature) {
+  const polygons = asPolygons(feature.geometry).map(polygon => polygon.map(ring =>
+    ring.map(([lng, lat]) => L.CRS.EPSG3857.project(L.latLng(lat, lng)))));
+  const area = ring => Math.abs(ring.reduce((sum, p, i) => {
+    const q = ring[(i + 1) % ring.length];
+    return sum + p.x * q.y - q.x * p.y;
+  }, 0));
+  const polygon = polygons.filter(p => p[0]?.length >= 3)
+    .sort((a, b) => area(b[0]) - area(a[0]))[0];
+  if (!polygon) return L.geoJSON(feature).getBounds().getCenter();
+  const inside = (point, ring) => {
+    let result = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const a = ring[i], b = ring[j];
+      if ((a.y > point.y) !== (b.y > point.y) &&
+          point.x < (b.x - a.x) * (point.y - a.y) / (b.y - a.y) + a.x) result = !result;
+    }
+    return result;
+  };
+  const clearance = point => {
+    if (!inside(point, polygon[0]) || polygon.slice(1).some(ring => inside(point, ring))) return -1;
+    let distance = Infinity;
+    polygon.forEach(ring => ring.forEach((a, i) => {
+      const b = ring[(i + 1) % ring.length];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const t = Math.max(0, Math.min(1,
+        ((point.x - a.x) * dx + (point.y - a.y) * dy) / (dx * dx + dy * dy || 1)));
+      distance = Math.min(distance, Math.hypot(point.x - a.x - t * dx, point.y - a.y - t * dy));
+    }));
+    return distance;
+  };
+  const bounds = L.bounds(polygon[0]);
+  let best = polygon[0][0], score = -1;
+  let left = bounds.min.x, bottom = bounds.min.y;
+  let width = bounds.max.x - left, height = bounds.max.y - bottom;
+  for (let pass = 0; pass < 4; pass++) {
+    for (let x = 0; x < 18; x++) for (let y = 0; y < 18; y++) {
+      const point = L.point(left + width * (x + .5) / 18, bottom + height * (y + .5) / 18);
+      const value = clearance(point);
+      if (value > score) { score = value; best = point; }
+    }
+    width /= 6; height /= 6;
+    left = best.x - width / 2; bottom = best.y - height / 2;
+  }
+  return L.CRS.EPSG3857.unproject(best);
+}
+function decorativeRegionCopy(path) {
+  const copy = path.cloneNode(false);
+  copy.removeAttribute('tabindex');
+  copy.removeAttribute('role');
+  copy.removeAttribute('aria-label');
+  copy.setAttribute('aria-hidden', 'true');
+  copy.classList.remove('leaflet-interactive', 'region-hit-active');
+  // Leaflet's own SVG selector can override ordinary CSS pointer-events rules.
+  copy.style.pointerEvents = 'none';
+  return copy;
+}
+function liftRegion(layer) {
+  if (liftedRegion === layer) return;
+  clearRegionLift();
+  const path = layer.getElement();
+  if (!path) return;
+  // Keep the original hit area stationary so the rising region never flickers.
+  const raised = decorativeRegionCopy(path);
+  raised.classList.add('region-hover');
+  // Never reinsert the actual click target between pointer down and pointer up.
+  // Only the decorative copy moves to the front; keyboard focus reuses it.
+  path.parentNode.appendChild(raised);
+  liftedRegion = layer;
+  path.classList.add('region-hit-active');
+  const tooltip = layer.getTooltip();
+  tooltip.options.offset = L.point(0, -8);
+  tooltip.update();
+  clearRegionLift = () => {
+    liftedRegion = null;
+    raised.remove();
+    path.classList.remove('region-hit-active');
+    tooltip.options.offset = L.point(0, 0);
+    tooltip.update();
+    clearRegionLift = () => {};
+  };
+}
+function bounceRegion(layer, feature, onClick) {
+  clearRegionLift();
+  const path = layer.getElement();
+  if (path && !reducedMotion.matches) {
+    const animated = decorativeRegionCopy(path);
+    animated.classList.add('region-boing');
+    path.parentNode.appendChild(animated);
+    setTimeout(() => animated.remove(), 620);
+  }
+  // Navigation runs immediately; the decorative animation cannot block it.
+  onClick(feature);
 }
 function addGeoLayer(features, onClick) {
-  state.geoLayer = L.geoJSON(features, {
-    style: () => ({color: '#ffffff', weight: 2.1, fillColor: colorFor(2), fillOpacity: .65, className: 'geo-shape'}),
+  state.geoLayer = L.geoJSON(features.map(smoothDisplayFeature), {
+    style: shapeStyle,
     onEachFeature: (feature, layer) => {
       const name = feature.properties.displayName;
-      layer.setStyle({fillColor: colorFor(feature.properties.colorIndex || 0)});
+      const labelCenter = regionLabelCenter(feature);
+      // Leaflet uses getCenter() for permanent center tooltips, including on zoom.
+      layer.getCenter = () => labelCenter;
       layer.on({
-        click: () => onClick(feature),
-        mouseover: () => layer.setStyle({fillColor: '#79c8a0', weight: 3, fillOpacity: .9}),
-        mouseout: () => state.geoLayer && state.geoLayer.resetStyle(layer)
+        click: () => bounceRegion(layer, feature, onClick),
+      });
+      layer.on('add', () => {
+        const path = layer.getElement();
+        if (!path) return;
+        path.setAttribute('tabindex', '0');
+        path.setAttribute('role', 'button');
+        path.setAttribute('aria-label', `${name} 선택`);
+        path.addEventListener('mouseenter', () => liftRegion(layer));
+        path.addEventListener('mouseleave', () => {
+          if (liftedRegion === layer) clearRegionLift();
+        });
+        path.addEventListener('focus', () => liftRegion(layer));
+        path.addEventListener('blur', () => {
+          if (liftedRegion === layer) clearRegionLift();
+        });
+        path.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            bounceRegion(layer, feature, onClick);
+          }
+        });
       });
       layer.bindTooltip(name, {permanent: true, direction: 'center', className: 'place-tooltip', opacity: .94});
     }
@@ -343,7 +558,7 @@ function makeMarker(p, i) {
     html: `<div class="landmark-pin" style="animation-delay:${Math.min(i * 65, 700)}ms"><div class="pin-bubble pin-${safeType}"><span>${cat.emoji}</span></div></div>`,
     className: '', iconSize: [36, 40], iconAnchor: [18, 38]
   });
-  return L.marker([p.latitude, p.longitude], {icon}).bindPopup(popupContent(p));
+  return L.marker(displayLatLng(p.latitude, p.longitude), {icon}).bindPopup(popupContent(p));
 }
 function renderCards(places, markers) {
   const container = $('#landmarkList'); container.replaceChildren();
@@ -370,7 +585,7 @@ function renderCards(places, markers) {
       card.append(a);
     }
     card.addEventListener('click', () => {
-      map.flyTo([p.latitude, p.longitude], Math.max(map.getZoom(), 12));
+      map.flyTo(displayLatLng(p.latitude, p.longitude), Math.max(map.getZoom(), 12));
       markers[i].openPopup();
     });
     container.append(card);

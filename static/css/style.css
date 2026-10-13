@@ -19,3 +19,57 @@
 /* 대한민국 행정구역 전용 지도: 외국 배경 타일 대신 바다색 표시 */
 .map-area {background: #deeff2;}
 .leaflet-container {background: radial-gradient(circle at 45% 45%, #e7f4f4, #d5e9ed);}
+
+/* Soft game-world relief; the map itself stays in Leaflet's coordinate space. */
+.map-filter-defs{position:absolute;pointer-events:none;overflow:hidden}
+.map-area{isolation:isolate;overflow:hidden;background:#86c8df}
+.map-area .leaflet-container{background:transparent}
+.ocean-scene{position:absolute;inset:0;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 48% 35%,#d2f1ef 0%,#a7dfe9 36%,#75bbd9 75%,#5499c5 100%)}
+.ocean-scene:after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 100px #367cab30;background:linear-gradient(130deg,#ffffff35,transparent 45%,#2b75b21a)}
+.ocean-grid{position:absolute;inset:-50%;opacity:.2;background-image:linear-gradient(#ffffff55 1px,transparent 1px),linear-gradient(90deg,#ffffff55 1px,transparent 1px);background-size:80px 80px;transform:perspective(700px) rotateX(48deg) rotateZ(-15deg);transform-origin:center}
+.ocean-waves{position:absolute;inset:-70px;opacity:.55;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='105' viewBox='0 0 180 105'%3E%3Cpath d='M18 28q12 7 24 0t24 0M105 78q10 6 20 0t20 0' fill='none' stroke='%23fff' stroke-opacity='.62' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M20 32q12 7 24 0t24 0' fill='none' stroke='%234f9dc4' stroke-opacity='.25' stroke-width='2'/%3E%3C/svg%3E");animation:ocean-drift 16s ease-in-out infinite alternate}
+.sea-label{position:absolute;font-size:10px;font-weight:800;letter-spacing:4px;color:#2e779b60;transform:rotate(-12deg)}
+.sea-west{left:12%;top:49%}.sea-east{right:8%;top:40%}
+.sea-sparkle{position:absolute;color:#efffff;font-size:29px;text-shadow:0 3px 0 #529fc044;animation:sea-glint 4s ease-in-out infinite}
+.sparkle-one{left:17%;top:29%}.sparkle-two{right:17%;bottom:27%;animation-delay:-2s}.sparkle-three{left:34%;bottom:18%;font-size:18px;animation-delay:-1s}
+.geo-shape,.country-relief{stroke-linejoin:round;stroke-linecap:round}
+/* Extrude the complete land surface once, so adjacent regions share one height. */
+.leaflet-countryRelief-pane svg>g{filter:url(#pudding-relief)}
+.country-relief{filter:none}
+.geo-shape{filter:url(#region-surface)}
+.geo-shape{cursor:pointer;transition:fill .2s,stroke .2s;transform-box:fill-box;transform-origin:50% 65%}
+.geo-shape.region-hover,.geo-shape:focus-visible{stroke:#f9ffff;stroke-width:3;outline:none}
+.geo-shape.region-hover{pointer-events:none;transform:translateY(-8px);filter:url(#pudding-relief) drop-shadow(0 9px 5px #24557840);animation:region-rise .22s ease-out both}
+.geo-shape.region-hit-active{opacity:0;pointer-events:all}
+.place-tooltip{pointer-events:none}
+.ocean-waves{animation:ocean-flow 28s linear infinite,ocean-swell 9s ease-in-out infinite;filter:url(#ocean-ripple);will-change:transform}
+.ocean-waves:after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 25% 40%,#ffffff25,transparent 45%),radial-gradient(ellipse at 75% 65%,#328abb20,transparent 50%);animation:ocean-sheen 11s ease-in-out infinite}
+.ocean-scene:after{background-size:180% 180%;animation:ocean-light 35s ease-in-out infinite alternate}
+.geo-shape.region-boing{filter:url(#pudding-relief) drop-shadow(0 8px 6px #24557830);animation:region-boing .62s ease-in-out both}
+.place-tooltip{border:1px solid #ffffffa6;background:#fffdf3e8;color:#354e68;border-radius:10px;padding:4px 8px;box-shadow:0 3px 0 #43677d24,0 5px 12px #28577818;text-shadow:0 1px #fff;font-size:10px}
+.map-tag{background:#fffdf4ee;color:#365f77;border:1px solid #fff;box-shadow:0 4px 0 #4f8ba32b,0 10px 25px #2c729222}
+.map-tip{background:#fffdf4ef;color:#426379;border:1px solid #fff;box-shadow:0 4px 0 #4f8ba32b,0 10px 25px #2c729222}
+.map-credit{color:#315f7b}.back-btn{background:#365e78;box-shadow:0 4px 0 #244357,0 8px 20px #285a7626}
+.leaflet-control-zoom{border:1px solid #ffffffb3!important;border-radius:13px!important;overflow:hidden;box-shadow:0 4px 0 #4f8ba32b,0 8px 20px #285a7626!important}
+.leaflet-control-zoom a{background:#fffdf4!important;color:#365e78!important}
+.sidebar{background:linear-gradient(160deg,#fffdf7,#f5faf4);box-shadow:8px 0 35px #285b7220}
+.region-button{box-shadow:0 3px 0 #dce7de;border-radius:14px}
+.region-button:active{transform:translateY(2px);box-shadow:0 1px 0 #dce7de}
+.region-button{transition:background-color .2s,border-color .2s,box-shadow .2s}
+.region-button:hover,.region-button:focus-visible,.region-button:active{transform:none}
+@keyframes region-boing{0%{opacity:1;transform:translateY(-8px) scale(1)}16%{transform:translateY(-3px) scale(1.035,.94)}36%{transform:translateY(-15px) scale(.975,1.07) rotate(-1deg)}56%{transform:translateY(-4px) scale(1.025,.975) rotate(.7deg)}73%{opacity:1;transform:translateY(-10px) scale(.99,1.02)}88%{transform:translateY(-5px) scale(1.01,.99)}100%{opacity:0;transform:translateY(-8px) scale(1)}}
+@keyframes ocean-drift{from{transform:translate(0,0)}to{transform:translate(36px,15px)}}
+@keyframes region-rise{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+@keyframes ocean-flow{from{background-position:0 0}to{background-position:180px 105px}}
+@keyframes ocean-swell{0%,100%{transform:translateY(-4px) scaleY(1)}50%{transform:translateY(5px) scaleY(1.025)}}
+@keyframes ocean-sheen{0%,100%{opacity:.4;transform:translate(-12px,-5px)}50%{opacity:1;transform:translate(12px,5px)}}
+@keyframes ocean-light{from{background-position:0% 20%;opacity:.6}to{background-position:100% 80%;opacity:1}}
+@keyframes sea-glint{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:.9;transform:scale(1.1)}}
+@media(max-width:840px){.sea-label{font-size:8px;letter-spacing:2px}.sea-west{left:5%}.sea-east{right:4%}.place-tooltip{font-size:9px;padding:2px 5px}.map-tip{max-width:calc(100% - 60px);line-height:1.6;border-radius:16px}}
+/* Independent sizes and phases make the water drift without a visible grid. */
+.ocean-grid{display:none}
+.ocean-waves{background-image:none;opacity:1;animation:ocean-swell 13s ease-in-out infinite}
+.ocean-wavelet{position:absolute;left:var(--wave-x);top:var(--wave-y);width:var(--wave-width);height:var(--wave-height);opacity:var(--wave-opacity);pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 22'%3E%3Cpath d='M3 12Q17 3 31 12T59 12T87 12' fill='none' stroke='%23efffff' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M14 19Q27 11 40 19T66 19' fill='none' stroke='%239adce6' stroke-width='1.3' stroke-opacity='.5'/%3E%3C/svg%3E") center/100% 100% no-repeat;animation:wavelet-drift var(--wave-duration) ease-in-out var(--wave-delay) infinite;transform:rotate(var(--wave-angle))}
+.ocean-waves:before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 15% 25%,#e1fffb40,transparent 32%),radial-gradient(ellipse at 80% 75%,#2d80b338,transparent 44%),radial-gradient(ellipse at 60% 18%,#fff8cd20,transparent 25%);animation:ocean-sheen 29s ease-in-out infinite reverse}
+@keyframes wavelet-drift{0%,100%{transform:translate(0,-3px) rotate(var(--wave-angle));opacity:calc(var(--wave-opacity) * .65)}50%{transform:translate(var(--wave-drift),6px) rotate(var(--wave-angle));opacity:var(--wave-opacity)}}
+@media(prefers-reduced-motion:reduce){.ocean-wavelet,.ocean-waves,.ocean-waves:before,.ocean-waves:after,.ocean-scene:after,.sea-sparkle,.geo-shape.region-boing,.geo-shape.region-hover,.landmark-pin{animation:none}.ocean-waves{filter:none}.geo-shape,.region-button{transition:none}}
