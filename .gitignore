@@ -1,0 +1,19 @@
+# Claude Code 지침 파일 (개인용, 커밋하지 않음)
+CLAUDE.md
+
+# 환경변수 / 비밀값
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 에디터 / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
