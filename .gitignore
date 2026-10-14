@@ -12,6 +12,9 @@ __pycache__/
 .venv/
 venv/
 
+# DB 백업
+db/backups/
+
 # 에디터 / OS
 .vscode/
 .idea/
