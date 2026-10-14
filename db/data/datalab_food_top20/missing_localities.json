@@ -1,0 +1,1157 @@
+[
+  {
+    "region_code": "29",
+    "locality": "광산구",
+    "source_codes": [
+      "29200"
+    ]
+  },
+  {
+    "region_code": "29",
+    "locality": "남구",
+    "source_codes": [
+      "29155"
+    ]
+  },
+  {
+    "region_code": "29",
+    "locality": "동구",
+    "source_codes": [
+      "29110"
+    ]
+  },
+  {
+    "region_code": "29",
+    "locality": "북구",
+    "source_codes": [
+      "29170"
+    ]
+  },
+  {
+    "region_code": "29",
+    "locality": "서구",
+    "source_codes": [
+      "29140"
+    ]
+  },
+  {
+    "region_code": "36",
+    "locality": "세종특별자치시",
+    "source_codes": [
+      "36110"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "고양시 덕양구",
+    "source_codes": [
+      "41281"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "고양시 일산동구",
+    "source_codes": [
+      "41285"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "고양시 일산서구",
+    "source_codes": [
+      "41287"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "부천시",
+    "source_codes": [
+      "41190"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "성남시 분당구",
+    "source_codes": [
+      "41135"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "성남시 수정구",
+    "source_codes": [
+      "41131"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "성남시 중원구",
+    "source_codes": [
+      "41133"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "수원시 권선구",
+    "source_codes": [
+      "41113"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "수원시 영통구",
+    "source_codes": [
+      "41117"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "수원시 장안구",
+    "source_codes": [
+      "41111"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "수원시 팔달구",
+    "source_codes": [
+      "41115"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "안산시 단원구",
+    "source_codes": [
+      "41273"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "안산시 상록구",
+    "source_codes": [
+      "41271"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "안양시 동안구",
+    "source_codes": [
+      "41173"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "안양시 만안구",
+    "source_codes": [
+      "41171"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "오산시",
+    "source_codes": [
+      "41370"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "용인시 기흥구",
+    "source_codes": [
+      "41463"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "용인시 수지구",
+    "source_codes": [
+      "41465"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "용인시 처인구",
+    "source_codes": [
+      "41461"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "의왕시",
+    "source_codes": [
+      "41430"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "의정부시",
+    "source_codes": [
+      "41150"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "이천시",
+    "source_codes": [
+      "41500"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "파주시",
+    "source_codes": [
+      "41480"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "평택시",
+    "source_codes": [
+      "41220"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "포천시",
+    "source_codes": [
+      "41650"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "하남시",
+    "source_codes": [
+      "41450"
+    ]
+  },
+  {
+    "region_code": "41",
+    "locality": "화성시",
+    "source_codes": [
+      "41590"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "강릉시",
+    "source_codes": [
+      "51150"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "고성군",
+    "source_codes": [
+      "51820"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "동해시",
+    "source_codes": [
+      "51170"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "삼척시",
+    "source_codes": [
+      "51230"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "속초시",
+    "source_codes": [
+      "51210"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "양구군",
+    "source_codes": [
+      "51800"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "양양군",
+    "source_codes": [
+      "51830"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "영월군",
+    "source_codes": [
+      "51750"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "원주시",
+    "source_codes": [
+      "51130"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "인제군",
+    "source_codes": [
+      "51810"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "정선군",
+    "source_codes": [
+      "51770"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "철원군",
+    "source_codes": [
+      "51780"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "춘천시",
+    "source_codes": [
+      "51110"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "태백시",
+    "source_codes": [
+      "51190"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "평창군",
+    "source_codes": [
+      "51760"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "홍천군",
+    "source_codes": [
+      "51720"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "화천군",
+    "source_codes": [
+      "51790"
+    ]
+  },
+  {
+    "region_code": "42",
+    "locality": "횡성군",
+    "source_codes": [
+      "51730"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "괴산군",
+    "source_codes": [
+      "43760"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "단양군",
+    "source_codes": [
+      "43800"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "보은군",
+    "source_codes": [
+      "43720"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "영동군",
+    "source_codes": [
+      "43740"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "옥천군",
+    "source_codes": [
+      "43730"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "음성군",
+    "source_codes": [
+      "43770"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "제천시",
+    "source_codes": [
+      "43150"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "증평군",
+    "source_codes": [
+      "43745"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "진천군",
+    "source_codes": [
+      "43750"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "청주시 상당구",
+    "source_codes": [
+      "43111"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "청주시 서원구",
+    "source_codes": [
+      "43112"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "청주시 청원구",
+    "source_codes": [
+      "43114"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "청주시 흥덕구",
+    "source_codes": [
+      "43113"
+    ]
+  },
+  {
+    "region_code": "43",
+    "locality": "충주시",
+    "source_codes": [
+      "43130"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "계룡시",
+    "source_codes": [
+      "44250"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "공주시",
+    "source_codes": [
+      "44150"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "금산군",
+    "source_codes": [
+      "44710"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "논산시",
+    "source_codes": [
+      "44230"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "당진시",
+    "source_codes": [
+      "44270"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "보령시",
+    "source_codes": [
+      "44180"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "부여군",
+    "source_codes": [
+      "44760"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "서산시",
+    "source_codes": [
+      "44210"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "서천군",
+    "source_codes": [
+      "44770"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "아산시",
+    "source_codes": [
+      "44200"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "예산군",
+    "source_codes": [
+      "44810"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "천안시 동남구",
+    "source_codes": [
+      "44131"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "천안시 서북구",
+    "source_codes": [
+      "44133"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "청양군",
+    "source_codes": [
+      "44790"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "태안군",
+    "source_codes": [
+      "44825"
+    ]
+  },
+  {
+    "region_code": "44",
+    "locality": "홍성군",
+    "source_codes": [
+      "44800"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "고창군",
+    "source_codes": [
+      "45790"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "군산시",
+    "source_codes": [
+      "45130"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "김제시",
+    "source_codes": [
+      "45210"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "남원시",
+    "source_codes": [
+      "45190"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "무주군",
+    "source_codes": [
+      "45730"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "부안군",
+    "source_codes": [
+      "45800"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "순창군",
+    "source_codes": [
+      "45770"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "완주군",
+    "source_codes": [
+      "45710"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "익산시",
+    "source_codes": [
+      "45140"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "임실군",
+    "source_codes": [
+      "45750"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "장수군",
+    "source_codes": [
+      "45740"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "전주시 덕진구",
+    "source_codes": [
+      "45113"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "전주시 완산구",
+    "source_codes": [
+      "45111"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "정읍시",
+    "source_codes": [
+      "45180"
+    ]
+  },
+  {
+    "region_code": "45",
+    "locality": "진안군",
+    "source_codes": [
+      "45720"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "강진군",
+    "source_codes": [
+      "46810"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "고흥군",
+    "source_codes": [
+      "46770"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "곡성군",
+    "source_codes": [
+      "46720"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "광양시",
+    "source_codes": [
+      "46230"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "구례군",
+    "source_codes": [
+      "46730"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "나주시",
+    "source_codes": [
+      "46170"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "담양군",
+    "source_codes": [
+      "46710"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "목포시",
+    "source_codes": [
+      "46110"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "무안군",
+    "source_codes": [
+      "46840"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "보성군",
+    "source_codes": [
+      "46780"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "순천시",
+    "source_codes": [
+      "46150"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "신안군",
+    "source_codes": [
+      "46910"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "여수시",
+    "source_codes": [
+      "46130"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "영광군",
+    "source_codes": [
+      "46870"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "영암군",
+    "source_codes": [
+      "46830"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "완도군",
+    "source_codes": [
+      "46890"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "장성군",
+    "source_codes": [
+      "46880"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "장흥군",
+    "source_codes": [
+      "46800"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "진도군",
+    "source_codes": [
+      "46900"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "함평군",
+    "source_codes": [
+      "46860"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "해남군",
+    "source_codes": [
+      "46820"
+    ]
+  },
+  {
+    "region_code": "46",
+    "locality": "화순군",
+    "source_codes": [
+      "46790"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "경산시",
+    "source_codes": [
+      "47290"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "경주시",
+    "source_codes": [
+      "47130"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "고령군",
+    "source_codes": [
+      "47830"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "구미시",
+    "source_codes": [
+      "47190"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "김천시",
+    "source_codes": [
+      "47150"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "문경시",
+    "source_codes": [
+      "47280"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "봉화군",
+    "source_codes": [
+      "47920"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "상주시",
+    "source_codes": [
+      "47250"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "성주군",
+    "source_codes": [
+      "47840"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "안동시",
+    "source_codes": [
+      "47170"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "영덕군",
+    "source_codes": [
+      "47770"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "영양군",
+    "source_codes": [
+      "47760"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "영주시",
+    "source_codes": [
+      "47210"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "영천시",
+    "source_codes": [
+      "47230"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "예천군",
+    "source_codes": [
+      "47900"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "울릉군",
+    "source_codes": [
+      "47940"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "울진군",
+    "source_codes": [
+      "47930"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "의성군",
+    "source_codes": [
+      "47730"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "청도군",
+    "source_codes": [
+      "47820"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "청송군",
+    "source_codes": [
+      "47750"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "칠곡군",
+    "source_codes": [
+      "47850"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "포항시 남구",
+    "source_codes": [
+      "47111"
+    ]
+  },
+  {
+    "region_code": "47",
+    "locality": "포항시 북구",
+    "source_codes": [
+      "47113"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "거제시",
+    "source_codes": [
+      "48310"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "거창군",
+    "source_codes": [
+      "48880"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "고성군",
+    "source_codes": [
+      "48820"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "김해시",
+    "source_codes": [
+      "48250"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "남해군",
+    "source_codes": [
+      "48840"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "밀양시",
+    "source_codes": [
+      "48270"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "사천시",
+    "source_codes": [
+      "48240"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "산청군",
+    "source_codes": [
+      "48860"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "양산시",
+    "source_codes": [
+      "48330"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "의령군",
+    "source_codes": [
+      "48720"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "진주시",
+    "source_codes": [
+      "48170"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "창녕군",
+    "source_codes": [
+      "48740"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "창원시 마산합포구",
+    "source_codes": [
+      "48125"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "창원시 마산회원구",
+    "source_codes": [
+      "48127"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "창원시 성산구",
+    "source_codes": [
+      "48123"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "창원시 의창구",
+    "source_codes": [
+      "48121"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "창원시 진해구",
+    "source_codes": [
+      "48129"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "통영시",
+    "source_codes": [
+      "48220"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "하동군",
+    "source_codes": [
+      "48850"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "함안군",
+    "source_codes": [
+      "48730"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "함양군",
+    "source_codes": [
+      "48870"
+    ]
+  },
+  {
+    "region_code": "48",
+    "locality": "합천군",
+    "source_codes": [
+      "48890"
+    ]
+  },
+  {
+    "region_code": "50",
+    "locality": "서귀포시",
+    "source_codes": [
+      "50130"
+    ]
+  },
+  {
+    "region_code": "50",
+    "locality": "제주시",
+    "source_codes": [
+      "50110"
+    ]
+  }
+]
