@@ -5,12 +5,16 @@ CLAUDE.md
 .env
 .env.*
 !.env.example
+api_keys/
 
 # Python
 __pycache__/
 *.py[cod]
 .venv/
 venv/
+
+# DB 백업
+db/backups/
 
 # 에디터 / OS
 .vscode/
