@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="csrf-token" content="{{ csrf_token }}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cityname | 국내 여행 지도</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,17 +19,25 @@
       <filter id="region-surface" x="-15%" y="-15%" width="130%" height="135%" color-interpolation-filters="sRGB">
         <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="edgeBlur"/>
         <feOffset in="edgeBlur" dy="2" result="edgeShadow"/>
-        <feFlood flood-color="#375d75" flood-opacity=".2"/>
+        <feFlood flood-color="#81728e" flood-opacity=".14"/>
         <feComposite in2="edgeShadow" operator="in" result="softShadow"/>
-        <feMorphology in="SourceAlpha" operator="erode" radius="1.5" result="inset"/>
+        <feMorphology in="SourceAlpha" operator="erode" radius="3" result="inset"/>
         <feComposite in="SourceAlpha" in2="inset" operator="out" result="rim"/>
-        <feFlood flood-color="#fffef0" flood-opacity=".65"/>
+        <feFlood flood-color="#b4a1be" flood-opacity=".16"/>
         <feComposite in2="rim" operator="in" result="softRim"/>
         <feOffset in="SourceAlpha" dy="2" result="lipOffset"/>
         <feComposite in="SourceAlpha" in2="lipOffset" operator="out" result="lip"/>
-        <feFlood flood-color="#ffffff" flood-opacity=".85"/>
+        <feFlood flood-color="#fff3e2" flood-opacity=".18"/>
         <feComposite in2="lip" operator="in" result="brightLip"/>
-        <feMerge><feMergeNode in="softShadow"/><feMergeNode in="SourceGraphic"/><feMergeNode in="softRim"/><feMergeNode in="brightLip"/></feMerge>
+        <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="roundedSurface"/>
+        <feSpecularLighting in="roundedSurface" surfaceScale="9" specularConstant="1.15" specularExponent="28" lighting-color="#ffffff" result="reflection">
+          <feDistantLight azimuth="225" elevation="55"/>
+        </feSpecularLighting>
+        <feComposite in="reflection" in2="inset" operator="in" result="clippedReflection"/>
+        <feComponentTransfer in="clippedReflection" result="gloss">
+          <feFuncA type="linear" slope=".48"/>
+        </feComponentTransfer>
+        <feMerge><feMergeNode in="softShadow"/><feMergeNode in="SourceGraphic"/><feMergeNode in="softRim"/><feMergeNode in="brightLip"/><feMergeNode in="gloss"/></feMerge>
       </filter>
       <filter id="ocean-ripple" x="-5%" y="-5%" width="110%" height="110%">
         <feTurbulence type="fractalNoise" baseFrequency=".012 .025" numOctaves="1" seed="8" result="waterNoise"/>
@@ -37,16 +46,19 @@
         </feDisplacementMap>
       </filter>
       <filter id="pudding-relief" x="-35%" y="-35%" width="170%" height="190%" color-interpolation-filters="sRGB">
-        <feComponentTransfer in="SourceGraphic" result="side">
-          <feFuncR type="linear" slope=".62"/>
-          <feFuncG type="linear" slope=".66"/>
-          <feFuncB type="linear" slope=".74"/>
-        </feComponentTransfer>
-        <feOffset in="side" dy="10" result="bottom"/>
-        <feOffset in="side" dy="6" result="middle"/>
-        <feOffset in="side" dy="3" result="upper"/>
+        <!-- Extrude a solid alpha silhouette instead of stacking stroked copies. -->
+        <feMorphology in="SourceAlpha" operator="dilate" radius="0 7" result="sideVolume"/>
+        <feOffset in="sideVolume" dy="7" result="sideSilhouette"/>
+        <feGaussianBlur in="sideSilhouette" stdDeviation=".65" result="sideMask"/>
+        <feGaussianBlur in="sideSilhouette" stdDeviation="3" result="sideSurface"/>
+        <feDiffuseLighting in="sideSurface" surfaceScale="4" diffuseConstant="1" lighting-color="#ffffff" result="sideLight">
+          <feDistantLight azimuth="225" elevation="65"/>
+        </feDiffuseLighting>
+        <feFlood flood-color="#9993a5" result="sideColor"/>
+        <feComposite in="sideColor" in2="sideLight" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="shadedSide"/>
+        <feComposite in="shadedSide" in2="sideMask" operator="in" result="continuousSide"/>
         <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur"/>
-        <feOffset in="blur" dx="3" dy="15" result="shadowOffset"/>
+        <feOffset in="blur" dx="4" dy="19" result="shadowOffset"/>
         <feFlood flood-color="#245578" flood-opacity=".28"/>
         <feComposite in2="shadowOffset" operator="in" result="shadow"/>
         <!-- A light upper lip and dark inner lower edge create the soft groove. -->
@@ -58,17 +70,22 @@
         <feComposite in="SourceAlpha" in2="innerOffset" operator="out" result="bottomEdge"/>
         <feFlood flood-color="#526e87" flood-opacity=".32"/>
         <feComposite in2="bottomEdge" operator="in" result="innerShadow"/>
+        <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="bevelSurface"/>
+        <feSpecularLighting in="bevelSurface" surfaceScale="12" specularConstant="1.2" specularExponent="32" lighting-color="#fffdf5" result="landReflection">
+          <feDistantLight azimuth="225" elevation="55"/>
+        </feSpecularLighting>
+        <feComposite in="landReflection" in2="SourceAlpha" operator="in" result="landGloss"/>
         <feMerge>
-          <feMergeNode in="shadow"/><feMergeNode in="bottom"/>
-          <feMergeNode in="middle"/><feMergeNode in="upper"/>
+          <feMergeNode in="shadow"/><feMergeNode in="continuousSide"/>
           <feMergeNode in="SourceGraphic"/><feMergeNode in="highlight"/>
           <feMergeNode in="innerShadow"/>
+          <feMergeNode in="landGloss"/>
         </feMerge>
       </filter>
     </defs>
   </svg>
   <div class="app-shell">
-    <aside class="sidebar">
+    <aside class="sidebar" id="travelSidebar" aria-hidden="true" inert>
       <header class="brand">
         <div class="brand-symbol">✳</div>
         <div><div class="brand-name">cityname<span>.</span></div><div class="brand-caption">TRAVEL DISCOVERY MAP</div></div>
@@ -80,6 +97,16 @@
         <div class="breadcrumb"><button id="homeBtn" type="button">전국</button><span id="crumbRegion"></span><span id="crumbCity"></span></div>
         <div class="step-title"><span id="stepNum">01</span><div><strong id="stepHeading">지역을 선택하세요</strong><small id="stepDetail">시·도 17개 지역</small></div></div>
         <div class="region-list" id="regionList"><div class="loading-message">지역 목록을 불러오는 중...</div></div>
+        <section class="nationwide-controls" id="nationwideControls" aria-label="전국 여행 장소 검색">
+          <h2>전국 여행 장소</h2>
+          <p>지역 선택 없이 전국의 장소를 둘러보세요.</p>
+          <div class="filters nationwide-filters" id="nationwideFilters">
+            <button type="button" class="filter" data-category="all" aria-pressed="false">전체</button>
+            <button type="button" class="filter" data-category="tourism" aria-pressed="false">관광지</button>
+            <button type="button" class="filter" data-category="food" aria-pressed="false">맛집</button>
+            <button type="button" class="filter" data-category="event" aria-pressed="false">행사</button>
+          </div>
+        </section>
         <div class="selected-card hidden" id="selectedCard">
           <p class="eyebrow">YOUR DESTINATION</p>
           <h2 id="selectedName"></h2>
@@ -97,6 +124,10 @@
       </div>
       <footer class="sidebar-footer"><span class="status-dot"></span> Flask + MariaDB + Leaflet <span>·</span> Cityname Project</footer>
     </aside>
+    <button class="sidebar-handle" id="sidebarHandle" type="button" aria-controls="travelSidebar" aria-expanded="false" aria-label="여행 패널 열기" title="오른쪽으로 끌거나 클릭해서 열기">
+      <span class="handle-grip" aria-hidden="true"></span>
+      <span class="handle-arrow" aria-hidden="true">›</span>
+    </button>
     <main class="map-area">
       <div class="ocean-scene" aria-hidden="true">
         <div class="ocean-grid"></div><div class="ocean-waves"></div>
@@ -107,12 +138,34 @@
         <span class="sea-sparkle sparkle-three">✦</span>
       </div>
       <div id="map" aria-label="대한민국 지역별 여행 지도"></div>
-      <div class="map-top"><div class="map-tag">✳ EXPLORE KOREA</div><button type="button" id="backBtn" class="back-btn hidden">← 이전 단계</button></div>
+      <div class="map-top">
+        <div class="map-navigation"><div class="map-tag">✳ EXPLORE KOREA</div><button type="button" id="backBtn" class="back-btn hidden">← 이전 단계</button></div>
+        <section class="login-card" aria-label="로그인">
+          {% if member_name %}
+          <div class="member-greeting">{{ member_name }}님, 반갑습니다. <button class="auth-submit" id="logoutButton" type="button">로그아웃</button></div>
+          {% else %}
+          <form id="loginForm" class="login-form">
+            <div class="login-fields">
+              <label for="loginId">아이디<input id="loginId" name="username" type="text" placeholder="아이디 입력" autocomplete="username" maxlength="50" required></label>
+              <label for="loginPassword">비밀번호<input id="loginPassword" name="password" type="password" placeholder="비밀번호 입력" autocomplete="current-password" required></label>
+            </div>
+            <div class="login-actions">
+              <button class="auth-submit" type="submit">로그인</button>
+              <a class="signup-link" id="signupOpen" href="{{ url_for('signup_page') }}">회원가입하기</a>
+            </div>
+          </form>
+          {% endif %}
+          <p class="auth-message" id="loginMessage" role="status"></p>
+        </section>
+      </div>
       <div class="map-bottom"><span class="map-tip" id="mapTip">👆 지도에서 시·도를 선택하면 확대됩니다.</span><span class="map-credit">행정구역 GeoJSON · 제주·울릉·독도 확대 표시</span></div>
       <div class="toast hidden" id="toast" role="status"></div>
     </main>
   </div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/account.js') }}"></script>
   <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 </body>
 </html>

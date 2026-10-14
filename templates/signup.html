@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>회원가입 | Cityname</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="signup-page">
+  <main class="registration-card">
+    <a href="{{ url_for('index') }}">← 여행 지도로 돌아가기</a>
+    <p class="eyebrow">JOIN CITYNAME</p>
+    <h1>나의 여행을 시작해요</h1>
+    <p class="signup-intro">회원 정보를 입력하고 좋아하는 여행 스타일을 골라 주세요.</p>
+    <form id="signupForm" class="signup-form">
+      <label>이름<input name="name" autocomplete="name" maxlength="50" required></label>
+      <label>생년월일<input id="birthDate" name="birth_date" type="date" autocomplete="bday" required></label>
+      <label>아이디<input name="username" autocomplete="username" minlength="4" maxlength="50" pattern="[A-Za-z0-9_]{4,50}" placeholder="영문, 숫자, 밑줄 4~50자" required></label>
+      <label>비밀번호<input name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="8자 이상" required></label>
+      <label>비밀번호 확인<input name="password_confirmation" type="password" autocomplete="new-password" minlength="8" maxlength="128" required></label>
+      <label>주소지<input name="address" autocomplete="street-address" maxlength="255" required></label>
+      <fieldset class="travel-style-fieldset">
+        <legend>여행 스타일 <small>여러 개 선택할 수 있어요</small></legend>
+        <div class="travel-style-options">
+          {% for style in travel_styles %}
+          <label class="travel-style-option"><input type="checkbox" name="travel_styles" value="{{ style }}"><span>{{ style }}</span></label>
+          {% endfor %}
+        </div>
+      </fieldset>
+      <p class="auth-message" id="signupMessage" role="status"></p>
+      <button class="auth-submit" type="submit">회원가입하기</button>
+    </form>
+  </main>
+  <script src="{{ url_for('static', filename='js/account.js') }}"></script>
+</body>
+</html>
