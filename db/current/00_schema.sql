@@ -84,3 +84,29 @@ CREATE TABLE IF NOT EXISTS members (
   travel_styles JSON NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 방문 기록 기능이 사용하는 테이블 (visits.py가 조회·저장 시 자동 생성할 예정, 여기 포함해 미리 만들 수 있게 함)
+-- member_id, landmark_id는 members/장소 테이블에 대한 논리적 참조이며 DB 외래키는 선언하지 않음 (db erd.md 참고)
+CREATE TABLE IF NOT EXISTS member_visits (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  member_id BIGINT UNSIGNED NOT NULL,
+  category VARCHAR(10) NOT NULL,
+  landmark_id BIGINT UNSIGNED NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  locality_name VARCHAR(100) NOT NULL,
+  review TEXT NOT NULL,
+  photo MEDIUMBLOB NOT NULL,
+  photo_mime VARCHAR(30) NOT NULL,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_member_place (member_id, category, landmark_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 즐겨찾기 기능이 사용하는 테이블 (favorites.py가 조회·저장 시 자동 생성할 예정, 여기 포함해 미리 만들 수 있게 함)
+-- member_id, landmark_id는 members/장소 테이블에 대한 논리적 참조이며 DB 외래키는 선언하지 않음 (db erd.md 참고)
+CREATE TABLE IF NOT EXISTS member_favorites (
+  member_id BIGINT UNSIGNED NOT NULL,
+  category VARCHAR(10) NOT NULL,
+  landmark_id BIGINT UNSIGNED NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (member_id, category, landmark_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
