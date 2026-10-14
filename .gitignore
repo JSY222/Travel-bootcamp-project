@@ -5,6 +5,7 @@ CLAUDE.md
 .env
 .env.*
 !.env.example
+api_keys/
 
 # Python
 __pycache__/
