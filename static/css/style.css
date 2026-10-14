@@ -15,6 +15,10 @@
 @media(max-width:840px){.app-shell{display:flex;flex-direction:column}.sidebar{height:49vh;min-height:325px;width:100%}.sidebar-scroll{padding:20px}.brand{padding:12px 20px}.map-area{height:51vh;min-height:400px}.region-list{grid-template-columns:repeat(3,minmax(0,1fr))}h1{font-size:24px}.map-top{top:12px;left:12px;right:12px}.map-bottom{bottom:12px;left:12px;right:12px}.map-credit{display:none}}
 
 .source-meta{font-size:10px!important;color:#8ca19a!important;line-height:1.4!important}
+.nationwide-controls{margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
+.nationwide-controls h2{margin:0;font-size:14px}
+.nationwide-controls p{margin:8px 0 12px;color:var(--muted);font-size:11px;line-height:1.6}
+.nationwide-filters{grid-template-columns:repeat(4,minmax(0,1fr))}
 
 /* 대한민국 행정구역 전용 지도: 외국 배경 타일 대신 바다색 표시 */
 .map-area {background: #deeff2;}
@@ -22,10 +26,10 @@
 
 /* Soft game-world relief; the map itself stays in Leaflet's coordinate space. */
 .map-filter-defs{position:absolute;pointer-events:none;overflow:hidden}
-.map-area{isolation:isolate;overflow:hidden;background:#86c8df}
+.map-area{isolation:isolate;overflow:hidden;background:#b5dbe2}
 .map-area .leaflet-container{background:transparent}
-.ocean-scene{position:absolute;inset:0;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 48% 35%,#d2f1ef 0%,#a7dfe9 36%,#75bbd9 75%,#5499c5 100%)}
-.ocean-scene:after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 100px #367cab30;background:linear-gradient(130deg,#ffffff35,transparent 45%,#2b75b21a)}
+.ocean-scene{position:absolute;inset:0;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 48% 35%,#e9f7f1 0%,#cdece9 36%,#b5dbe2 75%,#9bc5d8 100%)}
+.ocean-scene:after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 100px #7497b01a;background:linear-gradient(130deg,#fff8ed40,transparent 45%,#929ecb12)}
 .ocean-grid{position:absolute;inset:-50%;opacity:.2;background-image:linear-gradient(#ffffff55 1px,transparent 1px),linear-gradient(90deg,#ffffff55 1px,transparent 1px);background-size:80px 80px;transform:perspective(700px) rotateX(48deg) rotateZ(-15deg);transform-origin:center}
 .ocean-waves{position:absolute;inset:-70px;opacity:.55;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='105' viewBox='0 0 180 105'%3E%3Cpath d='M18 28q12 7 24 0t24 0M105 78q10 6 20 0t20 0' fill='none' stroke='%23fff' stroke-opacity='.62' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M20 32q12 7 24 0t24 0' fill='none' stroke='%234f9dc4' stroke-opacity='.25' stroke-width='2'/%3E%3C/svg%3E");animation:ocean-drift 16s ease-in-out infinite alternate}
 .sea-label{position:absolute;font-size:10px;font-weight:800;letter-spacing:4px;color:#2e779b60;transform:rotate(-12deg)}
@@ -38,7 +42,7 @@
 .country-relief{filter:none}
 .geo-shape{filter:url(#region-surface)}
 .geo-shape{cursor:pointer;transition:fill .2s,stroke .2s;transform-box:fill-box;transform-origin:50% 65%}
-.geo-shape.region-hover,.geo-shape:focus-visible{stroke:#f9ffff;stroke-width:3;outline:none}
+.geo-shape.region-hover,.geo-shape:focus-visible{stroke:#756580;stroke-width:1.8;outline:none}
 .geo-shape.region-hover{pointer-events:none;transform:translateY(-8px);filter:url(#pudding-relief) drop-shadow(0 9px 5px #24557840);animation:region-rise .22s ease-out both}
 .geo-shape.region-hit-active{opacity:0;pointer-events:all}
 .place-tooltip{pointer-events:none}
@@ -73,3 +77,55 @@
 .ocean-waves:before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 15% 25%,#e1fffb40,transparent 32%),radial-gradient(ellipse at 80% 75%,#2d80b338,transparent 44%),radial-gradient(ellipse at 60% 18%,#fff8cd20,transparent 25%);animation:ocean-sheen 29s ease-in-out infinite reverse}
 @keyframes wavelet-drift{0%,100%{transform:translate(0,-3px) rotate(var(--wave-angle));opacity:calc(var(--wave-opacity) * .65)}50%{transform:translate(var(--wave-drift),6px) rotate(var(--wave-angle));opacity:var(--wave-opacity)}}
 @media(prefers-reduced-motion:reduce){.ocean-wavelet,.ocean-waves,.ocean-waves:before,.ocean-waves:after,.ocean-scene:after,.sea-sparkle,.geo-shape.region-boing,.geo-shape.region-hover,.landmark-pin{animation:none}.ocean-waves{filter:none}.geo-shape,.region-button{transition:none}}
+/* Sliding travel panel: the map retains its full viewport while the panel moves. */
+.app-shell{--sidebar-width:min(365px,calc(100vw - 48px));--sidebar-offset:0px;position:relative;display:block;height:100vh;height:100dvh;min-height:0;overflow:hidden}
+.app-shell.sidebar-open{--sidebar-offset:var(--sidebar-width)}
+.app-shell .sidebar{position:absolute;top:0;left:0;bottom:0;width:var(--sidebar-width);height:100%;min-height:0;transform:translateX(calc(var(--sidebar-offset) - 100%));transition:transform .3s ease;z-index:500}
+.app-shell .map-area{width:100%;height:100%;min-height:0}
+.sidebar-handle{position:absolute;left:0;top:50%;z-index:600;transform:translate(var(--sidebar-offset),-50%);width:30px;height:132px;padding:0;border:1px solid #d9e5dc;border-left:0;border-radius:0 18px 18px 0;background:linear-gradient(160deg,#fffdf7,#f0f7ef);color:#527768;box-shadow:5px 3px 16px #285b7226;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:transform .3s ease,background .2s;touch-action:none;user-select:none;cursor:ew-resize}
+.sidebar-handle:hover{background:#e5f4ed}
+.sidebar-handle:focus-visible{outline:3px solid #365e78;outline-offset:3px}
+.handle-grip{width:5px;height:46px;border-radius:8px;background:#a8bfb0;box-shadow:2px 0 0 #fff}
+.handle-arrow{font-size:25px;line-height:1;transition:transform .3s ease}
+.sidebar-open .handle-arrow{transform:rotate(180deg)}
+.sidebar-dragging .sidebar,.sidebar-dragging .sidebar-handle{transition:none}
+@media(prefers-reduced-motion:reduce){.app-shell .sidebar,.sidebar-handle,.handle-arrow{transition:none}}
+
+/* Account inputs sit above the map, alongside the navigation controls. */
+.map-top{align-items:flex-start;gap:16px}
+.map-navigation{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.login-card{pointer-events:auto;width:430px;max-width:100%;flex-shrink:0;padding:14px 16px;border:1px solid #ffffffc9;border-radius:18px;background:#fffdf7f5;box-shadow:0 4px 0 #4f8ba32b,0 10px 25px #2c729222}
+.login-form{display:flex;align-items:flex-end;gap:12px}
+.login-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;min-width:0}
+.login-card label,.signup-form label{display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:700;color:#527568}
+.login-card input,.signup-form input{width:100%;min-width:0;border:1px solid #d9e5dc;border-radius:9px;padding:10px 11px;background:#fff;font:inherit;font-size:12px;color:var(--ink)}
+.login-card input:focus,.signup-form input:focus{outline:2px solid #86b5a0;outline-offset:1px}
+.login-card input::placeholder,.signup-form input::placeholder{color:#94a59c;font-weight:400}
+.login-actions{display:flex;flex-direction:column;gap:7px;min-width:88px}
+.auth-submit{border:0;border-radius:10px;padding:11px 14px;background:#365e78;color:#fff;font-size:12px;font-weight:700}
+.auth-submit:hover{background:#284b63}
+.signup-link{padding:0;border:0;background:transparent;color:#527568;font-size:11px;text-decoration:underline;text-underline-offset:3px}
+.auth-message{margin:10px 0 0;color:#527568;font-size:11px;line-height:1.6}
+.auth-message:empty{display:none}
+.signup-dialog{width:min(380px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;padding:30px;border:1px solid var(--line);border-radius:22px;background:var(--paper);color:var(--ink);box-shadow:var(--shadow)}
+.signup-dialog::backdrop{background:#18342d66}
+.signup-dialog h2{margin:0;font-size:24px}
+.signup-dialog .eyebrow{margin-bottom:8px}
+.signup-intro{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 22px}
+.signup-form{display:grid;gap:15px}
+.signup-close{position:absolute;top:10px;right:12px;width:32px;height:32px;border:0;border-radius:50%;background:transparent;font-size:25px;color:var(--muted)}
+.signup-close:hover{background:var(--mint)}
+.signup-page{height:auto;min-height:100vh;background:radial-gradient(ellipse at 30% 20%,#e9f7f1,#b5dbe2);padding:32px 16px}
+.registration-card{max-width:560px;margin:0 auto;padding:32px;background:#fffdf7f5;border:1px solid white;border-radius:24px;box-shadow:var(--shadow)}
+.registration-card>a{display:inline-block;margin-bottom:28px;font-size:12px;color:#365e78;text-decoration:none}
+.registration-card h1{font-size:28px;letter-spacing:-1px}
+.travel-style-fieldset{border:0;padding:0;margin:10px 0}
+.travel-style-fieldset legend{font-size:13px;font-weight:700;margin-bottom:12px}
+.travel-style-fieldset small{font-size:11px;color:var(--muted);font-weight:400;margin-left:8px}
+.travel-style-options{display:flex;flex-wrap:wrap;gap:10px}
+.signup-form .travel-style-option{flex-direction:row;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px;background:white;cursor:pointer}
+.signup-form .travel-style-option input{width:16px;height:16px;accent-color:#365e78;margin:0}
+.travel-style-option:has(input:checked){background:var(--mint);border-color:#86b5a0}
+.member-greeting{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px}
+.auth-submit:disabled{opacity:.6;cursor:wait}
+@media(max-width:640px){.map-top{flex-direction:column;gap:10px}.login-card{width:100%;padding:12px}.login-form{gap:8px}.login-fields{gap:7px}.login-card input{padding:10px 7px}.login-actions{min-width:78px}.map-navigation .map-tag{padding:9px 12px}}

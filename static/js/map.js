@@ -9,6 +9,9 @@ const GEO_BASES = [
 // 대한민국 전국 17개 시·도: DB에 등록되지 않은 시·도도 GeoJSON 경계에서 자동 보충합니다.
 // 특별시·광역시·특별자치시는 구·군 단위, 세종은 읍·면·동 단위로 펼쳐집니다.
 const METRO_CODES = new Set(['11', '26', '27', '28', '29', '30', '31', '36']);
+// 도는 북쪽부터 남쪽으로, 특별시·광역시는 행정구역 코드 순서로 배치합니다.
+const REGION_ORDER = ['41', '42', '51', '43', '44', '45', '52', '46', '47', '48', '50',
+  '11', '26', '27', '28', '29', '30', '31', '36'];
 let sejongEmdCache = null;
 
 const CATEGORIES = {
@@ -58,6 +61,64 @@ function displayLatLng(lat, lng) {
   const [x, y] = displayCoordinate([lng, lat]);
   return [y, x];
 }
+const sharedProvinceVertices = new Set();
+const coordinateKey = ([x, y]) => `${x.toFixed(7)},${y.toFixed(7)}`;
+function indexProvinceBorders(features) {
+  sharedProvinceVertices.clear();
+  const owners = new Map();
+  features.forEach((feature, index) => {
+    asPolygons(feature.geometry).forEach(polygon => polygon.forEach(ring => {
+      ring.forEach(point => {
+        const key = coordinateKey(point);
+        if (owners.has(key) && owners.get(key) !== index) sharedProvinceVertices.add(key);
+        else owners.set(key, index);
+      });
+    }));
+  });
+}
+// Cut coastal corners only; shared administrative vertices stay stationary.
+// A bounded radius keeps small islands recognizable and avoids oversized curves.
+function roundCoastline(points, radius, tolerance) {
+  const simplify = run => {
+    const reduced = L.LineUtil.simplify(run.map(([x, y]) => L.point(x, y)), tolerance);
+    return reduced.map(point => [point.x, point.y]);
+  };
+  const anchors = points.map((point, i) => sharedProvinceVertices.has(coordinateKey(point)) ? i : -1)
+    .filter(i => i >= 0);
+  let rounded;
+  if (!anchors.length) {
+    const reduced = simplify([...points, points[0]]).slice(0, -1);
+    rounded = reduced.length >= 3 ? reduced : points;
+  } else {
+    rounded = [];
+    anchors.forEach((start, i) => {
+      const end = anchors[(i + 1) % anchors.length];
+      const run = [points[start]];
+      let cursor = (start + 1) % points.length;
+      while (cursor !== end) {
+        run.push(points[cursor]);
+        cursor = (cursor + 1) % points.length;
+      }
+      run.push(points[end]);
+      rounded.push(...(run.length > 2 ? simplify(run) : run).slice(0, -1));
+    });
+  }
+  if (rounded.length < 3) rounded = points;
+  for (let pass = 0; pass < 5; pass++) {
+    rounded = rounded.flatMap((point, i) => {
+      if (sharedProvinceVertices.has(coordinateKey(point))) return [point];
+      const previous = rounded[(i + rounded.length - 1) % rounded.length];
+      const next = rounded[(i + 1) % rounded.length];
+      const towards = neighbor => {
+        const distance = Math.hypot(neighbor[0] - point[0], neighbor[1] - point[1]);
+        const fraction = distance ? Math.min(.3, radius / distance) : 0;
+        return point.map((value, axis) => value + (neighbor[axis] - value) * fraction);
+      };
+      return [towards(previous), towards(next)];
+    });
+  }
+  return rounded;
+}
 function smoothDisplayFeature(feature) {
   const polygons = asPolygons(feature.geometry);
   const area = ring => Math.abs(ring.reduce((sum, p, i) => {
@@ -75,7 +136,10 @@ function smoothDisplayFeature(feature) {
     const points = ring.slice(0, -1).map(([x, y]) => L.point(x, y));
     const simplified = L.LineUtil.simplify(points, tolerance);
     const outline = simplified.length >= 3 ? simplified.map(p => [p.x, p.y]) : ring.slice(0, -1);
-    const displayed = outline.map(displayCoordinate);
+    // Detail layers keep their existing geometry; only the overview gets rounded.
+    const softened = isProvince ? roundCoastline(outline,
+      importantIsland ? .025 : .18, importantIsland ? .0025 : .045) : outline;
+    const displayed = softened.map(displayCoordinate);
     return [...displayed, [...displayed[0]]];
   }));
   return {...feature, geometry: {type: 'MultiPolygon', coordinates}};
@@ -88,6 +152,7 @@ const map = L.map('map', {
   preferCanvas: false,
   minZoom: 6,
   maxZoom: 18,
+  zoomSnap: .25,
   maxBoundsViscosity: 1.0
 }).setView([36.4, 127.9], 7);
 L.control.zoom({position: 'bottomright'}).addTo(map);
@@ -141,9 +206,9 @@ function clearMap() {
   state.geoLayer = null;
   state.markerLayer.clearLayers();
 }
-function fit(layer, maxZoom = 10) {
+function fit(layer, maxZoom = 10, padding = [28, 28]) {
   if (layer && layer.getBounds().isValid()) {
-    map.fitBounds(layer.getBounds(), {padding: [28, 28], maxZoom, animate: true});
+    map.fitBounds(layer.getBounds(), {padding, maxZoom, animate: true});
   }
 }
 // 전국 17개 행정구역 윤곽을 배경으로 표시합니다.
@@ -152,10 +217,11 @@ function drawKoreaBackground() {
   if (state.countryLayer) map.removeLayer(state.countryLayer);
   state.islandLabelLayer.clearLayers();
   state.countryLayer = L.geoJSON(state.provinceFeatures.map(smoothDisplayFeature), {
+    smoothFactor: 0,
     interactive: false,
     pane: 'countryRelief',
     style: feature => ({
-      color: '#627e97', weight: 2.4,
+      color: '#827a8e', weight: 1.4,
       fillColor: provinceColor(feature), fillOpacity: 1,
       className: 'country-relief'
     })
@@ -181,7 +247,6 @@ function drawKoreaBackground() {
 // 기존 DB에 등록된 지역 이름·유형은 우선 사용하고, 누락된 지역은 GeoJSON 이름을 사용합니다.
 function buildAllRegions(dbRows, provinces) {
   const fromDB = new Map(dbRows.map(r => [String(r.code), r]));
-  const originalOrder = new Map(dbRows.map((r, i) => [String(r.code), i]));
   const seen = new Set();
   return provinces.map((feature, i) => {
     const code = String(feature.properties.CTPRVN_CD || '');
@@ -192,18 +257,18 @@ function buildAllRegions(dbRows, provinces) {
       code,
       name: saved?.name || feature.properties.CTP_KOR_NM || code,
       region_type: saved?.region_type || (METRO_CODES.has(code) ? 'metro' : 'province'),
-      order: originalOrder.get(code) ?? (100 + i)
+      order: REGION_ORDER.indexOf(code) < 0 ? 100 + i : REGION_ORDER.indexOf(code)
     };
   }).filter(Boolean).sort((a, b) => a.order - b.order);
 }
 
 // Codes keep each province's color stable regardless of DB/GeoJSON ordering.
 const PROVINCE_COLORS = {
-  '11': '#ff9fb5', '26': '#ffbb73', '27': '#c2a3f4', '28': '#8ddbd0',
-  '29': '#f4a6d7', '30': '#a9c5ff', '31': '#f4d574', '36': '#daafed',
-  '41': '#b6d879', '42': '#83cbaa', '43': '#f2b788', '44': '#8fcfdf',
-  '45': '#e9b9ce', '46': '#b8c98b', '47': '#b5b4ed', '48': '#efd393',
-  '50': '#83d5bc', '51': '#83cbaa', '52': '#e9b9ce'
+  '11': '#f3acc4', '26': '#f6b6a0', '27': '#c4ade5', '28': '#9dd7cf',
+  '29': '#ddaed1', '30': '#a9c5e8', '31': '#f3c888', '36': '#cdb7e5',
+  '41': '#c7dca0', '42': '#a0d4bd', '43': '#f1c1a5', '44': '#a6d5de',
+  '45': '#e8b7cb', '46': '#cbd9ac', '47': '#bebce7', '48': '#f1d79e',
+  '50': '#94d6c4', '51': '#a0d4bd', '52': '#e8b7cb'
 };
 function colorFor(index) {
   const palette = Object.values(PROVINCE_COLORS).slice(0, 17);
@@ -213,7 +278,7 @@ function provinceColor(feature) {
   return PROVINCE_COLORS[String(feature.properties.CTPRVN_CD)] || colorFor(feature.properties.colorIndex || 0);
 }
 function shapeStyle(feature) {
-  return {color: '#658397', weight: 2.2, fillColor: provinceColor(feature),
+  return {color: '#8b8296', weight: 1.15, fillColor: provinceColor(feature),
     fillOpacity: 1, className: 'geo-shape'};
 }
 // Find an interior label position on the largest landmass, excluding holes.
@@ -314,6 +379,7 @@ function bounceRegion(layer, feature, onClick) {
 }
 function addGeoLayer(features, onClick) {
   state.geoLayer = L.geoJSON(features.map(smoothDisplayFeature), {
+    smoothFactor: 0,
     style: shapeStyle,
     onEachFeature: (feature, layer) => {
       const name = feature.properties.displayName;
@@ -375,6 +441,12 @@ function goHome() {
   state.selectedCity = null;
   clearMap(); hideToast();
   $('#selectedCard').classList.add('hidden');
+  $('#nationwideControls').classList.remove('hidden');
+  $('#filters').classList.remove('hidden');
+  $('#nationwideFilters').querySelectorAll('.filter').forEach(btn => {
+    btn.classList.remove('active');
+    btn.setAttribute('aria-pressed', 'false');
+  });
   updateStep('01', '지역을 선택하세요', `시·도 ${state.regions.length}개 지역`);
   updateBreadcrumb();
   $('#mapTip').textContent = '👆 지도에서 시·도를 선택하면 확대됩니다.';
@@ -389,7 +461,7 @@ function goHome() {
       displayName: codes.get(f.properties.CTPRVN_CD).name,
       colorIndex: i
     }}));
-  if (features.length) fit(addGeoLayer(features, f => selectRegion(f.properties.CTPRVN_CD)), 8);
+  if (features.length) fit(addGeoLayer(features, f => selectRegion(f.properties.CTPRVN_CD)), 8.5, [44, 60]);
   else toast('행정구역 지도 데이터를 받지 못했습니다. 인터넷 연결을 확인하세요.');
 }
 
@@ -524,6 +596,7 @@ async function selectCity(cityName) {
   updateBreadcrumb();
   $('#selectedName').textContent = `${state.selectedRegion.name} ${cityName}`;
   $('#selectedCard').classList.remove('hidden');
+  $('#filters').classList.remove('hidden');
   $('#mapTip').textContent = `✨ ${cityName}의 여행 장소를 찾고 있어요.`;
   $('#regionList').replaceChildren();
   $('#filters').querySelectorAll('.filter').forEach(btn => {
@@ -592,13 +665,15 @@ function renderCards(places, markers) {
   });
 }
 
-async function loadLandmarks() {
-  if (!state.selectedCity || !state.selectedRegion) return;
+async function loadLandmarks(nationwide = false) {
+  if (!nationwide && (!state.selectedCity || !state.selectedRegion)) return;
   const token = ++state.fetchToken;
   state.markerLayer.clearLayers();
   $('#landmarkList').textContent = '장소를 불러오는 중...';
   $('#resultCount').textContent = '…';
-  const params = new URLSearchParams({
+  const params = new URLSearchParams(nationwide ? {
+    scope: 'all', category: state.selectedCategory
+  } : {
     region: state.selectedRegion.code,
     locality: state.selectedCity.properties.displayName,
     category: state.selectedCategory
@@ -611,7 +686,8 @@ async function loadLandmarks() {
     const markers = places.map((p, i) => makeMarker(p, i));
     markers.forEach(m => state.markerLayer.addLayer(m));
     renderCards(places, markers);
-    $('#mapTip').textContent = `✨ ${state.selectedCity.properties.displayName} · ${places.length}개 장소 표시 중`;
+    const area = nationwide ? '전국' : state.selectedCity.properties.displayName;
+    $('#mapTip').textContent = `✨ ${area} · ${places.length}개 장소 표시 중`;
   } catch (err) {
     if (token !== state.fetchToken) return;
     $('#resultCount').textContent = '0';
@@ -621,6 +697,22 @@ async function loadLandmarks() {
 }
 
 $('#homeBtn').addEventListener('click', goHome);
+$('#nationwideFilters').addEventListener('click', e => {
+  const btn = e.target.closest('[data-category]');
+  if (!btn) return;
+  const category = btn.dataset.category;
+  goHome();
+  state.selectedCategory = category;
+  $('#nationwideFilters').querySelectorAll('.filter').forEach(el => {
+    const active = el.dataset.category === category;
+    el.classList.toggle('active', active);
+    el.setAttribute('aria-pressed', String(active));
+  });
+  $('#selectedName').textContent = category === 'all' ? '전국의 여행 장소' : `전국 ${CATEGORIES[category].label}`;
+  $('#selectedCard').classList.remove('hidden');
+  $('#filters').classList.add('hidden');
+  loadLandmarks(true);
+});
 $('#backBtn').addEventListener('click', () => {
   if (state.selectedCity) selectRegion(state.selectedRegion.code);
   else goHome();
@@ -641,6 +733,7 @@ $('#filters').addEventListener('click', e => {
       fetchJSON('/api/regions'), fetchGeo('ctprvn.geojson'), fetchGeo('sig.geojson')
     ]);
     state.provinceFeatures = provinces;
+    indexProvinceBorders(provinces);
     state.districtFeatures = districts;
     state.regions = buildAllRegions(regionData.regions, provinces);
     drawKoreaBackground();
