@@ -122,13 +122,47 @@ python app.py
 
 <br>
 
+## ©️ 저작권 및 출처 안내
+
+저작권법 제24조의2(공공저작물의 자유이용)에 따라 한국관광공사에서 저작재산권의 전부를 보유하고 있거나 자유이용허락표시에 대한 권리자의 동의를 받은 경우는 **공공저작물 자유이용허락표시기준(공공누리, KOGL)** 을 부착하여 별도의 이용허락 없이 자유이용이 가능합니다.
+
+### 데이터 및 이미지 출처
+
+- [한국관광공사](https://knto.or.kr/)
+- [공공데이터포털](https://www.data.go.kr/)
+- [한국관광데이터랩](https://datalab.visitkorea.or.kr/)
+
+프로젝트에서 사용한 관광지·맛집·행사 데이터와 관련 이미지는 위 기관에서 제공한 자료를 바탕으로 하며, 개별 자료에 표시된 공공누리 유형과 이용조건을 따릅니다.
+
+### 공공누리 유형별 이용조건
+
+| 유형 | 공공누리 표시 |
+|:-:|:-:|
+| **제0유형** | [<img src="docs/images/readme/img_open01.png" alt="만료 저작물 유형(제0유형)">](https://knto.or.kr/humanframe/theme/kto/assets/image/content/img_open01.png) |
+| **제1유형** | [<img src="docs/images/readme/img_open02.png" alt="공공누리 제1유형">](https://knto.or.kr/humanframe/theme/kto/assets/image/content/img_open02.png) |
+| **제2유형** | [<img src="docs/images/readme/img_open03.png" alt="공공누리 제2유형">](https://knto.or.kr/humanframe/theme/kto/assets/image/content/img_open03.png) |
+| **제3유형** | [<img src="docs/images/readme/img_open04.png" alt="공공누리 제3유형">](https://knto.or.kr/humanframe/theme/kto/assets/image/content/img_open04.png) |
+| **제4유형** | [<img src="docs/images/readme/img_open05.png" alt="공공누리 제4유형">](https://knto.or.kr/humanframe/theme/kto/assets/image/content/img_open05.png) |
+| **AI유형**<br>\* 하단 이용조건 필수 확인 | [<img src="docs/images/readme/img_open06.png" alt="공공누리 AI유형">](https://knto.or.kr/humanframe/theme/kto/assets/image/content/img_open06.png) |
+
+> [!IMPORTANT]
+> 공공누리가 부착된 공공저작물은 제1유형의 경우 출처표시만 하면 자유이용이 가능합니다. 제2유형은 상업적 이용을, 제3유형은 변경 이용을, 제4유형은 상업적 이용과 변경 이용을 금지하므로 반드시 이용조건을 확인한 후 허용 범위 안에서 이용해야 합니다.
+
+또한 제1유형을 포함하여 어느 유형이든 출처를 반드시 표시해야 합니다. 출처에는 **발행연도, 해당 공공기관명과 홈페이지 URL**, 저작물 작성자의 성명이 표시된 경우에는 **작성자 성명**도 포함해야 합니다.
+
+**출처 표시 예시**
+
+> 본 저작물은 ‘한국관광공사’에서 ‘2022년’ 작성하여 공공누리 제1유형으로 개방한 ‘저작물명(저작권자: 홍길동)’을 이용하였으며, 해당 저작물은 ‘한국관광공사, kto.visitkorea.or.kr’에서 무료로 내려받으실 수 있습니다.
+
+<br>
+
 ## 👥 팀
 
 부트캠프 웹 프로젝트 1 팀
 
 | 장시영 | 김재환 | 조성준 | 양재덕 |
 |:-:|:-:|:-:|:-:|
-| 역할<br><a href="https://github.com/JSY222/"><img src="docs/images/readme/github.svg" alt="GitHub" width="20" height="20"></a> <a href="https://blog.naver.com/wkdtldud2621"><img src="docs/images/readme/globe.svg" alt="네이버 블로그" width="20" height="20"></a> | 역할<br><a href=""><img src="docs/images/readme/github.svg" alt="GitHub" width="20" height="20"></a> <a href=""><img src="docs/images/readme/globe.svg" alt="웹페이지" width="20" height="20"></a> | 역할<br><a href=""><img src="docs/images/readme/github.svg" alt="GitHub" width="20" height="20"></a> <a href=""><img src="docs/images/readme/globe.svg" alt="웹페이지" width="20" height="20"></a> | 역할<br><a href="https://github.com/YangJaeDeok"><img src="docs/images/readme/github.svg" alt="GitHub" width="20" height="20"></a> <a href="https://velog.io/@l0v3sick"><img src="docs/images/readme/velog.svg" alt="Velog" width="20" height="20"></a> <a href="https://www.linkedin.com/in/yangjaedeok/"><img src="docs/images/readme/linkedin.svg" alt="LinkedIn" width="20" height="20"></a> |
+| 역할<br><a href="https://github.com/JSY222/"><img src="docs/images/readme/github.svg" alt="GitHub" width="20" height="20"></a> <a href="https://blog.naver.com/wkdtldud2621"><img src="docs/images/readme/naver.svg" alt="네이버 블로그" width="20" height="20"></a> | 역할<br><a href=""><img src="docs/images/readme/github.svg" alt="GitHub" width="20" height="20"></a> <a href=""><img src="docs/images/readme/globe.svg" alt="웹페이지" width="20" height="20"></a> | 역할<br><a href=""><img src="docs/images/readme/github.svg" alt="GitHub" width="20" height="20"></a> <a href=""><img src="docs/images/readme/globe.svg" alt="웹페이지" width="20" height="20"></a> | 역할<br><a href="https://github.com/YangJaeDeok"><img src="docs/images/readme/github.svg" alt="GitHub" width="20" height="20"></a> <a href="https://velog.io/@l0v3sick"><img src="docs/images/readme/velog.svg" alt="Velog" width="20" height="20"></a> <a href="https://www.linkedin.com/in/yangjaedeok/"><img src="docs/images/readme/linkedin.svg" alt="LinkedIn" width="20" height="20"></a> |
 
 <br>
 
