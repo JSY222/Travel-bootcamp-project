@@ -404,6 +404,7 @@ def get_regions():
 @app.get('/api/landmarks')
 def get_landmarks():
     region = request.args.get('region', '').strip()
+    region = {'51': '42', '52': '45'}.get(region, region)
     locality = request.args.get('locality', '').strip()
     category = request.args.get('category', 'all').strip()
     nationwide = request.args.get('scope', '') == 'all'

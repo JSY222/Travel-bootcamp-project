@@ -257,6 +257,12 @@ async function fetchGeo(filename) {
       if (data.type !== 'FeatureCollection' || !Array.isArray(data.features)) {
         throw new Error('GeoJSON 형식이 올바르지 않습니다.');
       }
+      // Use the same province codes as the DB, including renamed provinces.
+      data.features.forEach(feature => {
+        const properties=feature.properties;
+        if(properties?.CTPRVN_CD!=null) properties.CTPRVN_CD=canonicalIconCode(properties.CTPRVN_CD);
+        else if(properties?.SIG_CD) properties.CTPRVN_CD=canonicalIconCode(String(properties.SIG_CD).slice(0,2));
+      });
       return data.features;
     } catch (err) { lastError = err; }
   }
