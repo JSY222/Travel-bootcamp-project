@@ -1,0 +1,4364 @@
+{
+ "regions": {
+  "3000000": {
+   "folder": "11_seoul/11_jongno-gu",
+   "sido": "서울특별시",
+   "sigungu": "종로구",
+   "source_file": "식품_일반음식점_3000000.csv",
+   "rows": 20613
+  },
+  "3010000": {
+   "folder": "11_seoul/11_jung-gu",
+   "sido": "서울특별시",
+   "sigungu": "중구",
+   "source_file": "식품_일반음식점_3010000.csv",
+   "rows": 22804
+  },
+  "3020000": {
+   "folder": "11_seoul/11_yongsan-gu",
+   "sido": "서울특별시",
+   "sigungu": "용산구",
+   "source_file": "식품_일반음식점_3020000.csv",
+   "rows": 16722
+  },
+  "3030000": {
+   "folder": "11_seoul/11_seongdong-gu",
+   "sido": "서울특별시",
+   "sigungu": "성동구",
+   "source_file": "식품_일반음식점_3030000.csv",
+   "rows": 15275
+  },
+  "3040000": {
+   "folder": "11_seoul/11_gwangjin-gu",
+   "sido": "서울특별시",
+   "sigungu": "광진구",
+   "source_file": "식품_일반음식점_3040000.csv",
+   "rows": 18356
+  },
+  "3050000": {
+   "folder": "11_seoul/11_dongdaemun-gu",
+   "sido": "서울특별시",
+   "sigungu": "동대문구",
+   "source_file": "식품_일반음식점_3050000.csv",
+   "rows": 22031
+  },
+  "3060000": {
+   "folder": "11_seoul/11_jungnang-gu",
+   "sido": "서울특별시",
+   "sigungu": "중랑구",
+   "source_file": "식품_일반음식점_3060000.csv",
+   "rows": 17680
+  },
+  "3070000": {
+   "folder": "11_seoul/11_seongbuk-gu",
+   "sido": "서울특별시",
+   "sigungu": "성북구",
+   "source_file": "식품_일반음식점_3070000.csv",
+   "rows": 18417
+  },
+  "3080000": {
+   "folder": "11_seoul/11_gangbuk-gu",
+   "sido": "서울특별시",
+   "sigungu": "강북구",
+   "source_file": "식품_일반음식점_3080000.csv",
+   "rows": 17312
+  },
+  "3090000": {
+   "folder": "11_seoul/11_dobong-gu",
+   "sido": "서울특별시",
+   "sigungu": "도봉구",
+   "source_file": "식품_일반음식점_3090000.csv",
+   "rows": 12008
+  },
+  "3100000": {
+   "folder": "11_seoul/11_nowon-gu",
+   "sido": "서울특별시",
+   "sigungu": "노원구",
+   "source_file": "식품_일반음식점_3100000.csv",
+   "rows": 16528
+  },
+  "3110000": {
+   "folder": "11_seoul/11_eunpyeong-gu",
+   "sido": "서울특별시",
+   "sigungu": "은평구",
+   "source_file": "식품_일반음식점_3110000.csv",
+   "rows": 17684
+  },
+  "3120000": {
+   "folder": "11_seoul/11_seodaemun-gu",
+   "sido": "서울특별시",
+   "sigungu": "서대문구",
+   "source_file": "식품_일반음식점_3120000.csv",
+   "rows": 18367
+  },
+  "3130000": {
+   "folder": "11_seoul/11_mapo-gu",
+   "sido": "서울특별시",
+   "sigungu": "마포구",
+   "source_file": "식품_일반음식점_3130000.csv",
+   "rows": 30072
+  },
+  "3140000": {
+   "folder": "11_seoul/11_yangcheon-gu",
+   "sido": "서울특별시",
+   "sigungu": "양천구",
+   "source_file": "식품_일반음식점_3140000.csv",
+   "rows": 18054
+  },
+  "3150000": {
+   "folder": "11_seoul/11_gangseo-gu",
+   "sido": "서울특별시",
+   "sigungu": "강서구",
+   "source_file": "식품_일반음식점_3150000.csv",
+   "rows": 24018
+  },
+  "3160000": {
+   "folder": "11_seoul/11_guro-gu",
+   "sido": "서울특별시",
+   "sigungu": "구로구",
+   "source_file": "식품_일반음식점_3160000.csv",
+   "rows": 19765
+  },
+  "3170000": {
+   "folder": "11_seoul/11_geumcheon-gu",
+   "sido": "서울특별시",
+   "sigungu": "금천구",
+   "source_file": "식품_일반음식점_3170000.csv",
+   "rows": 13951
+  },
+  "3180000": {
+   "folder": "11_seoul/11_yeongdeungpo-gu",
+   "sido": "서울특별시",
+   "sigungu": "영등포구",
+   "source_file": "식품_일반음식점_3180000.csv",
+   "rows": 28427
+  },
+  "3190000": {
+   "folder": "11_seoul/11_dongjak-gu",
+   "sido": "서울특별시",
+   "sigungu": "동작구",
+   "source_file": "식품_일반음식점_3190000.csv",
+   "rows": 14470
+  },
+  "3200000": {
+   "folder": "11_seoul/11_gwanak-gu",
+   "sido": "서울특별시",
+   "sigungu": "관악구",
+   "source_file": "식품_일반음식점_3200000.csv",
+   "rows": 23394
+  },
+  "3210000": {
+   "folder": "11_seoul/11_seocho-gu",
+   "sido": "서울특별시",
+   "sigungu": "서초구",
+   "source_file": "식품_일반음식점_3210000.csv",
+   "rows": 27720
+  },
+  "3220000": {
+   "folder": "11_seoul/11_gangnam-gu",
+   "sido": "서울특별시",
+   "sigungu": "강남구",
+   "source_file": "식품_일반음식점_3220000.csv",
+   "rows": 51505
+  },
+  "3230000": {
+   "folder": "11_seoul/11_songpa-gu",
+   "sido": "서울특별시",
+   "sigungu": "송파구",
+   "source_file": "식품_일반음식점_3230000.csv",
+   "rows": 31334
+  },
+  "3240000": {
+   "folder": "11_seoul/11_gangdong-gu",
+   "sido": "서울특별시",
+   "sigungu": "강동구",
+   "source_file": "식품_일반음식점_3240000.csv",
+   "rows": 23447
+  },
+  "3250000": {
+   "folder": "26_busan/26_jung-gu",
+   "sido": "부산광역시",
+   "sigungu": "중구",
+   "source_file": "식품_일반음식점_3250000.csv",
+   "rows": 5388
+  },
+  "3260000": {
+   "folder": "26_busan/26_seo-gu",
+   "sido": "부산광역시",
+   "sigungu": "서구",
+   "source_file": "식품_일반음식점_3260000.csv",
+   "rows": 3876
+  },
+  "3270000": {
+   "folder": "26_busan/26_dong-gu",
+   "sido": "부산광역시",
+   "sigungu": "동구",
+   "source_file": "식품_일반음식점_3270000.csv",
+   "rows": 4432
+  },
+  "3280000": {
+   "folder": "26_busan/26_yeongdo-gu",
+   "sido": "부산광역시",
+   "sigungu": "영도구",
+   "source_file": "식품_일반음식점_3280000.csv",
+   "rows": 3966
+  },
+  "3290000": {
+   "folder": "26_busan/26_busanjin-gu",
+   "sido": "부산광역시",
+   "sigungu": "부산진구",
+   "source_file": "식품_일반음식점_3290000.csv",
+   "rows": 16033
+  },
+  "3300000": {
+   "folder": "26_busan/26_dongnae-gu",
+   "sido": "부산광역시",
+   "sigungu": "동래구",
+   "source_file": "식품_일반음식점_3300000.csv",
+   "rows": 11900
+  },
+  "3310000": {
+   "folder": "26_busan/26_nam-gu",
+   "sido": "부산광역시",
+   "sigungu": "남구",
+   "source_file": "식품_일반음식점_3310000.csv",
+   "rows": 8106
+  },
+  "3320000": {
+   "folder": "26_busan/26_buk-gu",
+   "sido": "부산광역시",
+   "sigungu": "북구",
+   "source_file": "식품_일반음식점_3320000.csv",
+   "rows": 8229
+  },
+  "3330000": {
+   "folder": "26_busan/26_haeundae-gu",
+   "sido": "부산광역시",
+   "sigungu": "해운대구",
+   "source_file": "식품_일반음식점_3330000.csv",
+   "rows": 15024
+  },
+  "3340000": {
+   "folder": "26_busan/26_saha-gu",
+   "sido": "부산광역시",
+   "sigungu": "사하구",
+   "source_file": "식품_일반음식점_3340000.csv",
+   "rows": 9447
+  },
+  "3350000": {
+   "folder": "26_busan/26_geumjeong-gu",
+   "sido": "부산광역시",
+   "sigungu": "금정구",
+   "source_file": "식품_일반음식점_3350000.csv",
+   "rows": 8911
+  },
+  "3360000": {
+   "folder": "26_busan/26_gangseo-gu",
+   "sido": "부산광역시",
+   "sigungu": "강서구",
+   "source_file": "식품_일반음식점_3360000.csv",
+   "rows": 4807
+  },
+  "3370000": {
+   "folder": "26_busan/26_yeonje-gu",
+   "sido": "부산광역시",
+   "sigungu": "연제구",
+   "source_file": "식품_일반음식점_3370000.csv",
+   "rows": 7441
+  },
+  "3380000": {
+   "folder": "26_busan/26_suyeong-gu",
+   "sido": "부산광역시",
+   "sigungu": "수영구",
+   "source_file": "식품_일반음식점_3380000.csv",
+   "rows": 8777
+  },
+  "3390000": {
+   "folder": "26_busan/26_sasang-gu",
+   "sido": "부산광역시",
+   "sigungu": "사상구",
+   "source_file": "식품_일반음식점_3390000.csv",
+   "rows": 8524
+  },
+  "3400000": {
+   "folder": "26_busan/26_gijang-gun",
+   "sido": "부산광역시",
+   "sigungu": "기장군",
+   "source_file": "식품_일반음식점_3400000.csv",
+   "rows": 6986
+  },
+  "3410000": {
+   "folder": "27_daegu/27_jung-gu",
+   "sido": "대구광역시",
+   "sigungu": "중구",
+   "source_file": "식품_일반음식점_3410000.csv",
+   "rows": 9660
+  },
+  "3420000": {
+   "folder": "27_daegu/27_dong-gu",
+   "sido": "대구광역시",
+   "sigungu": "동구",
+   "source_file": "식품_일반음식점_3420000.csv",
+   "rows": 12972
+  },
+  "3430000": {
+   "folder": "27_daegu/27_seo-gu",
+   "sido": "대구광역시",
+   "sigungu": "서구",
+   "source_file": "식품_일반음식점_3430000.csv",
+   "rows": 8562
+  },
+  "3440000": {
+   "folder": "27_daegu/27_nam-gu",
+   "sido": "대구광역시",
+   "sigungu": "남구",
+   "source_file": "식품_일반음식점_3440000.csv",
+   "rows": 7439
+  },
+  "3450000": {
+   "folder": "27_daegu/27_buk-gu",
+   "sido": "대구광역시",
+   "sigungu": "북구",
+   "source_file": "식품_일반음식점_3450000.csv",
+   "rows": 15676
+  },
+  "3460000": {
+   "folder": "27_daegu/27_suseong-gu",
+   "sido": "대구광역시",
+   "sigungu": "수성구",
+   "source_file": "식품_일반음식점_3460000.csv",
+   "rows": 15273
+  },
+  "3470000": {
+   "folder": "27_daegu/27_dalseo-gu",
+   "sido": "대구광역시",
+   "sigungu": "달서구",
+   "source_file": "식품_일반음식점_3470000.csv",
+   "rows": 19640
+  },
+  "3480000": {
+   "folder": "27_daegu/27_dalseong-gun",
+   "sido": "대구광역시",
+   "sigungu": "달성군",
+   "source_file": "식품_일반음식점_3480000.csv",
+   "rows": 7377
+  },
+  "3491000": {
+   "folder": "28_incheon/28_yeongjong-gu",
+   "sido": "인천광역시",
+   "sigungu": "영종구",
+   "source_file": "식품_일반음식점_3491000.csv",
+   "rows": 4887
+  },
+  "3501000": {
+   "folder": "28_incheon/28_jemulpo-gu",
+   "sido": "인천광역시",
+   "sigungu": "제물포구",
+   "source_file": "식품_일반음식점_3501000.csv",
+   "rows": 6841
+  },
+  "3510500": {
+   "folder": "28_incheon/28_michuhol-gu",
+   "sido": "인천광역시",
+   "sigungu": "미추홀구",
+   "source_file": "식품_일반음식점_3510500.csv",
+   "rows": 17046
+  },
+  "3520000": {
+   "folder": "28_incheon/28_yeonsu-gu",
+   "sido": "인천광역시",
+   "sigungu": "연수구",
+   "source_file": "식품_일반음식점_3520000.csv",
+   "rows": 13061
+  },
+  "3530000": {
+   "folder": "28_incheon/28_namdong-gu",
+   "sido": "인천광역시",
+   "sigungu": "남동구",
+   "source_file": "식품_일반음식점_3530000.csv",
+   "rows": 17533
+  },
+  "3540000": {
+   "folder": "28_incheon/28_bupyeong-gu",
+   "sido": "인천광역시",
+   "sigungu": "부평구",
+   "source_file": "식품_일반음식점_3540000.csv",
+   "rows": 16145
+  },
+  "3550000": {
+   "folder": "28_incheon/28_gyeyang-gu",
+   "sido": "인천광역시",
+   "sigungu": "계양구",
+   "source_file": "식품_일반음식점_3550000.csv",
+   "rows": 9470
+  },
+  "3561000": {
+   "folder": "28_incheon/28_seohae-gu",
+   "sido": "인천광역시",
+   "sigungu": "서해구",
+   "source_file": "식품_일반음식점_3561000.csv",
+   "rows": 13923
+  },
+  "3565000": {
+   "folder": "28_incheon/28_geomdan-gu",
+   "sido": "인천광역시",
+   "sigungu": "검단구",
+   "source_file": "식품_일반음식점_3565000.csv",
+   "rows": 4790
+  },
+  "3570000": {
+   "folder": "28_incheon/28_ganghwa-gun",
+   "sido": "인천광역시",
+   "sigungu": "강화군",
+   "source_file": "식품_일반음식점_3570000.csv",
+   "rows": 3928
+  },
+  "3580000": {
+   "folder": "28_incheon/28_ongjin-gun",
+   "sido": "인천광역시",
+   "sigungu": "옹진군",
+   "source_file": "식품_일반음식점_3580000.csv",
+   "rows": 1384
+  },
+  "3640000": {
+   "folder": "30_daejeon/30_dong-gu",
+   "sido": "대전광역시",
+   "sigungu": "동구",
+   "source_file": "식품_일반음식점_3640000.csv",
+   "rows": 9954
+  },
+  "3650000": {
+   "folder": "30_daejeon/30_jung-gu",
+   "sido": "대전광역시",
+   "sigungu": "중구",
+   "source_file": "식품_일반음식점_3650000.csv",
+   "rows": 11868
+  },
+  "3660000": {
+   "folder": "30_daejeon/30_seo-gu",
+   "sido": "대전광역시",
+   "sigungu": "서구",
+   "source_file": "식품_일반음식점_3660000.csv",
+   "rows": 20340
+  },
+  "3670000": {
+   "folder": "30_daejeon/30_yuseong-gu",
+   "sido": "대전광역시",
+   "sigungu": "유성구",
+   "source_file": "식품_일반음식점_3670000.csv",
+   "rows": 14239
+  },
+  "3680000": {
+   "folder": "30_daejeon/30_daedeok-gu",
+   "sido": "대전광역시",
+   "sigungu": "대덕구",
+   "source_file": "식품_일반음식점_3680000.csv",
+   "rows": 7309
+  },
+  "3690000": {
+   "folder": "31_ulsan/31_jung-gu",
+   "sido": "울산광역시",
+   "sigungu": "중구",
+   "source_file": "식품_일반음식점_3690000.csv",
+   "rows": 10765
+  },
+  "3700000": {
+   "folder": "31_ulsan/31_nam-gu",
+   "sido": "울산광역시",
+   "sigungu": "남구",
+   "source_file": "식품_일반음식점_3700000.csv",
+   "rows": 18587
+  },
+  "3710000": {
+   "folder": "31_ulsan/31_dong-gu",
+   "sido": "울산광역시",
+   "sigungu": "동구",
+   "source_file": "식품_일반음식점_3710000.csv",
+   "rows": 6755
+  },
+  "3720000": {
+   "folder": "31_ulsan/31_buk-gu",
+   "sido": "울산광역시",
+   "sigungu": "북구",
+   "source_file": "식품_일반음식점_3720000.csv",
+   "rows": 6299
+  },
+  "3730000": {
+   "folder": "31_ulsan/31_ulju-gun",
+   "sido": "울산광역시",
+   "sigungu": "울주군",
+   "source_file": "식품_일반음식점_3730000.csv",
+   "rows": 8916
+  },
+  "3740000": {
+   "folder": "41_gyeonggi/41_suwon-si",
+   "sido": "경기도",
+   "sigungu": "수원시",
+   "source_file": "식품_일반음식점_3740000.csv",
+   "rows": 43467
+  },
+  "3780000": {
+   "folder": "41_gyeonggi/41_seongnam-si",
+   "sido": "경기도",
+   "sigungu": "성남시",
+   "source_file": "식품_일반음식점_3780000.csv",
+   "rows": 30672
+  },
+  "3820000": {
+   "folder": "41_gyeonggi/41_uijeongbu-si",
+   "sido": "경기도",
+   "sigungu": "의정부시",
+   "source_file": "식품_일반음식점_3820000.csv",
+   "rows": 18613
+  },
+  "3830000": {
+   "folder": "41_gyeonggi/41_anyang-si",
+   "sido": "경기도",
+   "sigungu": "안양시",
+   "source_file": "식품_일반음식점_3830000.csv",
+   "rows": 21459
+  },
+  "3860000": {
+   "folder": "41_gyeonggi/41_bucheon-si",
+   "sido": "경기도",
+   "sigungu": "부천시",
+   "source_file": "식품_일반음식점_3860000.csv",
+   "rows": 35873
+  },
+  "3900000": {
+   "folder": "41_gyeonggi/41_gwangmyeong-si",
+   "sido": "경기도",
+   "sigungu": "광명시",
+   "source_file": "식품_일반음식점_3900000.csv",
+   "rows": 9223
+  },
+  "3910000": {
+   "folder": "41_gyeonggi/41_pyeongtaek-si",
+   "sido": "경기도",
+   "sigungu": "평택시",
+   "source_file": "식품_일반음식점_3910000.csv",
+   "rows": 22832
+  },
+  "3920000": {
+   "folder": "41_gyeonggi/41_dongducheon-si",
+   "sido": "경기도",
+   "sigungu": "동두천시",
+   "source_file": "식품_일반음식점_3920000.csv",
+   "rows": 4501
+  },
+  "3930000": {
+   "folder": "41_gyeonggi/41_ansan-si",
+   "sido": "경기도",
+   "sigungu": "안산시",
+   "source_file": "식품_일반음식점_3930000.csv",
+   "rows": 32701
+  },
+  "3940000": {
+   "folder": "41_gyeonggi/41_goyang-si",
+   "sido": "경기도",
+   "sigungu": "고양시",
+   "source_file": "식품_일반음식점_3940000.csv",
+   "rows": 39076
+  },
+  "3970000": {
+   "folder": "41_gyeonggi/41_gwacheon-si",
+   "sido": "경기도",
+   "sigungu": "과천시",
+   "source_file": "식품_일반음식점_3970000.csv",
+   "rows": 1852
+  },
+  "3980000": {
+   "folder": "41_gyeonggi/41_guri-si",
+   "sido": "경기도",
+   "sigungu": "구리시",
+   "source_file": "식품_일반음식점_3980000.csv",
+   "rows": 7786
+  },
+  "3990000": {
+   "folder": "41_gyeonggi/41_namyangju-si",
+   "sido": "경기도",
+   "sigungu": "남양주시",
+   "source_file": "식품_일반음식점_3990000.csv",
+   "rows": 20723
+  },
+  "4000000": {
+   "folder": "41_gyeonggi/41_osan-si",
+   "sido": "경기도",
+   "sigungu": "오산시",
+   "source_file": "식품_일반음식점_4000000.csv",
+   "rows": 7570
+  },
+  "4010000": {
+   "folder": "41_gyeonggi/41_siheung-si",
+   "sido": "경기도",
+   "sigungu": "시흥시",
+   "source_file": "식품_일반음식점_4010000.csv",
+   "rows": 20142
+  },
+  "4020000": {
+   "folder": "41_gyeonggi/41_gunpo-si",
+   "sido": "경기도",
+   "sigungu": "군포시",
+   "source_file": "식품_일반음식점_4020000.csv",
+   "rows": 7825
+  },
+  "4030000": {
+   "folder": "41_gyeonggi/41_uiwang-si",
+   "sido": "경기도",
+   "sigungu": "의왕시",
+   "source_file": "식품_일반음식점_4030000.csv",
+   "rows": 4207
+  },
+  "4040000": {
+   "folder": "41_gyeonggi/41_hanam-si",
+   "sido": "경기도",
+   "sigungu": "하남시",
+   "source_file": "식품_일반음식점_4040000.csv",
+   "rows": 8685
+  },
+  "4050000": {
+   "folder": "41_gyeonggi/41_yongin-si",
+   "sido": "경기도",
+   "sigungu": "용인시",
+   "source_file": "식품_일반음식점_4050000.csv",
+   "rows": 27576
+  },
+  "4060000": {
+   "folder": "41_gyeonggi/41_paju-si",
+   "sido": "경기도",
+   "sigungu": "파주시",
+   "source_file": "식품_일반음식점_4060000.csv",
+   "rows": 18994
+  },
+  "4070000": {
+   "folder": "41_gyeonggi/41_icheon-si",
+   "sido": "경기도",
+   "sigungu": "이천시",
+   "source_file": "식품_일반음식점_4070000.csv",
+   "rows": 9059
+  },
+  "4080000": {
+   "folder": "41_gyeonggi/41_anseong-si",
+   "sido": "경기도",
+   "sigungu": "안성시",
+   "source_file": "식품_일반음식점_4080000.csv",
+   "rows": 8509
+  },
+  "4090000": {
+   "folder": "41_gyeonggi/41_gimpo-si",
+   "sido": "경기도",
+   "sigungu": "김포시",
+   "source_file": "식품_일반음식점_4090000.csv",
+   "rows": 15084
+  },
+  "4140000": {
+   "folder": "41_gyeonggi/41_yeoncheon-gun",
+   "sido": "경기도",
+   "sigungu": "연천군",
+   "source_file": "식품_일반음식점_4140000.csv",
+   "rows": 2531
+  },
+  "4160000": {
+   "folder": "41_gyeonggi/41_gapyeong-gun",
+   "sido": "경기도",
+   "sigungu": "가평군",
+   "source_file": "식품_일반음식점_4160000.csv",
+   "rows": 4311
+  },
+  "4170000": {
+   "folder": "41_gyeonggi/41_yangpyeong-gun",
+   "sido": "경기도",
+   "sigungu": "양평군",
+   "source_file": "식품_일반음식점_4170000.csv",
+   "rows": 4806
+  },
+  "4181000": {
+   "folder": "42_gangwon/42_chuncheon-si",
+   "sido": "강원특별자치도",
+   "sigungu": "춘천시",
+   "source_file": "식품_일반음식점_4181000.csv",
+   "rows": 15073
+  },
+  "4191000": {
+   "folder": "42_gangwon/42_wonju-si",
+   "sido": "강원특별자치도",
+   "sigungu": "원주시",
+   "source_file": "식품_일반음식점_4191000.csv",
+   "rows": 20608
+  },
+  "4201000": {
+   "folder": "42_gangwon/42_gangneung-si",
+   "sido": "강원특별자치도",
+   "sigungu": "강릉시",
+   "source_file": "식품_일반음식점_4201000.csv",
+   "rows": 15635
+  },
+  "4211000": {
+   "folder": "42_gangwon/42_donghae-si",
+   "sido": "강원특별자치도",
+   "sigungu": "동해시",
+   "source_file": "식품_일반음식점_4211000.csv",
+   "rows": 6890
+  },
+  "4221000": {
+   "folder": "42_gangwon/42_taebaek-si",
+   "sido": "강원특별자치도",
+   "sigungu": "태백시",
+   "source_file": "식품_일반음식점_4221000.csv",
+   "rows": 3338
+  },
+  "4231000": {
+   "folder": "42_gangwon/42_sokcho-si",
+   "sido": "강원특별자치도",
+   "sigungu": "속초시",
+   "source_file": "식품_일반음식점_4231000.csv",
+   "rows": 6976
+  },
+  "4241000": {
+   "folder": "42_gangwon/42_samcheok-si",
+   "sido": "강원특별자치도",
+   "sigungu": "삼척시",
+   "source_file": "식품_일반음식점_4241000.csv",
+   "rows": 5300
+  },
+  "4251000": {
+   "folder": "42_gangwon/42_hongcheon-gun",
+   "sido": "강원특별자치도",
+   "sigungu": "홍천군",
+   "source_file": "식품_일반음식점_4251000.csv",
+   "rows": 3973
+  },
+  "4261000": {
+   "folder": "42_gangwon/42_hoengseong-gun",
+   "sido": "강원특별자치도",
+   "sigungu": "횡성군",
+   "source_file": "식품_일반음식점_4261000.csv",
+   "rows": 2409
+  },
+  "4271000": {
+   "folder": "42_gangwon/42_yeongwol-gun",
+   "sido": "강원특별자치도",
+   "sigungu": "영월군",
+   "source_file": "식품_일반음식점_4271000.csv",
+   "rows": 1812
+  },
+  "4281000": {
+   "folder": "42_gangwon/42_pyeongchang-gun",
+   "sido": "강원특별자치도",
+   "sigungu": "평창군",
+   "source_file": "식품_일반음식점_4281000.csv",
+   "rows": 2779
+  },
+  "4291000": {
+   "folder": "42_gangwon/42_jeongseon-gun",
+   "sido": "강원특별자치도",
+   "sigungu": "정선군",
+   "source_file": "식품_일반음식점_4291000.csv",
+   "rows": 2726
+  },
+  "4301000": {
+   "folder": "42_gangwon/42_cheorwon-gun",
+   "sido": "강원특별자치도",
+   "sigungu": "철원군",
+   "source_file": "식품_일반음식점_4301000.csv",
+   "rows": 2892
+  },
+  "4311000": {
+   "folder": "42_gangwon/42_hwacheon-gun",
+   "sido": "강원특별자치도",
+   "sigungu": "화천군",
+   "source_file": "식품_일반음식점_4311000.csv",
+   "rows": 1526
+  },
+  "4321000": {
+   "folder": "42_gangwon/42_yanggu-gun",
+   "sido": "강원특별자치도",
+   "sigungu": "양구군",
+   "source_file": "식품_일반음식점_4321000.csv",
+   "rows": 1523
+  },
+  "4331000": {
+   "folder": "42_gangwon/42_inje-gun",
+   "sido": "강원특별자치도",
+   "sigungu": "인제군",
+   "source_file": "식품_일반음식점_4331000.csv",
+   "rows": 2329
+  },
+  "4341000": {
+   "folder": "42_gangwon/42_goseong-gun",
+   "sido": "강원특별자치도",
+   "sigungu": "고성군",
+   "source_file": "식품_일반음식점_4341000.csv",
+   "rows": 3096
+  },
+  "4351000": {
+   "folder": "42_gangwon/42_yangyang-gun",
+   "sido": "강원특별자치도",
+   "sigungu": "양양군",
+   "source_file": "식품_일반음식점_4351000.csv",
+   "rows": 3395
+  },
+  "4390000": {
+   "folder": "43_chungbuk/43_chungju-si",
+   "sido": "충청북도",
+   "sigungu": "충주시",
+   "source_file": "식품_일반음식점_4390000.csv",
+   "rows": 11021
+  },
+  "4400000": {
+   "folder": "43_chungbuk/43_jecheon-si",
+   "sido": "충청북도",
+   "sigungu": "제천시",
+   "source_file": "식품_일반음식점_4400000.csv",
+   "rows": 8644
+  },
+  "4420000": {
+   "folder": "43_chungbuk/43_boeun-gun",
+   "sido": "충청북도",
+   "sigungu": "보은군",
+   "source_file": "식품_일반음식점_4420000.csv",
+   "rows": 1549
+  },
+  "4430000": {
+   "folder": "43_chungbuk/43_okcheon-gun",
+   "sido": "충청북도",
+   "sigungu": "옥천군",
+   "source_file": "식품_일반음식점_4430000.csv",
+   "rows": 2134
+  },
+  "4440000": {
+   "folder": "43_chungbuk/43_yeongdong-gun",
+   "sido": "충청북도",
+   "sigungu": "영동군",
+   "source_file": "식품_일반음식점_4440000.csv",
+   "rows": 1870
+  },
+  "4450000": {
+   "folder": "43_chungbuk/43_jincheon-gun",
+   "sido": "충청북도",
+   "sigungu": "진천군",
+   "source_file": "식품_일반음식점_4450000.csv",
+   "rows": 4082
+  },
+  "4460000": {
+   "folder": "43_chungbuk/43_goesan-gun",
+   "sido": "충청북도",
+   "sigungu": "괴산군",
+   "source_file": "식품_일반음식점_4460000.csv",
+   "rows": 1896
+  },
+  "4470000": {
+   "folder": "43_chungbuk/43_eumseong-gun",
+   "sido": "충청북도",
+   "sigungu": "음성군",
+   "source_file": "식품_일반음식점_4470000.csv",
+   "rows": 4958
+  },
+  "4480000": {
+   "folder": "43_chungbuk/43_danyang-gun",
+   "sido": "충청북도",
+   "sigungu": "단양군",
+   "source_file": "식품_일반음식점_4480000.csv",
+   "rows": 2202
+  },
+  "4490000": {
+   "folder": "44_chungnam/44_cheonan-si",
+   "sido": "충청남도",
+   "sigungu": "천안시",
+   "source_file": "식품_일반음식점_4490000.csv",
+   "rows": 26623
+  },
+  "4500000": {
+   "folder": "44_chungnam/44_gongju-si",
+   "sido": "충청남도",
+   "sigungu": "공주시",
+   "source_file": "식품_일반음식점_4500000.csv",
+   "rows": 5571
+  },
+  "4510000": {
+   "folder": "44_chungnam/44_boryeong-si",
+   "sido": "충청남도",
+   "sigungu": "보령시",
+   "source_file": "식품_일반음식점_4510000.csv",
+   "rows": 4902
+  },
+  "4520000": {
+   "folder": "44_chungnam/44_asan-si",
+   "sido": "충청남도",
+   "sigungu": "아산시",
+   "source_file": "식품_일반음식점_4520000.csv",
+   "rows": 12253
+  },
+  "4530000": {
+   "folder": "44_chungnam/44_seosan-si",
+   "sido": "충청남도",
+   "sigungu": "서산시",
+   "source_file": "식품_일반음식점_4530000.csv",
+   "rows": 7360
+  },
+  "4540000": {
+   "folder": "44_chungnam/44_nonsan-si",
+   "sido": "충청남도",
+   "sigungu": "논산시",
+   "source_file": "식품_일반음식점_4540000.csv",
+   "rows": 4896
+  },
+  "4550000": {
+   "folder": "44_chungnam/44_geumsan-gun",
+   "sido": "충청남도",
+   "sigungu": "금산군",
+   "source_file": "식품_일반음식점_4550000.csv",
+   "rows": 2243
+  },
+  "4570000": {
+   "folder": "44_chungnam/44_buyeo-gun",
+   "sido": "충청남도",
+   "sigungu": "부여군",
+   "source_file": "식품_일반음식점_4570000.csv",
+   "rows": 2466
+  },
+  "4580000": {
+   "folder": "44_chungnam/44_seocheon-gun",
+   "sido": "충청남도",
+   "sigungu": "서천군",
+   "source_file": "식품_일반음식점_4580000.csv",
+   "rows": 3463
+  },
+  "4590000": {
+   "folder": "44_chungnam/44_cheongyang-gun",
+   "sido": "충청남도",
+   "sigungu": "청양군",
+   "source_file": "식품_일반음식점_4590000.csv",
+   "rows": 1369
+  },
+  "4600000": {
+   "folder": "44_chungnam/44_hongseong-gun",
+   "sido": "충청남도",
+   "sigungu": "홍성군",
+   "source_file": "식품_일반음식점_4600000.csv",
+   "rows": 4200
+  },
+  "4610000": {
+   "folder": "44_chungnam/44_yesan-gun",
+   "sido": "충청남도",
+   "sigungu": "예산군",
+   "source_file": "식품_일반음식점_4610000.csv",
+   "rows": 3841
+  },
+  "4620000": {
+   "folder": "44_chungnam/44_taean-gun",
+   "sido": "충청남도",
+   "sigungu": "태안군",
+   "source_file": "식품_일반음식점_4620000.csv",
+   "rows": 4030
+  },
+  "4641000": {
+   "folder": "45_jeonbuk/45_jeonju-si",
+   "sido": "전북특별자치도",
+   "sigungu": "전주시",
+   "source_file": "식품_일반음식점_4641000.csv",
+   "rows": 25518
+  },
+  "4671000": {
+   "folder": "45_jeonbuk/45_gunsan-si",
+   "sido": "전북특별자치도",
+   "sigungu": "군산시",
+   "source_file": "식품_일반음식점_4671000.csv",
+   "rows": 13821
+  },
+  "4681000": {
+   "folder": "45_jeonbuk/45_iksan-si",
+   "sido": "전북특별자치도",
+   "sigungu": "익산시",
+   "source_file": "식품_일반음식점_4681000.csv",
+   "rows": 12998
+  },
+  "4691000": {
+   "folder": "45_jeonbuk/45_jeongeup-si",
+   "sido": "전북특별자치도",
+   "sigungu": "정읍시",
+   "source_file": "식품_일반음식점_4691000.csv",
+   "rows": 4842
+  },
+  "4701000": {
+   "folder": "45_jeonbuk/45_namwon-si",
+   "sido": "전북특별자치도",
+   "sigungu": "남원시",
+   "source_file": "식품_일반음식점_4701000.csv",
+   "rows": 3909
+  },
+  "4711000": {
+   "folder": "45_jeonbuk/45_gimje-si",
+   "sido": "전북특별자치도",
+   "sigungu": "김제시",
+   "source_file": "식품_일반음식점_4711000.csv",
+   "rows": 3423
+  },
+  "4721000": {
+   "folder": "45_jeonbuk/45_wanju-gun",
+   "sido": "전북특별자치도",
+   "sigungu": "완주군",
+   "source_file": "식품_일반음식점_4721000.csv",
+   "rows": 3197
+  },
+  "4731000": {
+   "folder": "45_jeonbuk/45_jinan-gun",
+   "sido": "전북특별자치도",
+   "sigungu": "진안군",
+   "source_file": "식품_일반음식점_4731000.csv",
+   "rows": 897
+  },
+  "4741000": {
+   "folder": "45_jeonbuk/45_muju-gun",
+   "sido": "전북특별자치도",
+   "sigungu": "무주군",
+   "source_file": "식품_일반음식점_4741000.csv",
+   "rows": 1148
+  },
+  "4751000": {
+   "folder": "45_jeonbuk/45_jangsu-gun",
+   "sido": "전북특별자치도",
+   "sigungu": "장수군",
+   "source_file": "식품_일반음식점_4751000.csv",
+   "rows": 826
+  },
+  "4761000": {
+   "folder": "45_jeonbuk/45_imsil-gun",
+   "sido": "전북특별자치도",
+   "sigungu": "임실군",
+   "source_file": "식품_일반음식점_4761000.csv",
+   "rows": 1182
+  },
+  "4771000": {
+   "folder": "45_jeonbuk/45_sunchang-gun",
+   "sido": "전북특별자치도",
+   "sigungu": "순창군",
+   "source_file": "식품_일반음식점_4771000.csv",
+   "rows": 1137
+  },
+  "4781000": {
+   "folder": "45_jeonbuk/45_gochang-gun",
+   "sido": "전북특별자치도",
+   "sigungu": "고창군",
+   "source_file": "식품_일반음식점_4781000.csv",
+   "rows": 1713
+  },
+  "4791000": {
+   "folder": "45_jeonbuk/45_buan-gun",
+   "sido": "전북특별자치도",
+   "sigungu": "부안군",
+   "source_file": "식품_일반음식점_4791000.csv",
+   "rows": 2541
+  },
+  "5020000": {
+   "folder": "47_gyeongbuk/47_pohang-si",
+   "sido": "경상북도",
+   "sigungu": "포항시",
+   "source_file": "식품_일반음식점_5020000.csv",
+   "rows": 22013
+  },
+  "5050000": {
+   "folder": "47_gyeongbuk/47_gyeongju-si",
+   "sido": "경상북도",
+   "sigungu": "경주시",
+   "source_file": "식품_일반음식점_5050000.csv",
+   "rows": 16331
+  },
+  "5060000": {
+   "folder": "47_gyeongbuk/47_gimcheon-si",
+   "sido": "경상북도",
+   "sigungu": "김천시",
+   "source_file": "식품_일반음식점_5060000.csv",
+   "rows": 4886
+  },
+  "5070000": {
+   "folder": "47_gyeongbuk/47_andong-si",
+   "sido": "경상북도",
+   "sigungu": "안동시",
+   "source_file": "식품_일반음식점_5070000.csv",
+   "rows": 8028
+  },
+  "5080000": {
+   "folder": "47_gyeongbuk/47_gumi-si",
+   "sido": "경상북도",
+   "sigungu": "구미시",
+   "source_file": "식품_일반음식점_5080000.csv",
+   "rows": 21263
+  },
+  "5090000": {
+   "folder": "47_gyeongbuk/47_yeongju-si",
+   "sido": "경상북도",
+   "sigungu": "영주시",
+   "source_file": "식품_일반음식점_5090000.csv",
+   "rows": 5602
+  },
+  "5100000": {
+   "folder": "47_gyeongbuk/47_yeongcheon-si",
+   "sido": "경상북도",
+   "sigungu": "영천시",
+   "source_file": "식품_일반음식점_5100000.csv",
+   "rows": 3948
+  },
+  "5110000": {
+   "folder": "47_gyeongbuk/47_sangju-si",
+   "sido": "경상북도",
+   "sigungu": "상주시",
+   "source_file": "식품_일반음식점_5110000.csv",
+   "rows": 4232
+  },
+  "5120000": {
+   "folder": "47_gyeongbuk/47_mungyeong-si",
+   "sido": "경상북도",
+   "sigungu": "문경시",
+   "source_file": "식품_일반음식점_5120000.csv",
+   "rows": 3813
+  },
+  "5130000": {
+   "folder": "47_gyeongbuk/47_gyeongsan-si",
+   "sido": "경상북도",
+   "sigungu": "경산시",
+   "source_file": "식품_일반음식점_5130000.csv",
+   "rows": 10536
+  },
+  "5141000": {
+   "folder": "27_daegu/27_gunwi-gun",
+   "sido": "대구광역시",
+   "sigungu": "군위군",
+   "source_file": "식품_일반음식점_5141000.csv",
+   "rows": 843
+  },
+  "5150000": {
+   "folder": "47_gyeongbuk/47_uiseong-gun",
+   "sido": "경상북도",
+   "sigungu": "의성군",
+   "source_file": "식품_일반음식점_5150000.csv",
+   "rows": 1707
+  },
+  "5160000": {
+   "folder": "47_gyeongbuk/47_cheongsong-gun",
+   "sido": "경상북도",
+   "sigungu": "청송군",
+   "source_file": "식품_일반음식점_5160000.csv",
+   "rows": 1109
+  },
+  "5170000": {
+   "folder": "47_gyeongbuk/47_yeongyang-gun",
+   "sido": "경상북도",
+   "sigungu": "영양군",
+   "source_file": "식품_일반음식점_5170000.csv",
+   "rows": 549
+  },
+  "5180000": {
+   "folder": "47_gyeongbuk/47_yeongdeok-gun",
+   "sido": "경상북도",
+   "sigungu": "영덕군",
+   "source_file": "식품_일반음식점_5180000.csv",
+   "rows": 3001
+  },
+  "5190000": {
+   "folder": "47_gyeongbuk/47_cheongdo-gun",
+   "sido": "경상북도",
+   "sigungu": "청도군",
+   "source_file": "식품_일반음식점_5190000.csv",
+   "rows": 1826
+  },
+  "5200000": {
+   "folder": "47_gyeongbuk/47_goryeong-gun",
+   "sido": "경상북도",
+   "sigungu": "고령군",
+   "source_file": "식품_일반음식점_5200000.csv",
+   "rows": 1296
+  },
+  "5210000": {
+   "folder": "47_gyeongbuk/47_seongju-gun",
+   "sido": "경상북도",
+   "sigungu": "성주군",
+   "source_file": "식품_일반음식점_5210000.csv",
+   "rows": 1985
+  },
+  "5220000": {
+   "folder": "47_gyeongbuk/47_chilgok-gun",
+   "sido": "경상북도",
+   "sigungu": "칠곡군",
+   "source_file": "식품_일반음식점_5220000.csv",
+   "rows": 5223
+  },
+  "5230000": {
+   "folder": "47_gyeongbuk/47_yecheon-gun",
+   "sido": "경상북도",
+   "sigungu": "예천군",
+   "source_file": "식품_일반음식점_5230000.csv",
+   "rows": 2372
+  },
+  "5240000": {
+   "folder": "47_gyeongbuk/47_bonghwa-gun",
+   "sido": "경상북도",
+   "sigungu": "봉화군",
+   "source_file": "식품_일반음식점_5240000.csv",
+   "rows": 1392
+  },
+  "5250000": {
+   "folder": "47_gyeongbuk/47_uljin-gun",
+   "sido": "경상북도",
+   "sigungu": "울진군",
+   "source_file": "식품_일반음식점_5250000.csv",
+   "rows": 2935
+  },
+  "5260000": {
+   "folder": "47_gyeongbuk/47_ulleung-gun",
+   "sido": "경상북도",
+   "sigungu": "울릉군",
+   "source_file": "식품_일반음식점_5260000.csv",
+   "rows": 624
+  },
+  "5310000": {
+   "folder": "48_gyeongnam/48_jinju-si",
+   "sido": "경상남도",
+   "sigungu": "진주시",
+   "source_file": "식품_일반음식점_5310000.csv",
+   "rows": 16922
+  },
+  "5330000": {
+   "folder": "48_gyeongnam/48_tongyeong-si",
+   "sido": "경상남도",
+   "sigungu": "통영시",
+   "source_file": "식품_일반음식점_5330000.csv",
+   "rows": 7243
+  },
+  "5340000": {
+   "folder": "48_gyeongnam/48_sacheon-si",
+   "sido": "경상남도",
+   "sigungu": "사천시",
+   "source_file": "식품_일반음식점_5340000.csv",
+   "rows": 5622
+  },
+  "5350000": {
+   "folder": "48_gyeongnam/48_gimhae-si",
+   "sido": "경상남도",
+   "sigungu": "김해시",
+   "source_file": "식품_일반음식점_5350000.csv",
+   "rows": 19991
+  },
+  "5360000": {
+   "folder": "48_gyeongnam/48_miryang-si",
+   "sido": "경상남도",
+   "sigungu": "밀양시",
+   "source_file": "식품_일반음식점_5360000.csv",
+   "rows": 4779
+  },
+  "5370000": {
+   "folder": "48_gyeongnam/48_geoje-si",
+   "sido": "경상남도",
+   "sigungu": "거제시",
+   "source_file": "식품_일반음식점_5370000.csv",
+   "rows": 11275
+  },
+  "5380000": {
+   "folder": "48_gyeongnam/48_yangsan-si",
+   "sido": "경상남도",
+   "sigungu": "양산시",
+   "source_file": "식품_일반음식점_5380000.csv",
+   "rows": 13681
+  },
+  "5390000": {
+   "folder": "48_gyeongnam/48_uiryeong-gun",
+   "sido": "경상남도",
+   "sigungu": "의령군",
+   "source_file": "식품_일반음식점_5390000.csv",
+   "rows": 1257
+  },
+  "5400000": {
+   "folder": "48_gyeongnam/48_haman-gun",
+   "sido": "경상남도",
+   "sigungu": "함안군",
+   "source_file": "식품_일반음식점_5400000.csv",
+   "rows": 2733
+  },
+  "5410000": {
+   "folder": "48_gyeongnam/48_changnyeong-gun",
+   "sido": "경상남도",
+   "sigungu": "창녕군",
+   "source_file": "식품_일반음식점_5410000.csv",
+   "rows": 2760
+  },
+  "5420000": {
+   "folder": "48_gyeongnam/48_goseong-gun",
+   "sido": "경상남도",
+   "sigungu": "고성군",
+   "source_file": "식품_일반음식점_5420000.csv",
+   "rows": 2552
+  },
+  "5430000": {
+   "folder": "48_gyeongnam/48_namhae-gun",
+   "sido": "경상남도",
+   "sigungu": "남해군",
+   "source_file": "식품_일반음식점_5430000.csv",
+   "rows": 2013
+  },
+  "5440000": {
+   "folder": "48_gyeongnam/48_hadong-gun",
+   "sido": "경상남도",
+   "sigungu": "하동군",
+   "source_file": "식품_일반음식점_5440000.csv",
+   "rows": 2400
+  },
+  "5450000": {
+   "folder": "48_gyeongnam/48_sancheong-gun",
+   "sido": "경상남도",
+   "sigungu": "산청군",
+   "source_file": "식품_일반음식점_5450000.csv",
+   "rows": 1428
+  },
+  "5460000": {
+   "folder": "48_gyeongnam/48_hamyang-gun",
+   "sido": "경상남도",
+   "sigungu": "함양군",
+   "source_file": "식품_일반음식점_5460000.csv",
+   "rows": 1848
+  },
+  "5470000": {
+   "folder": "48_gyeongnam/48_geochang-gun",
+   "sido": "경상남도",
+   "sigungu": "거창군",
+   "source_file": "식품_일반음식점_5470000.csv",
+   "rows": 2791
+  },
+  "5480000": {
+   "folder": "48_gyeongnam/48_hapcheon-gun",
+   "sido": "경상남도",
+   "sigungu": "합천군",
+   "source_file": "식품_일반음식점_5480000.csv",
+   "rows": 1884
+  },
+  "5530000": {
+   "folder": "41_gyeonggi/41_hwaseong-si",
+   "sido": "경기도",
+   "sigungu": "화성시",
+   "source_file": "식품_일반음식점_5530000.csv",
+   "rows": 27342
+  },
+  "5540000": {
+   "folder": "41_gyeonggi/41_gwangju-si",
+   "sido": "경기도",
+   "sigungu": "광주시",
+   "source_file": "식품_일반음식점_5540000.csv",
+   "rows": 9293
+  },
+  "5570000": {
+   "folder": "43_chungbuk/43_jeungpyeong-gun",
+   "sido": "충청북도",
+   "sigungu": "증평군",
+   "source_file": "식품_일반음식점_5570000.csv",
+   "rows": 1733
+  },
+  "5580000": {
+   "folder": "44_chungnam/44_gyeryong-si",
+   "sido": "충청남도",
+   "sigungu": "계룡시",
+   "source_file": "식품_일반음식점_5580000.csv",
+   "rows": 1396
+  },
+  "5590000": {
+   "folder": "41_gyeonggi/41_yangju-si",
+   "sido": "경기도",
+   "sigungu": "양주시",
+   "source_file": "식품_일반음식점_5590000.csv",
+   "rows": 8822
+  },
+  "5600000": {
+   "folder": "41_gyeonggi/41_pocheon-si",
+   "sido": "경기도",
+   "sigungu": "포천시",
+   "source_file": "식품_일반음식점_5600000.csv",
+   "rows": 9573
+  },
+  "5670000": {
+   "folder": "48_gyeongnam/48_changwon-si",
+   "sido": "경상남도",
+   "sigungu": "창원시",
+   "source_file": "식품_일반음식점_5670000.csv",
+   "rows": 42037
+  },
+  "5680000": {
+   "folder": "44_chungnam/44_dangjin-si",
+   "sido": "충청남도",
+   "sigungu": "당진시",
+   "source_file": "식품_일반음식점_5680000.csv",
+   "rows": 8025
+  },
+  "5690000": {
+   "folder": "36_sejong/36_sejong",
+   "sido": "세종특별자치시",
+   "sigungu": "세종특별자치시",
+   "source_file": "식품_일반음식점_5690000.csv",
+   "rows": 9753
+  },
+  "5700000": {
+   "folder": "41_gyeonggi/41_yeoju-si",
+   "sido": "경기도",
+   "sigungu": "여주시",
+   "source_file": "식품_일반음식점_5700000.csv",
+   "rows": 5406
+  },
+  "5710000": {
+   "folder": "43_chungbuk/43_cheongju-si",
+   "sido": "충청북도",
+   "sigungu": "청주시",
+   "source_file": "식품_일반음식점_5710000.csv",
+   "rows": 42135
+  },
+  "5780000": {
+   "folder": "46_jeonnam/46_mokpo-si",
+   "sido": "전남광주통합특별시",
+   "sigungu": "목포시",
+   "source_file": "식품_일반음식점_5780000.csv",
+   "rows": 14666
+  },
+  "5785000": {
+   "folder": "46_jeonnam/46_yeosu-si",
+   "sido": "전남광주통합특별시",
+   "sigungu": "여수시",
+   "source_file": "식품_일반음식점_5785000.csv",
+   "rows": 14416
+  },
+  "5790000": {
+   "folder": "46_jeonnam/46_suncheon-si",
+   "sido": "전남광주통합특별시",
+   "sigungu": "순천시",
+   "source_file": "식품_일반음식점_5790000.csv",
+   "rows": 13245
+  },
+  "5795000": {
+   "folder": "46_jeonnam/46_naju-si",
+   "sido": "전남광주통합특별시",
+   "sigungu": "나주시",
+   "source_file": "식품_일반음식점_5795000.csv",
+   "rows": 5239
+  },
+  "5800000": {
+   "folder": "46_jeonnam/46_gwangyang-si",
+   "sido": "전남광주통합특별시",
+   "sigungu": "광양시",
+   "source_file": "식품_일반음식점_5800000.csv",
+   "rows": 7522
+  },
+  "5805000": {
+   "folder": "29_gwangju/29_dong-gu",
+   "sido": "전남광주통합특별시",
+   "sigungu": "동구",
+   "source_file": "식품_일반음식점_5805000.csv",
+   "rows": 8767
+  },
+  "5810000": {
+   "folder": "29_gwangju/29_seo-gu",
+   "sido": "전남광주통합특별시",
+   "sigungu": "서구",
+   "source_file": "식품_일반음식점_5810000.csv",
+   "rows": 12861
+  },
+  "5815000": {
+   "folder": "29_gwangju/29_nam-gu",
+   "sido": "전남광주통합특별시",
+   "sigungu": "남구",
+   "source_file": "식품_일반음식점_5815000.csv",
+   "rows": 7558
+  },
+  "5820000": {
+   "folder": "29_gwangju/29_buk-gu",
+   "sido": "전남광주통합특별시",
+   "sigungu": "북구",
+   "source_file": "식품_일반음식점_5820000.csv",
+   "rows": 17481
+  },
+  "5825000": {
+   "folder": "29_gwangju/29_gwangsan-gu",
+   "sido": "전남광주통합특별시",
+   "sigungu": "광산구",
+   "source_file": "식품_일반음식점_5825000.csv",
+   "rows": 14010
+  },
+  "5830000": {
+   "folder": "46_jeonnam/46_damyang-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "담양군",
+   "source_file": "식품_일반음식점_5830000.csv",
+   "rows": 2172
+  },
+  "5835000": {
+   "folder": "46_jeonnam/46_gokseong-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "곡성군",
+   "source_file": "식품_일반음식점_5835000.csv",
+   "rows": 1334
+  },
+  "5840000": {
+   "folder": "46_jeonnam/46_gurye-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "구례군",
+   "source_file": "식품_일반음식점_5840000.csv",
+   "rows": 1392
+  },
+  "5845000": {
+   "folder": "46_jeonnam/46_goheung-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "고흥군",
+   "source_file": "식품_일반음식점_5845000.csv",
+   "rows": 2704
+  },
+  "5850000": {
+   "folder": "46_jeonnam/46_boseong-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "보성군",
+   "source_file": "식품_일반음식점_5850000.csv",
+   "rows": 1831
+  },
+  "5855000": {
+   "folder": "46_jeonnam/46_hwasun-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "화순군",
+   "source_file": "식품_일반음식점_5855000.csv",
+   "rows": 2788
+  },
+  "5860000": {
+   "folder": "46_jeonnam/46_jangheung-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "장흥군",
+   "source_file": "식품_일반음식점_5860000.csv",
+   "rows": 1723
+  },
+  "5865000": {
+   "folder": "46_jeonnam/46_gangjin-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "강진군",
+   "source_file": "식품_일반음식점_5865000.csv",
+   "rows": 1585
+  },
+  "5870000": {
+   "folder": "46_jeonnam/46_haenam-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "해남군",
+   "source_file": "식품_일반음식점_5870000.csv",
+   "rows": 2898
+  },
+  "5875000": {
+   "folder": "46_jeonnam/46_yeongam-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "영암군",
+   "source_file": "식품_일반음식점_5875000.csv",
+   "rows": 2779
+  },
+  "5880000": {
+   "folder": "46_jeonnam/46_muan-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "무안군",
+   "source_file": "식품_일반음식점_5880000.csv",
+   "rows": 3407
+  },
+  "5885000": {
+   "folder": "46_jeonnam/46_hampyeong-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "함평군",
+   "source_file": "식품_일반음식점_5885000.csv",
+   "rows": 1093
+  },
+  "5890000": {
+   "folder": "46_jeonnam/46_yeonggwang-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "영광군",
+   "source_file": "식품_일반음식점_5890000.csv",
+   "rows": 1829
+  },
+  "5895000": {
+   "folder": "46_jeonnam/46_jangseong-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "장성군",
+   "source_file": "식품_일반음식점_5895000.csv",
+   "rows": 1530
+  },
+  "5900000": {
+   "folder": "46_jeonnam/46_wando-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "완도군",
+   "source_file": "식품_일반음식점_5900000.csv",
+   "rows": 2495
+  },
+  "5905000": {
+   "folder": "46_jeonnam/46_jindo-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "진도군",
+   "source_file": "식품_일반음식점_5905000.csv",
+   "rows": 2283
+  },
+  "5910000": {
+   "folder": "46_jeonnam/46_sinan-gun",
+   "sido": "전남광주통합특별시",
+   "sigungu": "신안군",
+   "source_file": "식품_일반음식점_5910000.csv",
+   "rows": 1401
+  },
+  "6510000": {
+   "folder": "50_jeju/50_jeju-si",
+   "sido": "제주특별자치도",
+   "sigungu": "제주시",
+   "source_file": "식품_일반음식점_6510000.csv",
+   "rows": 28505
+  },
+  "6520000": {
+   "folder": "50_jeju/50_seogwipo-si",
+   "sido": "제주특별자치도",
+   "sigungu": "서귀포시",
+   "source_file": "식품_일반음식점_6520000.csv",
+   "rows": 10912
+  }
+ },
+ "rankings": [
+  {
+   "region_folder": "42_gangwon/42_sokcho-si",
+   "ranking_folder": "20261014103808_속초시_202510-202609_데이터랩_다운로드",
+   "home_code": "4231000",
+   "pool_codes": [
+    "4231000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "36_sejong/36_sejong",
+   "ranking_folder": "20261014113458_세종특별자치시_202510-202609_데이터랩_다운로드",
+   "home_code": "5690000",
+   "pool_codes": [
+    "5690000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_gangnam-gu",
+   "ranking_folder": "20261014114547_강남구_202510-202609_데이터랩_다운로드",
+   "home_code": "3220000",
+   "pool_codes": [
+    "3220000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_yongsan-gu",
+   "ranking_folder": "20261014114823_용산구_202510-202609_데이터랩_다운로드",
+   "home_code": "3020000",
+   "pool_codes": [
+    "3020000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_jung-gu",
+   "ranking_folder": "20261014114823_중구_202510-202609_데이터랩_다운로드",
+   "home_code": "3010000",
+   "pool_codes": [
+    "3010000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_seongdong-gu",
+   "ranking_folder": "20261014120400_성동구_202510-202609_데이터랩_다운로드",
+   "home_code": "3030000",
+   "pool_codes": [
+    "3030000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_jongno-gu",
+   "ranking_folder": "20261014120400_종로구_202510-202609_데이터랩_다운로드",
+   "home_code": "3000000",
+   "pool_codes": [
+    "3000000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_dongdaemun-gu",
+   "ranking_folder": "20261014120543_동대문구_202510-202609_데이터랩_다운로드",
+   "home_code": "3050000",
+   "pool_codes": [
+    "3050000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_gwangjin-gu",
+   "ranking_folder": "20261014120544_광진구_202510-202609_데이터랩_다운로드",
+   "home_code": "3040000",
+   "pool_codes": [
+    "3040000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_seongbuk-gu",
+   "ranking_folder": "20261014120722_성북구_202510-202609_데이터랩_다운로드",
+   "home_code": "3070000",
+   "pool_codes": [
+    "3070000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_jungnang-gu",
+   "ranking_folder": "20261014120722_중랑구_202510-202609_데이터랩_다운로드",
+   "home_code": "3060000",
+   "pool_codes": [
+    "3060000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_gangbuk-gu",
+   "ranking_folder": "20261014120924_강북구_202510-202609_데이터랩_다운로드",
+   "home_code": "3080000",
+   "pool_codes": [
+    "3080000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_dobong-gu",
+   "ranking_folder": "20261014120924_도봉구_202510-202609_데이터랩_다운로드",
+   "home_code": "3090000",
+   "pool_codes": [
+    "3090000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_eunpyeong-gu",
+   "ranking_folder": "20261014121123_은평구_202510-202609_데이터랩_다운로드",
+   "home_code": "3110000",
+   "pool_codes": [
+    "3110000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_nowon-gu",
+   "ranking_folder": "20261014121124_노원구_202510-202609_데이터랩_다운로드",
+   "home_code": "3100000",
+   "pool_codes": [
+    "3100000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_seodaemun-gu",
+   "ranking_folder": "20261014121603_서대문구_202510-202609_데이터랩_다운로드",
+   "home_code": "3120000",
+   "pool_codes": [
+    "3120000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_mapo-gu",
+   "ranking_folder": "20261014121727_마포구_202510-202609_데이터랩_다운로드",
+   "home_code": "3130000",
+   "pool_codes": [
+    "3130000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_gangseo-gu",
+   "ranking_folder": "20261014121912_강서구_202510-202609_데이터랩_다운로드",
+   "home_code": "3150000",
+   "pool_codes": [
+    "3150000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_yangcheon-gu",
+   "ranking_folder": "20261014121912_양천구_202510-202609_데이터랩_다운로드",
+   "home_code": "3140000",
+   "pool_codes": [
+    "3140000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_guro-gu",
+   "ranking_folder": "20261014122103_구로구_202510-202609_데이터랩_다운로드",
+   "home_code": "3160000",
+   "pool_codes": [
+    "3160000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_geumcheon-gu",
+   "ranking_folder": "20261014122103_금천구_202510-202609_데이터랩_다운로드",
+   "home_code": "3170000",
+   "pool_codes": [
+    "3170000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_dongjak-gu",
+   "ranking_folder": "20261014122248_동작구_202510-202609_데이터랩_다운로드",
+   "home_code": "3190000",
+   "pool_codes": [
+    "3190000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_yeongdeungpo-gu",
+   "ranking_folder": "20261014122248_영등포구_202510-202609_데이터랩_다운로드",
+   "home_code": "3180000",
+   "pool_codes": [
+    "3180000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_gwanak-gu",
+   "ranking_folder": "20261014122434_관악구_202510-202609_데이터랩_다운로드",
+   "home_code": "3200000",
+   "pool_codes": [
+    "3200000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_seocho-gu",
+   "ranking_folder": "20261014122434_서초구_202510-202609_데이터랩_다운로드",
+   "home_code": "3210000",
+   "pool_codes": [
+    "3210000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_gangdong-gu",
+   "ranking_folder": "20261014122634_강동구_202510-202609_데이터랩_다운로드",
+   "home_code": "3240000",
+   "pool_codes": [
+    "3240000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "11_seoul/11_songpa-gu",
+   "ranking_folder": "20261014122635_송파구_202510-202609_데이터랩_다운로드",
+   "home_code": "3230000",
+   "pool_codes": [
+    "3230000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_gangseo-gu",
+   "ranking_folder": "20261014123453_강서구_202510-202609_데이터랩_다운로드",
+   "home_code": "3360000",
+   "pool_codes": [
+    "3360000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_geumjeong-gu",
+   "ranking_folder": "20261014123651_금정구_202510-202609_데이터랩_다운로드",
+   "home_code": "3350000",
+   "pool_codes": [
+    "3350000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_gijang-gun",
+   "ranking_folder": "20261014123651_기장군_202510-202609_데이터랩_다운로드",
+   "home_code": "3400000",
+   "pool_codes": [
+    "3400000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_nam-gu",
+   "ranking_folder": "20261014123834_남구_202510-202609_데이터랩_다운로드",
+   "home_code": "3310000",
+   "pool_codes": [
+    "3310000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_dong-gu",
+   "ranking_folder": "20261014123834_동구_202510-202609_데이터랩_다운로드",
+   "home_code": "3270000",
+   "pool_codes": [
+    "3270000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_dongnae-gu",
+   "ranking_folder": "20261014124054_동래구_202510-202609_데이터랩_다운로드",
+   "home_code": "3300000",
+   "pool_codes": [
+    "3300000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_busanjin-gu",
+   "ranking_folder": "20261014124054_부산진구_202510-202609_데이터랩_다운로드",
+   "home_code": "3290000",
+   "pool_codes": [
+    "3290000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_buk-gu",
+   "ranking_folder": "20261014124318_북구_202510-202609_데이터랩_다운로드",
+   "home_code": "3320000",
+   "pool_codes": [
+    "3320000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_sasang-gu",
+   "ranking_folder": "20261014124319_사상구_202510-202609_데이터랩_다운로드",
+   "home_code": "3390000",
+   "pool_codes": [
+    "3390000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_saha-gu",
+   "ranking_folder": "20261014124536_사하구_202510-202609_데이터랩_다운로드",
+   "home_code": "3340000",
+   "pool_codes": [
+    "3340000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_seo-gu",
+   "ranking_folder": "20261014124536_서구_202510-202609_데이터랩_다운로드",
+   "home_code": "3260000",
+   "pool_codes": [
+    "3260000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_suyeong-gu",
+   "ranking_folder": "20261014124734_수영구_202510-202609_데이터랩_다운로드",
+   "home_code": "3380000",
+   "pool_codes": [
+    "3380000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_yeonje-gu",
+   "ranking_folder": "20261014124734_연제구_202510-202609_데이터랩_다운로드",
+   "home_code": "3370000",
+   "pool_codes": [
+    "3370000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_yeongdo-gu",
+   "ranking_folder": "20261014124957_영도구_202510-202609_데이터랩_다운로드",
+   "home_code": "3280000",
+   "pool_codes": [
+    "3280000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_jung-gu",
+   "ranking_folder": "20261014124957_중구_202510-202609_데이터랩_다운로드",
+   "home_code": "3250000",
+   "pool_codes": [
+    "3250000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "26_busan/26_haeundae-gu",
+   "ranking_folder": "20261014125139_해운대구_202510-202609_데이터랩_다운로드",
+   "home_code": "3330000",
+   "pool_codes": [
+    "3330000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "27_daegu/27_nam-gu",
+   "ranking_folder": "20261014125809_남구_202510-202609_데이터랩_다운로드",
+   "home_code": "3440000",
+   "pool_codes": [
+    "3440000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "27_daegu/27_gunwi-gun",
+   "ranking_folder": "20261014125810_군위군_202510-202609_데이터랩_다운로드",
+   "home_code": "5141000",
+   "pool_codes": [
+    "5141000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "27_daegu/27_dalseo-gu",
+   "ranking_folder": "20261014131556_달서구_202510-202609_데이터랩_다운로드",
+   "home_code": "3470000",
+   "pool_codes": [
+    "3470000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "27_daegu/27_dalseong-gun",
+   "ranking_folder": "20261014134833_달성군_202510-202609_데이터랩_다운로드",
+   "home_code": "3480000",
+   "pool_codes": [
+    "3480000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "27_daegu/27_dalseong-gun",
+   "ranking_folder": "20261014134950_달성군_202510-202609_데이터랩_다운로드",
+   "home_code": "3480000",
+   "pool_codes": [
+    "3480000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "27_daegu/27_dong-gu",
+   "ranking_folder": "20261014135134_동구_202510-202609_데이터랩_다운로드",
+   "home_code": "3420000",
+   "pool_codes": [
+    "3420000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "27_daegu/27_buk-gu",
+   "ranking_folder": "20261014135319_북구_202510-202609_데이터랩_다운로드",
+   "home_code": "3450000",
+   "pool_codes": [
+    "3450000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "27_daegu/27_seo-gu",
+   "ranking_folder": "20261014135446_서구_202510-202609_데이터랩_다운로드",
+   "home_code": "3430000",
+   "pool_codes": [
+    "3430000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "27_daegu/27_suseong-gu",
+   "ranking_folder": "20261014135615_수성구_202510-202609_데이터랩_다운로드",
+   "home_code": "3460000",
+   "pool_codes": [
+    "3460000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "27_daegu/27_jung-gu",
+   "ranking_folder": "20261014135740_중구_202510-202609_데이터랩_다운로드",
+   "home_code": "3410000",
+   "pool_codes": [
+    "3410000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_ganghwa-gun",
+   "ranking_folder": "20261014140034_강화군_202510-202609_데이터랩_다운로드",
+   "home_code": "3570000",
+   "pool_codes": [
+    "3570000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_gyeyang-gu",
+   "ranking_folder": "20261014140034_계양구_202510-202609_데이터랩_다운로드",
+   "home_code": "3550000",
+   "pool_codes": [
+    "3550000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_namdong-gu",
+   "ranking_folder": "20261014140243_남동구_202510-202609_데이터랩_다운로드",
+   "home_code": "3530000",
+   "pool_codes": [
+    "3530000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_michuhol-gu",
+   "ranking_folder": "20261014140459_미추홀구_202510-202609_데이터랩_다운로드",
+   "home_code": "3510500",
+   "pool_codes": [
+    "3510500"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_bupyeong-gu",
+   "ranking_folder": "20261014140722_부평구_202510-202609_데이터랩_다운로드",
+   "home_code": "3540000",
+   "pool_codes": [
+    "3540000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_yeonsu-gu",
+   "ranking_folder": "20261014140723_연수구_202510-202609_데이터랩_다운로드",
+   "home_code": "3520000",
+   "pool_codes": [
+    "3520000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_ongjin-gun",
+   "ranking_folder": "20261014140927_옹진군_202510-202609_데이터랩_다운로드",
+   "home_code": "3580000",
+   "pool_codes": [
+    "3580000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_jemulpo-gu",
+   "ranking_folder": "20261014140928_동구_202507-202606_데이터랩_다운로드",
+   "home_code": "3501000",
+   "pool_codes": [
+    "3501000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_seohae-gu",
+   "ranking_folder": "20261014141153_서구_202507-202606_데이터랩_다운로드",
+   "home_code": "3561000",
+   "pool_codes": [
+    "3561000",
+    "3565000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_yeongjong-gu",
+   "ranking_folder": "20261014141153_중구_202507-202606_데이터랩_다운로드",
+   "home_code": "3491000",
+   "pool_codes": [
+    "3491000",
+    "3501000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "30_daejeon/30_daedeok-gu",
+   "ranking_folder": "20261014141406_대덕구_202510-202609_데이터랩_다운로드",
+   "home_code": "3680000",
+   "pool_codes": [
+    "3680000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "30_daejeon/30_dong-gu",
+   "ranking_folder": "20261014141406_동구_202510-202609_데이터랩_다운로드",
+   "home_code": "3640000",
+   "pool_codes": [
+    "3640000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "30_daejeon/30_seo-gu",
+   "ranking_folder": "20261014142601_서구_202510-202609_데이터랩_다운로드",
+   "home_code": "3660000",
+   "pool_codes": [
+    "3660000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "30_daejeon/30_yuseong-gu",
+   "ranking_folder": "20261014143117_유성구_202510-202609_데이터랩_다운로드",
+   "home_code": "3670000",
+   "pool_codes": [
+    "3670000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "30_daejeon/30_jung-gu",
+   "ranking_folder": "20261014143659_중구_202510-202609_데이터랩_다운로드",
+   "home_code": "3650000",
+   "pool_codes": [
+    "3650000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "31_ulsan/31_nam-gu",
+   "ranking_folder": "20261014143841_남구_202510-202609_데이터랩_다운로드",
+   "home_code": "3700000",
+   "pool_codes": [
+    "3700000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "31_ulsan/31_dong-gu",
+   "ranking_folder": "20261014144022_동구_202510-202609_데이터랩_다운로드",
+   "home_code": "3710000",
+   "pool_codes": [
+    "3710000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "31_ulsan/31_buk-gu",
+   "ranking_folder": "20261014144202_북구_202510-202609_데이터랩_다운로드",
+   "home_code": "3720000",
+   "pool_codes": [
+    "3720000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "31_ulsan/31_ulju-gun",
+   "ranking_folder": "20261014144338_울주군_202510-202609_데이터랩_다운로드",
+   "home_code": "3730000",
+   "pool_codes": [
+    "3730000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "31_ulsan/31_jung-gu",
+   "ranking_folder": "20261014144506_중구_202510-202609_데이터랩_다운로드",
+   "home_code": "3690000",
+   "pool_codes": [
+    "3690000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_gapyeong-gun",
+   "ranking_folder": "20261014144840_가평군_202510-202609_데이터랩_다운로드",
+   "home_code": "4160000",
+   "pool_codes": [
+    "4160000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_gwacheon-si",
+   "ranking_folder": "20261014145058_과천시_202510-202609_데이터랩_다운로드",
+   "home_code": "3970000",
+   "pool_codes": [
+    "3970000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_gwangmyeong-si",
+   "ranking_folder": "20261014145058_광명시_202510-202609_데이터랩_다운로드",
+   "home_code": "3900000",
+   "pool_codes": [
+    "3900000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_gwangju-si",
+   "ranking_folder": "20261014145308_광주시_202510-202609_데이터랩_다운로드",
+   "home_code": "5540000",
+   "pool_codes": [
+    "5540000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_guri-si",
+   "ranking_folder": "20261014145308_구리시_202510-202609_데이터랩_다운로드",
+   "home_code": "3980000",
+   "pool_codes": [
+    "3980000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_gunpo-si",
+   "ranking_folder": "20261014145525_군포시_202510-202609_데이터랩_다운로드",
+   "home_code": "4020000",
+   "pool_codes": [
+    "4020000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_gimpo-si",
+   "ranking_folder": "20261014145525_김포시_202510-202609_데이터랩_다운로드",
+   "home_code": "4090000",
+   "pool_codes": [
+    "4090000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_namyangju-si",
+   "ranking_folder": "20261014145805_남양주시_202510-202609_데이터랩_다운로드",
+   "home_code": "3990000",
+   "pool_codes": [
+    "3990000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_dongducheon-si",
+   "ranking_folder": "20261014145805_동두천시_202510-202609_데이터랩_다운로드",
+   "home_code": "3920000",
+   "pool_codes": [
+    "3920000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "50_jeju/50_jeju-si",
+   "ranking_folder": "20261014150828_제주특별자치도_202510-202609_데이터랩_다운로드",
+   "home_code": "6510000",
+   "pool_codes": [
+    "6510000",
+    "6520000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_siheung-si",
+   "ranking_folder": "20261014150915_시흥시_202510-202609_데이터랩_다운로드",
+   "home_code": "4010000",
+   "pool_codes": [
+    "4010000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_anseong-si",
+   "ranking_folder": "20261014151124_안성시_202510-202609_데이터랩_다운로드",
+   "home_code": "4080000",
+   "pool_codes": [
+    "4080000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_geoje-si",
+   "ranking_folder": "20261014151200_거제시_202510-202609_데이터랩_다운로드",
+   "home_code": "5370000",
+   "pool_codes": [
+    "5370000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_yangju-si",
+   "ranking_folder": "20261014151358_양주시_202510-202609_데이터랩_다운로드",
+   "home_code": "5590000",
+   "pool_codes": [
+    "5590000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_yangpyeong-gun",
+   "ranking_folder": "20261014151358_양평군_202510-202609_데이터랩_다운로드",
+   "home_code": "4170000",
+   "pool_codes": [
+    "4170000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_yeoju-si",
+   "ranking_folder": "20261014151608_여주시_202510-202609_데이터랩_다운로드",
+   "home_code": "5700000",
+   "pool_codes": [
+    "5700000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_yeoncheon-gun",
+   "ranking_folder": "20261014151608_연천군_202510-202609_데이터랩_다운로드",
+   "home_code": "4140000",
+   "pool_codes": [
+    "4140000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_yeoju-si",
+   "ranking_folder": "20261014153848_여주시_202510-202609_데이터랩_다운로드",
+   "home_code": "5700000",
+   "pool_codes": [
+    "5700000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "29_gwangju/29_gwangsan-gu",
+   "ranking_folder": "20261014154059_광산구_202510-202609_데이터랩_다운로드",
+   "home_code": "5825000",
+   "pool_codes": [
+    "5825000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_cheongsong-gun",
+   "ranking_folder": "20261015011739_청송군_202510-202609_데이터랩_다운로드",
+   "home_code": "5160000",
+   "pool_codes": [
+    "5160000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_chilgok-gun",
+   "ranking_folder": "20261015012210_칠곡군_202510-202609_데이터랩_다운로드",
+   "home_code": "5220000",
+   "pool_codes": [
+    "5220000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_cheongdo-gun",
+   "ranking_folder": "20261015012408_청도군_202510-202609_데이터랩_다운로드",
+   "home_code": "5190000",
+   "pool_codes": [
+    "5190000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_uiseong-gun",
+   "ranking_folder": "20261015012639_의성군_202510-202609_데이터랩_다운로드",
+   "home_code": "5150000",
+   "pool_codes": [
+    "5150000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_uljin-gun",
+   "ranking_folder": "20261015013412_울진군_202510-202609_데이터랩_다운로드",
+   "home_code": "5250000",
+   "pool_codes": [
+    "5250000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_ulleung-gun",
+   "ranking_folder": "20261015013511_울릉군_202510-202609_데이터랩_다운로드",
+   "home_code": "5260000",
+   "pool_codes": [
+    "5260000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_yecheon-gun",
+   "ranking_folder": "20261015013600_예천군_202510-202609_데이터랩_다운로드",
+   "home_code": "5230000",
+   "pool_codes": [
+    "5230000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_yeongcheon-si",
+   "ranking_folder": "20261015013649_영천시_202510-202609_데이터랩_다운로드",
+   "home_code": "5100000",
+   "pool_codes": [
+    "5100000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_goyang-si",
+   "ranking_folder": "20261015014217_고양시+덕양구_202510-202609_데이터랩_다운로드",
+   "home_code": "3940000",
+   "pool_codes": [
+    "3940000"
+   ],
+   "gu": "덕양구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_goyang-si",
+   "ranking_folder": "20261015014635_고양시+일산동구_202510-202609_데이터랩_다운로드",
+   "home_code": "3940000",
+   "pool_codes": [
+    "3940000"
+   ],
+   "gu": "일산동구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_goyang-si",
+   "ranking_folder": "20261015014635_고양시+일산서구_202510-202609_데이터랩_다운로드",
+   "home_code": "3940000",
+   "pool_codes": [
+    "3940000"
+   ],
+   "gu": "일산서구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_seongnam-si",
+   "ranking_folder": "20261015014951_성남시+분당구_202510-202609_데이터랩_다운로드",
+   "home_code": "3780000",
+   "pool_codes": [
+    "3780000"
+   ],
+   "gu": "분당구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_suwon-si",
+   "ranking_folder": "20261015014951_수원시+권선구_202510-202609_데이터랩_다운로드",
+   "home_code": "3740000",
+   "pool_codes": [
+    "3740000"
+   ],
+   "gu": "권선구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_seongnam-si",
+   "ranking_folder": "20261015015054_성남시+수정구_202510-202609_데이터랩_다운로드",
+   "home_code": "3780000",
+   "pool_codes": [
+    "3780000"
+   ],
+   "gu": "수정구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_seongnam-si",
+   "ranking_folder": "20261015015054_성남시+중원구_202510-202609_데이터랩_다운로드",
+   "home_code": "3780000",
+   "pool_codes": [
+    "3780000"
+   ],
+   "gu": "중원구"
+  },
+  {
+   "region_folder": "46_jeonnam/46_jindo-gun",
+   "ranking_folder": "20261015055327_진도군_202510-202609_데이터랩_다운로드",
+   "home_code": "5905000",
+   "pool_codes": [
+    "5905000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_suwon-si",
+   "ranking_folder": "20261015061414_수원시+영통구_202510-202609_데이터랩_다운로드",
+   "home_code": "3740000",
+   "pool_codes": [
+    "3740000"
+   ],
+   "gu": "영통구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_suwon-si",
+   "ranking_folder": "20261015061939_수원시+장안구_202510-202609_데이터랩_다운로드",
+   "home_code": "3740000",
+   "pool_codes": [
+    "3740000"
+   ],
+   "gu": "장안구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_suwon-si",
+   "ranking_folder": "20261015062036_수원시+팔달구_202510-202609_데이터랩_다운로드",
+   "home_code": "3740000",
+   "pool_codes": [
+    "3740000"
+   ],
+   "gu": "팔달구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_ansan-si",
+   "ranking_folder": "20261015062134_안산시+단원구_202510-202609_데이터랩_다운로드",
+   "home_code": "3930000",
+   "pool_codes": [
+    "3930000"
+   ],
+   "gu": "단원구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_ansan-si",
+   "ranking_folder": "20261015062536_안산시+상록구_202510-202609_데이터랩_다운로드",
+   "home_code": "3930000",
+   "pool_codes": [
+    "3930000"
+   ],
+   "gu": "상록구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_anyang-si",
+   "ranking_folder": "20261015062618_안양시+동안구_202510-202609_데이터랩_다운로드",
+   "home_code": "3830000",
+   "pool_codes": [
+    "3830000"
+   ],
+   "gu": "동안구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_anyang-si",
+   "ranking_folder": "20261015062700_안양시+만안구_202510-202609_데이터랩_다운로드",
+   "home_code": "3830000",
+   "pool_codes": [
+    "3830000"
+   ],
+   "gu": "만안구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_osan-si",
+   "ranking_folder": "20261015062814_오산시_202510-202609_데이터랩_다운로드",
+   "home_code": "4000000",
+   "pool_codes": [
+    "4000000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_uiwang-si",
+   "ranking_folder": "20261015062856_의왕시_202510-202609_데이터랩_다운로드",
+   "home_code": "4030000",
+   "pool_codes": [
+    "4030000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_hanam-si",
+   "ranking_folder": "20261015062938_하남시_202510-202609_데이터랩_다운로드",
+   "home_code": "4040000",
+   "pool_codes": [
+    "4040000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_yongin-si",
+   "ranking_folder": "20261015063021_용인시+기흥구_202510-202609_데이터랩_다운로드",
+   "home_code": "4050000",
+   "pool_codes": [
+    "4050000"
+   ],
+   "gu": "기흥구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_yongin-si",
+   "ranking_folder": "20261015063104_용인시+수지구_202510-202609_데이터랩_다운로드",
+   "home_code": "4050000",
+   "pool_codes": [
+    "4050000"
+   ],
+   "gu": "수지구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_yongin-si",
+   "ranking_folder": "20261015063201_용인시+처인구_202510-202609_데이터랩_다운로드",
+   "home_code": "4050000",
+   "pool_codes": [
+    "4050000"
+   ],
+   "gu": "처인구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_paju-si",
+   "ranking_folder": "20261015063244_파주시_202510-202609_데이터랩_다운로드",
+   "home_code": "4060000",
+   "pool_codes": [
+    "4060000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_icheon-si",
+   "ranking_folder": "20261015063326_이천시_202510-202609_데이터랩_다운로드",
+   "home_code": "4070000",
+   "pool_codes": [
+    "4070000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_icheon-si",
+   "ranking_folder": "20261015063526_이천시_202510-202609_데이터랩_다운로드",
+   "home_code": "4070000",
+   "pool_codes": [
+    "4070000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_uijeongbu-si",
+   "ranking_folder": "20261015064501_의정부시_202510-202609_데이터랩_다운로드",
+   "home_code": "3820000",
+   "pool_codes": [
+    "3820000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_pyeongtaek-si",
+   "ranking_folder": "20261015064556_평택시_202510-202609_데이터랩_다운로드",
+   "home_code": "3910000",
+   "pool_codes": [
+    "3910000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_pocheon-si",
+   "ranking_folder": "20261015064649_포천시_202510-202609_데이터랩_다운로드",
+   "home_code": "5600000",
+   "pool_codes": [
+    "5600000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_hwaseong-si",
+   "ranking_folder": "20261015064959_화성시+동탄구_202510-202609_데이터랩_다운로드",
+   "home_code": "5530000",
+   "pool_codes": [
+    "5530000"
+   ],
+   "gu": "동탄구"
+  },
+  {
+   "region_folder": "42_gangwon/42_chuncheon-si",
+   "ranking_folder": "20261015092404_춘천시_202510-202609_데이터랩_다운로드",
+   "home_code": "4181000",
+   "pool_codes": [
+    "4181000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_gangneung-si",
+   "ranking_folder": "20261015092406_강릉시_202510-202609_데이터랩_다운로드",
+   "home_code": "4201000",
+   "pool_codes": [
+    "4201000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_wonju-si",
+   "ranking_folder": "20261015092406_원주시_202510-202609_데이터랩_다운로드",
+   "home_code": "4191000",
+   "pool_codes": [
+    "4191000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_donghae-si",
+   "ranking_folder": "20261015092601_동해시_202510-202609_데이터랩_다운로드",
+   "home_code": "4211000",
+   "pool_codes": [
+    "4211000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_samcheok-si",
+   "ranking_folder": "20261015092601_삼척시_202510-202609_데이터랩_다운로드",
+   "home_code": "4241000",
+   "pool_codes": [
+    "4241000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_taebaek-si",
+   "ranking_folder": "20261015092601_태백시_202510-202609_데이터랩_다운로드",
+   "home_code": "4221000",
+   "pool_codes": [
+    "4221000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_hongcheon-gun",
+   "ranking_folder": "20261015092728_홍천군_202510-202609_데이터랩_다운로드",
+   "home_code": "4251000",
+   "pool_codes": [
+    "4251000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_yeongwol-gun",
+   "ranking_folder": "20261015092729_영월군_202510-202609_데이터랩_다운로드",
+   "home_code": "4271000",
+   "pool_codes": [
+    "4271000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_hoengseong-gun",
+   "ranking_folder": "20261015092729_횡성군_202510-202609_데이터랩_다운로드",
+   "home_code": "4261000",
+   "pool_codes": [
+    "4261000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_jeongseon-gun",
+   "ranking_folder": "20261015092851_정선군_202510-202609_데이터랩_다운로드",
+   "home_code": "4291000",
+   "pool_codes": [
+    "4291000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_cheorwon-gun",
+   "ranking_folder": "20261015092851_철원군_202510-202609_데이터랩_다운로드",
+   "home_code": "4301000",
+   "pool_codes": [
+    "4301000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_pyeongchang-gun",
+   "ranking_folder": "20261015092851_평창군_202510-202609_데이터랩_다운로드",
+   "home_code": "4281000",
+   "pool_codes": [
+    "4281000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_hwacheon-gun",
+   "ranking_folder": "20261015093156_화천군_202510-202609_데이터랩_다운로드",
+   "home_code": "4311000",
+   "pool_codes": [
+    "4311000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_yanggu-gun",
+   "ranking_folder": "20261015093157_양구군_202510-202609_데이터랩_다운로드",
+   "home_code": "4321000",
+   "pool_codes": [
+    "4321000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_inje-gun",
+   "ranking_folder": "20261015093157_인제군_202510-202609_데이터랩_다운로드",
+   "home_code": "4331000",
+   "pool_codes": [
+    "4331000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_goseong-gun",
+   "ranking_folder": "20261015093314_고성군_202510-202609_데이터랩_다운로드",
+   "home_code": "4341000",
+   "pool_codes": [
+    "4341000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_yangyang-gun",
+   "ranking_folder": "20261015093314_양양군_202510-202609_데이터랩_다운로드",
+   "home_code": "4351000",
+   "pool_codes": [
+    "4351000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "43_chungbuk/43_cheongju-si",
+   "ranking_folder": "20261015093314_청주시+상당구_202510-202609_데이터랩_다운로드",
+   "home_code": "5710000",
+   "pool_codes": [
+    "5710000"
+   ],
+   "gu": "상당구"
+  },
+  {
+   "region_folder": "43_chungbuk/43_cheongju-si",
+   "ranking_folder": "20261015093439_청주시+서원구_202510-202609_데이터랩_다운로드",
+   "home_code": "5710000",
+   "pool_codes": [
+    "5710000"
+   ],
+   "gu": "서원구"
+  },
+  {
+   "region_folder": "43_chungbuk/43_cheongju-si",
+   "ranking_folder": "20261015093439_청주시+청원구_202510-202609_데이터랩_다운로드",
+   "home_code": "5710000",
+   "pool_codes": [
+    "5710000"
+   ],
+   "gu": "청원구"
+  },
+  {
+   "region_folder": "43_chungbuk/43_cheongju-si",
+   "ranking_folder": "20261015093439_청주시+흥덕구_202510-202609_데이터랩_다운로드",
+   "home_code": "5710000",
+   "pool_codes": [
+    "5710000"
+   ],
+   "gu": "흥덕구"
+  },
+  {
+   "region_folder": "43_chungbuk/43_boeun-gun",
+   "ranking_folder": "20261015093608_보은군_202510-202609_데이터랩_다운로드",
+   "home_code": "4420000",
+   "pool_codes": [
+    "4420000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "43_chungbuk/43_jecheon-si",
+   "ranking_folder": "20261015093608_제천시_202510-202609_데이터랩_다운로드",
+   "home_code": "4400000",
+   "pool_codes": [
+    "4400000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "43_chungbuk/43_chungju-si",
+   "ranking_folder": "20261015093608_충주시_202510-202609_데이터랩_다운로드",
+   "home_code": "4390000",
+   "pool_codes": [
+    "4390000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "43_chungbuk/43_yeongdong-gun",
+   "ranking_folder": "20261015093731_영동군_202510-202609_데이터랩_다운로드",
+   "home_code": "4440000",
+   "pool_codes": [
+    "4440000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "43_chungbuk/43_okcheon-gun",
+   "ranking_folder": "20261015093731_옥천군_202510-202609_데이터랩_다운로드",
+   "home_code": "4430000",
+   "pool_codes": [
+    "4430000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "43_chungbuk/43_jeungpyeong-gun",
+   "ranking_folder": "20261015093731_증평군_202510-202609_데이터랩_다운로드",
+   "home_code": "5570000",
+   "pool_codes": [
+    "5570000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "43_chungbuk/43_jincheon-gun",
+   "ranking_folder": "20261015105451_진천군_202510-202609_데이터랩_다운로드",
+   "home_code": "4450000",
+   "pool_codes": [
+    "4450000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "43_chungbuk/43_danyang-gun",
+   "ranking_folder": "20261015105558_단양군_202510-202609_데이터랩_다운로드",
+   "home_code": "4480000",
+   "pool_codes": [
+    "4480000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "43_chungbuk/43_eumseong-gun",
+   "ranking_folder": "20261015105558_음성군_202510-202609_데이터랩_다운로드",
+   "home_code": "4470000",
+   "pool_codes": [
+    "4470000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "43_chungbuk/43_goesan-gun",
+   "ranking_folder": "20261015105607_괴산군_202510-202609_데이터랩_다운로드",
+   "home_code": "4460000",
+   "pool_codes": [
+    "4460000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_gongju-si",
+   "ranking_folder": "20261015105721_공주시_202510-202609_데이터랩_다운로드",
+   "home_code": "4500000",
+   "pool_codes": [
+    "4500000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_cheonan-si",
+   "ranking_folder": "20261015105721_천안시+서북구_202510-202609_데이터랩_다운로드",
+   "home_code": "4490000",
+   "pool_codes": [
+    "4490000"
+   ],
+   "gu": "서북구"
+  },
+  {
+   "region_folder": "44_chungnam/44_cheonan-si",
+   "ranking_folder": "20261015105730_천안시+동남구_202510-202609_데이터랩_다운로드",
+   "home_code": "4490000",
+   "pool_codes": [
+    "4490000"
+   ],
+   "gu": "동남구"
+  },
+  {
+   "region_folder": "44_chungnam/44_seosan-si",
+   "ranking_folder": "20261015105903_서산시_202510-202609_데이터랩_다운로드",
+   "home_code": "4530000",
+   "pool_codes": [
+    "4530000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_asan-si",
+   "ranking_folder": "20261015105903_아산시_202510-202609_데이터랩_다운로드",
+   "home_code": "4520000",
+   "pool_codes": [
+    "4520000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_boryeong-si",
+   "ranking_folder": "20261015105912_보령시_202510-202609_데이터랩_다운로드",
+   "home_code": "4510000",
+   "pool_codes": [
+    "4510000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_gyeryong-si",
+   "ranking_folder": "20261015110130_계룡시_202510-202609_데이터랩_다운로드",
+   "home_code": "5580000",
+   "pool_codes": [
+    "5580000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_dangjin-si",
+   "ranking_folder": "20261015110130_당진시_202510-202609_데이터랩_다운로드",
+   "home_code": "5680000",
+   "pool_codes": [
+    "5680000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_nonsan-si",
+   "ranking_folder": "20261015110139_논산시_202510-202609_데이터랩_다운로드",
+   "home_code": "4540000",
+   "pool_codes": [
+    "4540000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_buyeo-gun",
+   "ranking_folder": "20261015110253_부여군_202510-202609_데이터랩_다운로드",
+   "home_code": "4570000",
+   "pool_codes": [
+    "4570000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_seocheon-gun",
+   "ranking_folder": "20261015110253_서천군_202510-202609_데이터랩_다운로드",
+   "home_code": "4580000",
+   "pool_codes": [
+    "4580000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_geumsan-gun",
+   "ranking_folder": "20261015110302_금산군_202510-202609_데이터랩_다운로드",
+   "home_code": "4550000",
+   "pool_codes": [
+    "4550000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_yesan-gun",
+   "ranking_folder": "20261015110430_예산군_202510-202609_데이터랩_다운로드",
+   "home_code": "4610000",
+   "pool_codes": [
+    "4610000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_hongseong-gun",
+   "ranking_folder": "20261015110430_홍성군_202510-202609_데이터랩_다운로드",
+   "home_code": "4600000",
+   "pool_codes": [
+    "4600000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "44_chungnam/44_cheongyang-gun",
+   "ranking_folder": "20261015110439_청양군_202510-202609_데이터랩_다운로드",
+   "home_code": "4590000",
+   "pool_codes": [
+    "4590000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_jeonju-si",
+   "ranking_folder": "20261015110551_전주시+덕진구_202510-202609_데이터랩_다운로드",
+   "home_code": "4641000",
+   "pool_codes": [
+    "4641000"
+   ],
+   "gu": "덕진구"
+  },
+  {
+   "region_folder": "45_jeonbuk/45_jeonju-si",
+   "ranking_folder": "20261015110551_전주시+완산구_202510-202609_데이터랩_다운로드",
+   "home_code": "4641000",
+   "pool_codes": [
+    "4641000"
+   ],
+   "gu": "완산구"
+  },
+  {
+   "region_folder": "44_chungnam/44_taean-gun",
+   "ranking_folder": "20261015110559_태안군_202510-202609_데이터랩_다운로드",
+   "home_code": "4620000",
+   "pool_codes": [
+    "4620000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_iksan-si",
+   "ranking_folder": "20261015110730_익산시_202510-202609_데이터랩_다운로드",
+   "home_code": "4681000",
+   "pool_codes": [
+    "4681000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_jeongeup-si",
+   "ranking_folder": "20261015110730_정읍시_202510-202609_데이터랩_다운로드",
+   "home_code": "4691000",
+   "pool_codes": [
+    "4691000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_gunsan-si",
+   "ranking_folder": "20261015110739_군산시_202510-202609_데이터랩_다운로드",
+   "home_code": "4671000",
+   "pool_codes": [
+    "4671000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_gimje-si",
+   "ranking_folder": "20261015110853_김제시_202510-202609_데이터랩_다운로드",
+   "home_code": "4711000",
+   "pool_codes": [
+    "4711000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_wanju-gun",
+   "ranking_folder": "20261015110853_완주군_202510-202609_데이터랩_다운로드",
+   "home_code": "4721000",
+   "pool_codes": [
+    "4721000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_namwon-si",
+   "ranking_folder": "20261015110901_남원시_202510-202609_데이터랩_다운로드",
+   "home_code": "4701000",
+   "pool_codes": [
+    "4701000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_jinan-gun",
+   "ranking_folder": "20261015111034_진안군_202510-202609_데이터랩_다운로드",
+   "home_code": "4731000",
+   "pool_codes": [
+    "4731000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_muju-gun",
+   "ranking_folder": "20261015111239_무주군_202510-202609_데이터랩_다운로드",
+   "home_code": "4741000",
+   "pool_codes": [
+    "4741000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_jangsu-gun",
+   "ranking_folder": "20261015111239_장수군_202510-202609_데이터랩_다운로드",
+   "home_code": "4751000",
+   "pool_codes": [
+    "4751000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_gochang-gun",
+   "ranking_folder": "20261015111344_고창군_202510-202609_데이터랩_다운로드",
+   "home_code": "4781000",
+   "pool_codes": [
+    "4781000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_sunchang-gun",
+   "ranking_folder": "20261015111344_순창군_202510-202609_데이터랩_다운로드",
+   "home_code": "4771000",
+   "pool_codes": [
+    "4771000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_imsil-gun",
+   "ranking_folder": "20261015111353_임실군_202510-202609_데이터랩_다운로드",
+   "home_code": "4761000",
+   "pool_codes": [
+    "4761000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "45_jeonbuk/45_buan-gun",
+   "ranking_folder": "20261015111529_부안군_202510-202609_데이터랩_다운로드",
+   "home_code": "4791000",
+   "pool_codes": [
+    "4791000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_mokpo-si",
+   "ranking_folder": "20261015113451_목포시_202510-202609_데이터랩_다운로드",
+   "home_code": "5780000",
+   "pool_codes": [
+    "5780000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_yeosu-si",
+   "ranking_folder": "20261015113624_여수시_202510-202609_데이터랩_다운로드",
+   "home_code": "5785000",
+   "pool_codes": [
+    "5785000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_suncheon-si",
+   "ranking_folder": "20261015113750_순천시_202510-202609_데이터랩_다운로드",
+   "home_code": "5790000",
+   "pool_codes": [
+    "5790000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_naju-si",
+   "ranking_folder": "20261015113928_나주시_202510-202609_데이터랩_다운로드",
+   "home_code": "5795000",
+   "pool_codes": [
+    "5795000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_gwangyang-si",
+   "ranking_folder": "20261015114057_광양시_202510-202609_데이터랩_다운로드",
+   "home_code": "5800000",
+   "pool_codes": [
+    "5800000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_damyang-gun",
+   "ranking_folder": "20261015114219_담양군_202510-202609_데이터랩_다운로드",
+   "home_code": "5830000",
+   "pool_codes": [
+    "5830000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_gokseong-gun",
+   "ranking_folder": "20261015114340_곡성군_202510-202609_데이터랩_다운로드",
+   "home_code": "5835000",
+   "pool_codes": [
+    "5835000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_gurye-gun",
+   "ranking_folder": "20261015114450_구례군_202510-202609_데이터랩_다운로드",
+   "home_code": "5840000",
+   "pool_codes": [
+    "5840000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_goheung-gun",
+   "ranking_folder": "20261015114615_고흥군_202510-202609_데이터랩_다운로드",
+   "home_code": "5845000",
+   "pool_codes": [
+    "5845000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_boseong-gun",
+   "ranking_folder": "20261015114758_보성군_202510-202609_데이터랩_다운로드",
+   "home_code": "5850000",
+   "pool_codes": [
+    "5850000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_hwasun-gun",
+   "ranking_folder": "20261015114913_화순군_202510-202609_데이터랩_다운로드",
+   "home_code": "5855000",
+   "pool_codes": [
+    "5855000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_jangheung-gun",
+   "ranking_folder": "20261015115045_장흥군_202510-202609_데이터랩_다운로드",
+   "home_code": "5860000",
+   "pool_codes": [
+    "5860000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_gangjin-gun",
+   "ranking_folder": "20261015115159_강진군_202510-202609_데이터랩_다운로드",
+   "home_code": "5865000",
+   "pool_codes": [
+    "5865000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_gyeongju-si",
+   "ranking_folder": "20261015123316_경주시_202510-202609_데이터랩_다운로드",
+   "home_code": "5050000",
+   "pool_codes": [
+    "5050000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_gimcheon-si",
+   "ranking_folder": "20261015123452_김천시_202510-202609_데이터랩_다운로드",
+   "home_code": "5060000",
+   "pool_codes": [
+    "5060000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_gumi-si",
+   "ranking_folder": "20261015123622_구미시_202510-202609_데이터랩_다운로드",
+   "home_code": "5080000",
+   "pool_codes": [
+    "5080000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_andong-si",
+   "ranking_folder": "20261015123622_안동시_202510-202609_데이터랩_다운로드",
+   "home_code": "5070000",
+   "pool_codes": [
+    "5070000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_mungyeong-si",
+   "ranking_folder": "20261015123810_문경시_202510-202609_데이터랩_다운로드",
+   "home_code": "5120000",
+   "pool_codes": [
+    "5120000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_sangju-si",
+   "ranking_folder": "20261015123810_상주시_202510-202609_데이터랩_다운로드",
+   "home_code": "5110000",
+   "pool_codes": [
+    "5110000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_yeongju-si",
+   "ranking_folder": "20261015123810_영주시_202510-202609_데이터랩_다운로드",
+   "home_code": "5090000",
+   "pool_codes": [
+    "5090000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_gyeongsan-si",
+   "ranking_folder": "20261015123954_경산시_202510-202609_데이터랩_다운로드",
+   "home_code": "5130000",
+   "pool_codes": [
+    "5130000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_yeongdeok-gun",
+   "ranking_folder": "20261015123956_영덕군_202510-202609_데이터랩_다운로드",
+   "home_code": "5180000",
+   "pool_codes": [
+    "5180000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_yeongyang-gun",
+   "ranking_folder": "20261015123957_영양군_202510-202609_데이터랩_다운로드",
+   "home_code": "5170000",
+   "pool_codes": [
+    "5170000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_bonghwa-gun",
+   "ranking_folder": "20261015124144_봉화군_202510-202609_데이터랩_다운로드",
+   "home_code": "5240000",
+   "pool_codes": [
+    "5240000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_goryeong-gun",
+   "ranking_folder": "20261015124147_고령군_202510-202609_데이터랩_다운로드",
+   "home_code": "5200000",
+   "pool_codes": [
+    "5200000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_seongju-gun",
+   "ranking_folder": "20261015124147_성주군_202510-202609_데이터랩_다운로드",
+   "home_code": "5210000",
+   "pool_codes": [
+    "5210000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "50_jeju/50_seogwipo-si",
+   "ranking_folder": "20261015124433_서귀포시_202510-202609_데이터랩_다운로드",
+   "home_code": "6520000",
+   "pool_codes": [
+    "6520000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "50_jeju/50_jeju-si",
+   "ranking_folder": "20261015124433_제주시_202510-202609_데이터랩_다운로드",
+   "home_code": "6510000",
+   "pool_codes": [
+    "6510000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_gimhae-si",
+   "ranking_folder": "20261015143559_김해시_202510-202609_데이터랩_다운로드",
+   "home_code": "5350000",
+   "pool_codes": [
+    "5350000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_geoje-si",
+   "ranking_folder": "20261015143842_거제시_202510-202609_데이터랩_다운로드",
+   "home_code": "5370000",
+   "pool_codes": [
+    "5370000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_hapcheon-gun",
+   "ranking_folder": "20261015144123_합천군_202510-202609_데이터랩_다운로드",
+   "home_code": "5480000",
+   "pool_codes": [
+    "5480000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_geochang-gun",
+   "ranking_folder": "20261015144224_거창군_202510-202609_데이터랩_다운로드",
+   "home_code": "5470000",
+   "pool_codes": [
+    "5470000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_goseong-gun",
+   "ranking_folder": "20261015144547_고성군_202510-202609_데이터랩_다운로드",
+   "home_code": "5420000",
+   "pool_codes": [
+    "5420000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_haman-gun",
+   "ranking_folder": "20261015144734_함안군_202510-202609_데이터랩_다운로드",
+   "home_code": "5400000",
+   "pool_codes": [
+    "5400000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_namhae-gun",
+   "ranking_folder": "20261015144747_남해군_202510-202609_데이터랩_다운로드",
+   "home_code": "5430000",
+   "pool_codes": [
+    "5430000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_hadong-gun",
+   "ranking_folder": "20261015145009_하동군_202510-202609_데이터랩_다운로드",
+   "home_code": "5440000",
+   "pool_codes": [
+    "5440000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_miryang-si",
+   "ranking_folder": "20261015145051_밀양시_202510-202609_데이터랩_다운로드",
+   "home_code": "5360000",
+   "pool_codes": [
+    "5360000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_tongyeong-si",
+   "ranking_folder": "20261015145221_통영시_202510-202609_데이터랩_다운로드",
+   "home_code": "5330000",
+   "pool_codes": [
+    "5330000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_sacheon-si",
+   "ranking_folder": "20261015145236_사천시_202510-202609_데이터랩_다운로드",
+   "home_code": "5340000",
+   "pool_codes": [
+    "5340000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_changwon-si",
+   "ranking_folder": "20261015145446_창원시+진해구_202510-202609_데이터랩_다운로드",
+   "home_code": "5670000",
+   "pool_codes": [
+    "5670000"
+   ],
+   "gu": "진해구"
+  },
+  {
+   "region_folder": "48_gyeongnam/48_sancheong-gun",
+   "ranking_folder": "20261015145502_산청군_202510-202609_데이터랩_다운로드",
+   "home_code": "5450000",
+   "pool_codes": [
+    "5450000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_changwon-si",
+   "ranking_folder": "20261015145728_창원시+의창구_202510-202609_데이터랩_다운로드",
+   "home_code": "5670000",
+   "pool_codes": [
+    "5670000"
+   ],
+   "gu": "의창구"
+  },
+  {
+   "region_folder": "48_gyeongnam/48_yangsan-si",
+   "ranking_folder": "20261015145744_양산시_202510-202609_데이터랩_다운로드",
+   "home_code": "5380000",
+   "pool_codes": [
+    "5380000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_changwon-si",
+   "ranking_folder": "20261015145954_창원시+성산구_202510-202609_데이터랩_다운로드",
+   "home_code": "5670000",
+   "pool_codes": [
+    "5670000"
+   ],
+   "gu": "성산구"
+  },
+  {
+   "region_folder": "48_gyeongnam/48_uiryeong-gun",
+   "ranking_folder": "20261015150018_의령군_202510-202609_데이터랩_다운로드",
+   "home_code": "5390000",
+   "pool_codes": [
+    "5390000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_changwon-si",
+   "ranking_folder": "20261015150358_창원시+마산회원구_202510-202609_데이터랩_다운로드",
+   "home_code": "5670000",
+   "pool_codes": [
+    "5670000"
+   ],
+   "gu": "마산회원구"
+  },
+  {
+   "region_folder": "48_gyeongnam/48_jinju-si",
+   "ranking_folder": "20261015150418_진주시_202510-202609_데이터랩_다운로드",
+   "home_code": "5310000",
+   "pool_codes": [
+    "5310000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "48_gyeongnam/48_changwon-si",
+   "ranking_folder": "20261015151033_창원시+마산합포구_202510-202609_데이터랩_다운로드",
+   "home_code": "5670000",
+   "pool_codes": [
+    "5670000"
+   ],
+   "gu": "마산합포구"
+  },
+  {
+   "region_folder": "48_gyeongnam/48_changnyeong-gun",
+   "ranking_folder": "20261015151049_창녕군_202510-202609_데이터랩_다운로드",
+   "home_code": "5410000",
+   "pool_codes": [
+    "5410000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_gyeongsan-si",
+   "ranking_folder": "20261015151301_경산시_202510-202609_데이터랩_다운로드",
+   "home_code": "5130000",
+   "pool_codes": [
+    "5130000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_pohang-si",
+   "ranking_folder": "20261015151322_포항시+북구_202510-202609_데이터랩_다운로드",
+   "home_code": "5020000",
+   "pool_codes": [
+    "5020000"
+   ],
+   "gu": "북구"
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_gyeongju-si",
+   "ranking_folder": "20261015151450_경주시_202510-202609_데이터랩_다운로드",
+   "home_code": "5050000",
+   "pool_codes": [
+    "5050000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_pohang-si",
+   "ranking_folder": "20261015151540_포항시+남구_202510-202609_데이터랩_다운로드",
+   "home_code": "5020000",
+   "pool_codes": [
+    "5020000"
+   ],
+   "gu": "남구"
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_chilgok-gun",
+   "ranking_folder": "20261015151736_칠곡군_202510-202609_데이터랩_다운로드",
+   "home_code": "5220000",
+   "pool_codes": [
+    "5220000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_goryeong-gun",
+   "ranking_folder": "20261015151832_고령군_202510-202609_데이터랩_다운로드",
+   "home_code": "5200000",
+   "pool_codes": [
+    "5200000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_cheongsong-gun",
+   "ranking_folder": "20261015151906_청송군_202510-202609_데이터랩_다운로드",
+   "home_code": "5160000",
+   "pool_codes": [
+    "5160000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_gumi-si",
+   "ranking_folder": "20261015152001_구미시_202510-202609_데이터랩_다운로드",
+   "home_code": "5080000",
+   "pool_codes": [
+    "5080000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_cheongdo-gun",
+   "ranking_folder": "20261015152101_청도군_202510-202609_데이터랩_다운로드",
+   "home_code": "5190000",
+   "pool_codes": [
+    "5190000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_gimcheon-si",
+   "ranking_folder": "20261015152130_김천시_202510-202609_데이터랩_다운로드",
+   "home_code": "5060000",
+   "pool_codes": [
+    "5060000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_uiseong-gun",
+   "ranking_folder": "20261015152235_의성군_202510-202609_데이터랩_다운로드",
+   "home_code": "5150000",
+   "pool_codes": [
+    "5150000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_mungyeong-si",
+   "ranking_folder": "20261015152308_문경시_202510-202609_데이터랩_다운로드",
+   "home_code": "5120000",
+   "pool_codes": [
+    "5120000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_uljin-gun",
+   "ranking_folder": "20261015152417_울진군_202510-202609_데이터랩_다운로드",
+   "home_code": "5250000",
+   "pool_codes": [
+    "5250000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_bonghwa-gun",
+   "ranking_folder": "20261015152447_봉화군_202510-202609_데이터랩_다운로드",
+   "home_code": "5240000",
+   "pool_codes": [
+    "5240000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_sangju-si",
+   "ranking_folder": "20261015152642_상주시_202510-202609_데이터랩_다운로드",
+   "home_code": "5110000",
+   "pool_codes": [
+    "5110000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_ulleung-gun",
+   "ranking_folder": "20261015152716_울릉군_202510-202609_데이터랩_다운로드",
+   "home_code": "5260000",
+   "pool_codes": [
+    "5260000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_seongju-gun",
+   "ranking_folder": "20261015152931_성주군_202510-202609_데이터랩_다운로드",
+   "home_code": "5210000",
+   "pool_codes": [
+    "5210000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_yeongju-si",
+   "ranking_folder": "20261015152955_영주시_202510-202609_데이터랩_다운로드",
+   "home_code": "5090000",
+   "pool_codes": [
+    "5090000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_yeongyang-gun",
+   "ranking_folder": "20261015153055_영양군_202510-202609_데이터랩_다운로드",
+   "home_code": "5170000",
+   "pool_codes": [
+    "5170000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_yeongcheon-si",
+   "ranking_folder": "20261015153115_영천시_202510-202609_데이터랩_다운로드",
+   "home_code": "5100000",
+   "pool_codes": [
+    "5100000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_yeongdeok-gun",
+   "ranking_folder": "20261015153227_영덕군_202510-202609_데이터랩_다운로드",
+   "home_code": "5180000",
+   "pool_codes": [
+    "5180000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_yecheon-gun",
+   "ranking_folder": "20261015153310_예천군_202510-202609_데이터랩_다운로드",
+   "home_code": "5230000",
+   "pool_codes": [
+    "5230000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "47_gyeongbuk/47_andong-si",
+   "ranking_folder": "20261015153356_안동시_202510-202609_데이터랩_다운로드",
+   "home_code": "5070000",
+   "pool_codes": [
+    "5070000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_gangneung-si",
+   "ranking_folder": "20261015153648_강릉시_202510-202609_데이터랩_다운로드",
+   "home_code": "4201000",
+   "pool_codes": [
+    "4201000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_hoengseong-gun",
+   "ranking_folder": "20261015153755_횡성군_202510-202609_데이터랩_다운로드",
+   "home_code": "4261000",
+   "pool_codes": [
+    "4261000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_hwacheon-gun",
+   "ranking_folder": "20261015153954_화천군_202510-202609_데이터랩_다운로드",
+   "home_code": "4311000",
+   "pool_codes": [
+    "4311000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_goseong-gun",
+   "ranking_folder": "20261015154105_고성군_202510-202609_데이터랩_다운로드",
+   "home_code": "4341000",
+   "pool_codes": [
+    "4341000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_hongcheon-gun",
+   "ranking_folder": "20261015154220_홍천군_202510-202609_데이터랩_다운로드",
+   "home_code": "4251000",
+   "pool_codes": [
+    "4251000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_donghae-si",
+   "ranking_folder": "20261015154341_동해시_202510-202609_데이터랩_다운로드",
+   "home_code": "4211000",
+   "pool_codes": [
+    "4211000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_chuncheon-si",
+   "ranking_folder": "20261015154447_춘천시_202510-202609_데이터랩_다운로드",
+   "home_code": "4181000",
+   "pool_codes": [
+    "4181000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_yanggu-gun",
+   "ranking_folder": "20261015154625_양구군_202510-202609_데이터랩_다운로드",
+   "home_code": "4321000",
+   "pool_codes": [
+    "4321000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_taebaek-si",
+   "ranking_folder": "20261015154710_태백시_202510-202609_데이터랩_다운로드",
+   "home_code": "4221000",
+   "pool_codes": [
+    "4221000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_wonju-si",
+   "ranking_folder": "20261015160353_원주시_202510-202609_데이터랩_다운로드",
+   "home_code": "4191000",
+   "pool_codes": [
+    "4191000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_pyeongchang-gun",
+   "ranking_folder": "20261015160509_평창군_202510-202609_데이터랩_다운로드",
+   "home_code": "4281000",
+   "pool_codes": [
+    "4281000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_yeongwol-gun",
+   "ranking_folder": "20261015160557_영월군_202510-202609_데이터랩_다운로드",
+   "home_code": "4271000",
+   "pool_codes": [
+    "4271000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_cheorwon-gun",
+   "ranking_folder": "20261015160651_철원군_202510-202609_데이터랩_다운로드",
+   "home_code": "4301000",
+   "pool_codes": [
+    "4301000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_yangyang-gun",
+   "ranking_folder": "20261015160749_양양군_202510-202609_데이터랩_다운로드",
+   "home_code": "4351000",
+   "pool_codes": [
+    "4351000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_jeongseon-gun",
+   "ranking_folder": "20261015160851_정선군_202510-202609_데이터랩_다운로드",
+   "home_code": "4291000",
+   "pool_codes": [
+    "4291000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "42_gangwon/42_inje-gun",
+   "ranking_folder": "20261015160932_인제군_202510-202609_데이터랩_다운로드",
+   "home_code": "4331000",
+   "pool_codes": [
+    "4331000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_haenam-gun",
+   "ranking_folder": "20261015161903_해남군_202510-202609_데이터랩_다운로드",
+   "home_code": "5870000",
+   "pool_codes": [
+    "5870000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_yeongam-gun",
+   "ranking_folder": "20261015162117_영암군_202510-202609_데이터랩_다운로드",
+   "home_code": "5875000",
+   "pool_codes": [
+    "5875000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_muan-gun",
+   "ranking_folder": "20261015162244_무안군_202510-202609_데이터랩_다운로드",
+   "home_code": "5880000",
+   "pool_codes": [
+    "5880000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_hampyeong-gun",
+   "ranking_folder": "20261015162410_함평군_202510-202609_데이터랩_다운로드",
+   "home_code": "5885000",
+   "pool_codes": [
+    "5885000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_yeonggwang-gun",
+   "ranking_folder": "20261015162540_영광군_202510-202609_데이터랩_다운로드",
+   "home_code": "5890000",
+   "pool_codes": [
+    "5890000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_jangseong-gun",
+   "ranking_folder": "20261015162707_장성군_202510-202609_데이터랩_다운로드",
+   "home_code": "5895000",
+   "pool_codes": [
+    "5895000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_wando-gun",
+   "ranking_folder": "20261015162830_완도군_202510-202609_데이터랩_다운로드",
+   "home_code": "5900000",
+   "pool_codes": [
+    "5900000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "46_jeonnam/46_sinan-gun",
+   "ranking_folder": "20261015163010_신안군_202510-202609_데이터랩_다운로드",
+   "home_code": "5910000",
+   "pool_codes": [
+    "5910000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_hwaseong-si",
+   "ranking_folder": "20261015163309_화성시+만세구_202602-202609_데이터랩_다운로드",
+   "home_code": "5530000",
+   "pool_codes": [
+    "5530000"
+   ],
+   "gu": "만세구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_hwaseong-si",
+   "ranking_folder": "20261015163427_화성시+병점구_202602-202609_데이터랩_다운로드",
+   "home_code": "5530000",
+   "pool_codes": [
+    "5530000"
+   ],
+   "gu": "병점구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_hwaseong-si",
+   "ranking_folder": "20261015163629_화성시+효행구_202602-202609_데이터랩_다운로드",
+   "home_code": "5530000",
+   "pool_codes": [
+    "5530000"
+   ],
+   "gu": "효행구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_bucheon-si",
+   "ranking_folder": "20261015165327_부천시+소사구_202510-202609_데이터랩_다운로드",
+   "home_code": "3860000",
+   "pool_codes": [
+    "3860000"
+   ],
+   "gu": "소사구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_bucheon-si",
+   "ranking_folder": "20261015165518_부천시+오정구_202510-202609_데이터랩_다운로드",
+   "home_code": "3860000",
+   "pool_codes": [
+    "3860000"
+   ],
+   "gu": "오정구"
+  },
+  {
+   "region_folder": "48_gyeongnam/48_hamyang-gun",
+   "ranking_folder": "20261015165609_함양군_202510-202609_데이터랩_다운로드",
+   "home_code": "5460000",
+   "pool_codes": [
+    "5460000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "41_gyeonggi/41_bucheon-si",
+   "ranking_folder": "20261015165749_부천시+원미구_202510-202609_데이터랩_다운로드",
+   "home_code": "3860000",
+   "pool_codes": [
+    "3860000"
+   ],
+   "gu": "원미구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_suwon-si",
+   "ranking_folder": "20261015170040_수원시+영통구_202510-202609_데이터랩_다운로드",
+   "home_code": "3740000",
+   "pool_codes": [
+    "3740000"
+   ],
+   "gu": "영통구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_seongnam-si",
+   "ranking_folder": "20261015170051_성남시+수정구_202510-202609_데이터랩_다운로드",
+   "home_code": "3780000",
+   "pool_codes": [
+    "3780000"
+   ],
+   "gu": "수정구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_suwon-si",
+   "ranking_folder": "20261015170334_수원시+권선구_202510-202609_데이터랩_다운로드",
+   "home_code": "3740000",
+   "pool_codes": [
+    "3740000"
+   ],
+   "gu": "권선구"
+  },
+  {
+   "region_folder": "41_gyeonggi/41_seongnam-si",
+   "ranking_folder": "20261015170335_성남시+중원구_202510-202609_데이터랩_다운로드",
+   "home_code": "3780000",
+   "pool_codes": [
+    "3780000"
+   ],
+   "gu": "중원구"
+  },
+  {
+   "region_folder": "29_gwangju/29_nam-gu",
+   "ranking_folder": "20261015170630_남구_202510-202609_데이터랩_다운로드",
+   "home_code": "5815000",
+   "pool_codes": [
+    "5815000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "29_gwangju/29_dong-gu",
+   "ranking_folder": "20261015170641_동구_202510-202609_데이터랩_다운로드",
+   "home_code": "5805000",
+   "pool_codes": [
+    "5805000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "29_gwangju/29_buk-gu",
+   "ranking_folder": "20261015170925_북구_202510-202609_데이터랩_다운로드",
+   "home_code": "5820000",
+   "pool_codes": [
+    "5820000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "29_gwangju/29_seo-gu",
+   "ranking_folder": "20261015170937_서구_202510-202609_데이터랩_다운로드",
+   "home_code": "5810000",
+   "pool_codes": [
+    "5810000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_geomdan-gu",
+   "ranking_folder": "20261015171201_검단구_202607-202609_데이터랩_다운로드",
+   "home_code": "3565000",
+   "pool_codes": [
+    "3565000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_seohae-gu",
+   "ranking_folder": "20261015171209_서해구_202607-202609_데이터랩_다운로드",
+   "home_code": "3561000",
+   "pool_codes": [
+    "3561000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_yeongjong-gu",
+   "ranking_folder": "20261015171308_영종구_202607-202609_데이터랩_다운로드",
+   "home_code": "3491000",
+   "pool_codes": [
+    "3491000"
+   ],
+   "gu": ""
+  },
+  {
+   "region_folder": "28_incheon/28_jemulpo-gu",
+   "ranking_folder": "20261015171318_제물포구_202607-202609_데이터랩_다운로드",
+   "home_code": "3501000",
+   "pool_codes": [
+    "3501000"
+   ],
+   "gu": ""
+  }
+ ]
+}
