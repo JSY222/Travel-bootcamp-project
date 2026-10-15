@@ -201,6 +201,9 @@ const map = L.map('map', {
   minZoom: 6,
   maxZoom: 18,
   zoomSnap: .25,
+  zoomAnimation: false,
+  markerZoomAnimation: false,
+  fadeAnimation: false,
   maxBoundsViscosity: 1.0
 }).setView([36.7, 128.3], 7.5);
 L.control.zoom({position: 'bottomright'}).addTo(map);
@@ -444,6 +447,7 @@ function decorativeRegionCopy(path) {
   return copy;
 }
 function liftRegion(layer) {
+  if (state.selectedCity) { clearRegionLift(); return; }
   if (liftedRegion === layer) return;
   clearRegionLift();
   const path = layer.getElement();
@@ -865,7 +869,7 @@ function popupContent(p) {
   if (/^https?:\/\//.test(p.location_url || '')) {
     const a = document.createElement('a');
     a.className = 'popup-link'; a.href = p.location_url; a.target = '_blank';
-    a.rel = 'noopener noreferrer'; a.textContent = '위치 지도 열기 ↗';
+    a.rel = 'noopener noreferrer'; a.textContent = p.latitude == null || p.longitude == null ? '원문 정보 열기 ↗' : '위치 지도 열기 ↗';
     wrap.appendChild(a);
   }
   if (p.id != null) {
@@ -929,7 +933,10 @@ function shortPlaceLabel(title) {
   return label;
 }
 function makeMarker(p, i) {
-  const marker = L.marker(p._displayPosition || (p.latitude != null && p.longitude != null ? displayLatLng(p.latitude, p.longitude) : map.getCenter()), {icon: landmarkIcon(p, i),
+  const exact = p.latitude != null && p.longitude != null;
+  const position = state.selectedCity ? p._displayPosition : exact ? displayLatLng(p.latitude, p.longitude) : null;
+  if (!position) return null;
+  const marker = L.marker(position, {icon: landmarkIcon(p, i),
     title: `${p.title}${window.CityVisits.has(p) ? ' · 방문 완료' : ''}`});
   marker.visitPlace = p;
   marker.bindTooltip(shortPlaceLabel(p.title),{permanent:true,direction:'bottom',offset:[0,24],className:'location-name-tag'});
@@ -967,11 +974,16 @@ function renderCards(places, markers, rankings = []) {
     card.append(favorite);
     if (/^https?:\/\//.test(p.location_url || '')) {
       const a = document.createElement('a'); a.textContent = '지도에서 위치 확인 ↗';
+      if (p.latitude == null || p.longitude == null) a.textContent = '원문 정보 보기 ↗';
       a.href = p.location_url; a.target = '_blank'; a.rel = 'noopener noreferrer';
       a.addEventListener('click', e => e.stopPropagation());
       card.append(a);
     }
     card.addEventListener('click', () => {
+      if (!markers[i]) {
+        toast('정확한 위치 정보가 없는 장소입니다. 원문 정보를 확인해 주세요.');
+        return;
+      }
       if (!state.favoritesMode && !state.selectedCity) map.flyTo(displayLatLng(p.latitude, p.longitude), Math.max(map.getZoom(), 12));
       markers[i].openPopup();
     });
@@ -1005,6 +1017,56 @@ function renderCards(places, markers, rankings = []) {
   }
 }
 
+function renderLandmarkBatch(allPlaces, allRankings = [], page = 0) {
+  state.markerLayer.clearLayers();
+  rankingMarkers.clearLayers();
+  const city = Boolean(state.selectedCity);
+  const bounds = city && state.geoLayer ? map.latLngToContainerPoint(state.geoLayer.getBounds().getNorthEast()).subtract(map.latLngToContainerPoint(state.geoLayer.getBounds().getSouthWest())) : null;
+  let budget = city ? Math.max(1, Math.min(28, Math.floor(Math.abs((bounds?.x || 600) * (bounds?.y || 600)) / 26000))) : 40;
+  const positions = city ? scatterInCity(budget) : [];
+  if (city) budget = positions.length;
+  const visible = allPlaces.filter(p => city || (p.latitude != null && p.longitude != null));
+  const ordered = items => {
+    const groups = new Map();
+    items.forEach(item => {
+      const key = `${item.place.region_code}/${item.place.locality_name || ''}`;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(item);
+    });
+    const queues = [...groups.values()], result = [];
+    for (let i = 0; result.length < items.length; i++) queues.forEach(q => { if (q[i]) result.push(q[i]); });
+    return result;
+  };
+  const groups = Object.fromEntries(['tourism','event','food'].map(kind => [kind, ordered([
+    ...visible.filter(p => p.category === kind).map(place => ({place, ranking:false})),
+    ...(kind === 'food' ? allRankings.filter(p => city || (p.latitude != null && p.longitude != null)).map(place => ({place, ranking:true})) : [])
+  ])]));
+  const weights = {tourism: .5, event: .3, food: .2}, used = {tourism:0,event:0,food:0}, kinds = [];
+  while (kinds.length < budget) {
+    const available = Object.keys(groups).filter(kind => used[kind] < groups[kind].length);
+    if (!available.length) break;
+    available.sort((a,b) => (used[a]+1)/weights[a] - (used[b]+1)/weights[b]);
+    kinds.push(available[0]); used[available[0]]++;
+  }
+  const offsets = {tourism:0,event:0,food:0};
+  const selected = kinds.map(kind => groups[kind][(page * used[kind] + offsets[kind]++) % groups[kind].length]);
+  selected.forEach((item,i) => { if (city) item.place._displayPosition = positions[i]; });
+  const places = selected.filter(item => !item.ranking).map(item => item.place);
+  const rankings = selected.filter(item => item.ranking).map(item => item.place);
+  const markers = places.map((place,index) => makeMarker(place,index));
+  markers.filter(Boolean).forEach(marker => state.markerLayer.addLayer(marker));
+  renderCards(places,markers,rankings);
+  renderRankingMarkers(rankings);
+  const total = allPlaces.length + allRankings.length;
+  $('#resultCount').textContent = `${selected.length} / ${total}`;
+  if (total > selected.length) {
+    const more = document.createElement('button');
+    more.type = 'button'; more.className = 'filter'; more.textContent = '다른 장소 보기';
+    more.addEventListener('click', () => renderLandmarkBatch(allPlaces,allRankings,page+1));
+    $('#landmarkList').append(more);
+  }
+}
+
 async function loadLandmarks(nationwide = false) {
   if (!nationwide && (!state.selectedCity || !state.selectedRegion)) return;
   const token = ++state.fetchToken;
@@ -1023,15 +1085,7 @@ async function loadLandmarks(nationwide = false) {
     if (token !== state.fetchToken) return;
     hideToast();
     const places = data.landmarks;
-    if (!nationwide && state.selectedCity) {
-      const ranking=data.food_rankings||[],positions=scatterInCity(places.length+ranking.length);
-      places.forEach((p,i)=>{p._displayPosition=positions[i];});
-      ranking.forEach((p,i)=>{p._displayPosition=positions[places.length+i];});
-    }
-    const markers = places.map((p, i) => makeMarker(p, i));
-    markers.forEach(marker => state.markerLayer.addLayer(marker));
-    renderCards(places, markers, data.food_rankings || []);
-    renderRankingMarkers(data.food_rankings || []);
+    renderLandmarkBatch(places, data.food_rankings || []);
     if (!nationwide) setTimeout(()=>{if(token===state.fetchToken)$('#mapTip').textContent='태그는 해당 시·군·구 안에 임의 배치한 정보이며 실제 위치가 아닙니다.';},0);
     const area = nationwide ? '전국' : state.selectedCity.properties.displayName;
     $('#mapTip').textContent = `${area} · 장소 ${places.length}곳 · 맛집 순위 ${(data.food_rankings || []).length}곳`;
@@ -1064,7 +1118,7 @@ async function showFavorites() {
     $('#filters').classList.add('hidden');
     updateStep('★', '즐겨찾기 장소', `${places.length}곳의 여행지를 모았어요`);
     const markers = places.map((place, index) => makeMarker(place, index));
-    markers.forEach(marker => state.markerLayer.addLayer(marker));
+    markers.filter(Boolean).forEach(marker => state.markerLayer.addLayer(marker));
     renderCards(places, markers);
     $('#placesDrawer').open = false;
     $('#placesDrawer summary span').textContent = '저장한 즐겨찾기 펼쳐보기';
@@ -1076,7 +1130,7 @@ async function showFavorites() {
       const heading = document.createElement('summary');heading.textContent=`나머지 ${places.length-5}곳 더 펼쳐보기`;
       more.append(heading,...cards.slice(5));container.append(more);
     }
-    if (!markers.length) {
+    if (!places.length) {
       $('#landmarkList').textContent = '아직 즐겨찾기가 없습니다. 장소 정보에서 ☆ 즐겨찾기 등록을 눌러 주세요.';
     }
     $('#mapTip').textContent = `★ 즐겨찾기 ${places.length}곳만 표시하고 있어요`;
@@ -1150,9 +1204,7 @@ $('#filters').addEventListener('click', e => {
     Promise.all([fetchJSON(`/api/landmarks?scope=all&category=${category}`), window.CityVisits.ready]).then(([data]) => {
       if (request !== state.fetchToken) return;
       const places = data.landmarks.filter(place => String(place.region_code) === String(region.code));
-      const markers = places.map((place,index) => makeMarker(place,index));
-      markers.forEach(marker => state.markerLayer.addLayer(marker));
-      renderCards(places,markers);
+      renderLandmarkBatch(places);
       $('#selectedName').textContent = `${region.name} ${category === 'all' ? '여행 장소' : CATEGORIES[category].label}`;
       $('#selectedCard').classList.remove('hidden');
       $('#placesDrawer').classList.remove('hidden');

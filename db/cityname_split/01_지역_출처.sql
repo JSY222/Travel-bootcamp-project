@@ -1,4 +1,4 @@
-﻿-- 지역 관련 데이터 및 데이터 출처(원본 값 유지)
+-- 지역 관련 데이터 및 데이터 출처(원본 값 유지)
 USE `cityname`;
 
 -- Data: regions
@@ -283,3 +283,37 @@ INSERT INTO `data_sources` (`id`, `name`, `source_url`, `provider`, `license_not
 (3, '전국공연행사정보표준데이터', 'https://www.data.go.kr/data/15013106/standard.do', '공공데이터포털/지방자치단체', '공공데이터포털 이용조건', '2026-10-12'),
 (4, 'Visit Seoul 맛집 목록', 'https://korean.visitseoul.net/restaurants?curPage=2', '서울관광재단', '원문 출처 표시', '2026-10-12'),
 (5, '전국지역특화거리표준데이터', 'https://www.data.go.kr/data/15017322/standard.do', '공공데이터포털/지방자치단체', '공공데이터포털 이용조건', '2026-10-12');
+
+-- 관광지·행사에서 참조하는 추가 지역 및 출처
+INSERT INTO `regions` (`id`,`name`,`official_name`,`region_type`,`default_zoom`) VALUES
+(15, '대전광역시', '대전광역시', '광역시', '9.5'),
+(16, '울산광역시', '울산광역시', '광역시', '9.5'),
+(17, '세종특별자치시', '세종특별자치시', '특별자치시', '9.5');
+INSERT INTO `administrative_divisions` (`id`,`region_id`,`name`,`division_type`,`admin_code`,`center_latitude`,`center_longitude`,`geojson`,`is_current`) VALUES
+(222, 16, '울주군', '군', NULL, NULL, NULL, NULL, 1),
+(223, 15, '서구', '구', NULL, NULL, NULL, NULL, 1),
+(224, 15, '대덕구', '구', NULL, NULL, NULL, NULL, 1),
+(225, 15, '유성구', '구', NULL, NULL, NULL, NULL, 1),
+(226, 15, '중구', '구', NULL, NULL, NULL, NULL, 1),
+(227, 16, '북구', '구', NULL, NULL, NULL, NULL, 1),
+(228, 16, '동구', '구', NULL, NULL, NULL, NULL, 1),
+(229, 16, '중구', '구', NULL, NULL, NULL, NULL, 1),
+(230, 16, '남구', '구', NULL, NULL, NULL, NULL, 1),
+(231, 17, '세종특별자치시', '시', NULL, NULL, NULL, NULL, 1),
+(232, 15, '동구', '구', NULL, NULL, NULL, NULL, 1);
+INSERT INTO `data_sources` (`id`,`name`,`source_url`,`provider`,`license_note`,`retrieved_at`) VALUES
+(8, '서울특별시 관광 명소', 'https://www.data.go.kr/data/15083933/fileData.do', '서울특별시/서울관광재단', '공공누리 제1유형: 출처표시', '2026-10-15'),
+(9, '서울특별시 관광 자연', 'https://www.data.go.kr/data/15083935/fileData.do', '서울특별시/서울관광재단', '공공누리 제1유형: 출처표시', '2026-10-15'),
+(10, '서울특별시 관광 쇼핑', 'https://www.data.go.kr/data/15083934/fileData.do', '서울특별시/서울관광재단', '공공누리 제1유형: 출처표시', '2026-10-15'),
+(11, '전국길관광정보표준데이터', 'https://www.data.go.kr/data/15017321/standard.do', '공공데이터포털/지방자치단체', '공공데이터포털 이용조건', '2026-10-15'),
+(12, '전국시티투어정보표준데이터', 'https://www.data.go.kr/data/15025456/standard.do', '공공데이터포털/지방자치단체', '공공데이터포털 이용조건', '2026-10-15');
+
+-- 2026-10-15 게임·서브컬처·팝업 행사 19건 추가
+INSERT INTO `data_sources` (`id`,`name`,`source_url`,`provider`,`license_note`,`retrieved_at`) VALUES
+(13, '게임·서브컬처 주최사 공식 행사 일정', 'https://www.agfkorea.com/event?idx=1', '개별 행사 주최사', '행사명·기간·장소 및 출처 링크 기록', '2026-10-15'),
+(14, '코믹월드 서브컬처 행사캘린더', 'https://comicw.net/c', '코믹월드 행사캘린더', '일정 확인 출처와 개별 주최사 링크를 details_json에 구분 기록', '2026-10-15'),
+(15, 'RE:CAL 팝업·콜라보 행사일정', 'https://recal.kr/ko/c/offline', 'RE:CAL', '일정 확인 출처와 공식 SNS 링크를 구분 기록. 공식 원문 직접 확인 제한은 details_json에 명시', '2026-10-15');
+
+-- 다양한 분야 행사 보강 출처
+INSERT INTO `data_sources` (`id`,`name`,`source_url`,`provider`,`license_note`,`retrieved_at`) VALUES
+(16, '다양한 분야 주최사·행사장 공개 일정', 'https://www.setec.or.kr/front/schedule/list.do', '개별 주최사·행사장·공공기관', '행사명·기간·장소 및 출처 링크 기록. 확인 방법과 관람 조건은 각 행사의 details_json 참조', '2026-10-15');

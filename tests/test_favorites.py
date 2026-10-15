@@ -68,6 +68,21 @@ class FavoritesTests(unittest.TestCase):
         self.assertIn('DELETE FROM member_favorites WHERE member_id=%s', sql)
         self.assertEqual(args, (7, 'tourism', 4))
 
+    def test_coordinate_free_places_remain_in_favorites(self):
+        self.login()
+        for category in ['tourism', 'event']:
+            with self.subTest(category=category):
+                self.cur.fetchall.side_effect = [
+                    [dict(id=4, title='Place', description='Info', latitude=None, longitude=None,
+                          location_url='https://example.com', source_name='Source', locality_name='City')]
+                    if kind == category else [] for kind in ['tourism', 'food', 'event']
+                ] + [[]]
+                response = self.client.get('/api/favorites')
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.json['landmarks'][0]['category'], category)
+                self.assertIsNone(response.json['landmarks'][0]['latitude'])
+                self.assertIsNone(response.json['landmarks'][0]['longitude'])
+
     def test_list_joins_live_places_and_separates_categories(self):
         self.login()
         self.cur.fetchall.side_effect = [

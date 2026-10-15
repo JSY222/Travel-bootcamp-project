@@ -39,8 +39,8 @@ def register_favorite_routes(app, db_config, tables, auth_payload):
                                     (session['member_id'], category))
                         for row in cur.fetchall():
                             row['category'] = category
-                            row['latitude'] = float(row['latitude'])
-                            row['longitude'] = float(row['longitude'])
+                            row['latitude'] = float(row['latitude']) if row['latitude'] is not None else None
+                            row['longitude'] = float(row['longitude']) if row['longitude'] is not None else None
                             places.append(row)
                     cur.execute("SELECT landmark_id FROM member_favorites WHERE member_id=%s AND category='food' AND landmark_id>=1000000000000", (session['member_id'],))
                     rank_ids = {row['landmark_id'] for row in cur.fetchall()}
