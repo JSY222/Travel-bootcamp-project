@@ -197,6 +197,9 @@ function smoothDisplayFeature(feature, detailed = false) {
 // 따라서 중국·일본 등 외국의 지형이나 도시가 보이지 않습니다.
 const map = L.map('map', {
   zoomControl: false,
+  zoomAnimation: false,
+  markerZoomAnimation: false,
+  fadeAnimation: false,
   preferCanvas: false,
   minZoom: 6,
   maxZoom: 18,
@@ -212,20 +215,27 @@ map.getPane('selectedRelief').style.zIndex = '410';
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let clearRegionLift = () => {};
 let liftedRegion = null;
-map.on('zoomstart', () => clearRegionLift());
-// Filtered polygons must keep their complete outlines. Viewport clipping creates
-// artificial edges that the relief filter turns into visible walls on zoom.
 map.on('zoomstart', () => map.getContainer().classList.add('map-zooming'));
 map.on('zoomend', () => {
   map.getContainer().classList.remove('map-zooming');
 });
+let mapViewChanging = false;
+map.on('movestart zoomstart', () => {
+  mapViewChanging = true;
+  clearRegionLift();
+});
+map.on('moveend zoomend', () => {
+  mapViewChanging = false;
+  clearRegionLift();
+});
+map.on('viewreset resize', () => clearRegionLift());
 
 const state = {
   regions: [], provinceFeatures: [], districtFeatures: [],
   selectedRegion: null, selectedCity: null, selectedCategory: 'all',
   geoLayer: null, countryLayer: null, markerLayer: L.layerGroup().addTo(map),
   islandLabelLayer: L.layerGroup().addTo(map),
-  cityFeatures: [], fetchToken: 0
+  cityFeatures: [], fetchToken: 0, landmarkData: null, placePage: 0
 };
 
 async function fetchJSON(url) {
@@ -264,6 +274,9 @@ function clearMap() {
   map.stop();
   map.getContainer().classList.remove('map-zooming');
   map.closePopup();
+  state.landmarkData = null;
+  state.placePage = 0;
+  state.focusedRanking = null;
   if (cityWatermark) { map.removeLayer(cityWatermark); cityWatermark = null; }
   rankingMarkers.clearLayers();
   rankingMarkersByPoi.clear();
@@ -444,6 +457,12 @@ function decorativeRegionCopy(path) {
   return copy;
 }
 function liftRegion(layer) {
+  // A cloned SVG path does not follow Leaflet's later path reprojection.
+  // The selected city is already highlighted and does not need a hover copy.
+  if (state.selectedCity || mapViewChanging) {
+    clearRegionLift();
+    return;
+  }
   if (liftedRegion === layer) return;
   clearRegionLift();
   const path = layer.getElement();
@@ -865,7 +884,8 @@ function popupContent(p) {
   if (/^https?:\/\//.test(p.location_url || '')) {
     const a = document.createElement('a');
     a.className = 'popup-link'; a.href = p.location_url; a.target = '_blank';
-    a.rel = 'noopener noreferrer'; a.textContent = '위치 지도 열기 ↗';
+    a.rel = 'noopener noreferrer';
+    a.textContent = p.latitude==null||p.longitude==null?'원문 정보 열기 ↗':'위치 지도 열기 ↗';
     wrap.appendChild(a);
   }
   if (p.id != null) {
@@ -886,10 +906,18 @@ function landmarkIcon(p, i = 0) {
     className: 'category-tag-marker', iconSize: [48, 48], iconAnchor: [24, 24]
   });
 }
+function displayedCityPolygons() {
+  const polygons=[];
+  if(state.selectedCity)state.geoLayer?.eachLayer(layer=>{
+    if(layer.feature?.geometry)polygons.push(...asPolygons(layer.feature.geometry));
+  });
+  return polygons;
+}
+
 function scatterInCity(count) {
-  if (!count || !state.selectedCity) return [];
-  const rendered = smoothDisplayFeature(state.selectedCity, true);
-  const polygons=asPolygons(rendered.geometry);
+  if (!count || !state.selectedCity || map._animatingZoom) return [];
+  const polygons=displayedCityPolygons();
+  if(!polygons.length)return [];
   const points=polygons.flat(2),xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);
   const west=Math.min(...xs),east=Math.max(...xs),south=Math.min(...ys),north=Math.max(...ys);
   function contains(x,y,r) {
@@ -902,25 +930,220 @@ function scatterInCity(count) {
   }
   const candidates=[];
   const inside=(x,y)=>polygons.some(p=>contains(x,y,p[0])&&!p.slice(1).some(r=>contains(x,y,r)));
-  const zoom=map.getZoom();
-  for(let n=0;n<12000&&candidates.length<Math.max(200,count*8);n++) {
-    const x=west+Math.random()*(east-west),y=south+Math.random()*(north-south);
+  const zoom=map.getZoom(),size=map.getSize();
+  const sidebar=document.querySelector('.app-shell').classList.contains('sidebar-open')
+    ? document.getElementById('travelSidebar').getBoundingClientRect().width : 0;
+  const nw=map.containerPointToLatLng([sidebar+56,60]);
+  const se=map.containerPointToLatLng([size.x-56,size.y-110]);
+  const viewWest=Math.max(west,nw.lng),viewEast=Math.min(east,se.lng);
+  const viewSouth=Math.max(south,se.lat),viewNorth=Math.min(north,nw.lat);
+  if(viewEast<=viewWest||viewNorth<=viewSouth)return [];
+  const footprint=[];
+  for(let dx=-54;dx<=54;dx+=18)footprint.push([dx,-48],[dx,68]);
+  for(let dy=-48;dy<=68;dy+=20)footprint.push([-54,dy],[54,dy]);
+  const mapRect=map.getContainer().getBoundingClientRect();
+  const paths=[];
+  state.geoLayer.eachLayer(layer=>{
+    const path=layer.getElement?.(),matrix=path?.getScreenCTM?.();
+    if(matrix&&path.isPointInFill)paths.push({path,inverse:matrix.inverse()});
+  });
+  let seed=731;
+  const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+  for(let n=0;n<4000&&candidates.length<Math.max(120,count*12);n++) {
+    const x=viewWest+random()*(viewEast-viewWest),y=viewSouth+random()*(viewNorth-viewSouth);
     if(!inside(x,y))continue;
     const pixel=map.project(L.latLng(y,x),zoom);
-    const fits=[[-44,-20],[0,-20],[44,-20],[-44,0],[44,0],[-44,20],[0,20],[44,20]].every(([dx,dy])=>{
-      const p=map.unproject(pixel.add(L.point(dx,dy)),zoom);return inside(p.lng,p.lat);
+    const screen=map.latLngToContainerPoint([y,x]);
+    if(screen.x<sidebar+56||screen.x>size.x-56||screen.y<60||screen.y>size.y-110)continue;
+    const fits=footprint.every(([dx,dy])=>{
+      const p=map.unproject(pixel.add(L.point(dx,dy)),zoom);
+      if(!inside(p.lng,p.lat))return false;
+      const point=new DOMPoint(mapRect.left+screen.x+dx,mapRect.top+screen.y+dy);
+      return !paths.length||paths.some(({path,inverse})=>path.isPointInFill(point.matrixTransform(inverse)));
     });
-    if(fits)candidates.push({x,y,d:Infinity});
+    if(fits)candidates.push({x,y,pixel,d:Infinity});
   }
   const result=[];
   while(result.length<count&&candidates.length) {
     let best=0;
     for(let i=1;i<candidates.length;i++)if(candidates[i].d>candidates[best].d)best=i;
     const p=candidates.splice(best,1)[0];result.push(L.latLng(p.y,p.x));
-    candidates.forEach(c=>{c.d=Math.min(c.d,((c.x-p.x)/(east-west))**2+((c.y-p.y)/(north-south))**2);});
+    for(let i=candidates.length-1;i>=0;i--) {
+      const c=candidates[i],dx=c.pixel.x-p.pixel.x,dy=c.pixel.y-p.pixel.y;
+      if(Math.abs(dx)<110&&Math.abs(dy)<120)candidates.splice(i,1);
+      else c.d=Math.min(c.d,dx*dx+dy*dy);
+    }
   }
   return result;
 }
+
+function markerBudget() {
+  const size=map.getSize();
+  let area=size.x*size.y*.6;
+  if(state.selectedCity) {
+    const polygons=displayedCityPolygons();
+    const ringArea=ring=>{
+      const points=ring.map(([lng,lat])=>map.latLngToContainerPoint([lat,lng]));
+      return Math.abs(points.reduce((sum,p,i)=>{
+        const q=points[(i+1)%points.length];return sum+p.x*q.y-q.x*p.y;
+      },0))/2;
+    };
+    area=Math.min(area,polygons.reduce((sum,p)=>sum+ringArea(p[0])-p.slice(1).reduce((holes,r)=>holes+ringArea(r),0),0));
+  }
+  return Math.max(4,Math.min(state.selectedCity?28:40,Math.floor(area/18000)));
+}
+
+// Category quotas prevent a large restaurant dataset from hiding other places.
+function sampleMapPlaces(places,rankings,budget,page=0) {
+  if(budget<=0)return [];
+  const groups={tourism:[],food:[],event:[]},weights={tourism:.5,food:.2,event:.3};
+  const rankedIds=new Set(rankings.map(p=>p.landmark_id).filter(id=>id!=null));
+  for(const p of places) {
+    if(p.category==='food'&&rankedIds.has(p.id))continue;
+    groups[p.category].push({place:p,ranking:false});
+  }
+  for(const p of rankings)groups.food.push({place:p,ranking:true});
+  // Round-robin localities also keeps province/nationwide views balanced.
+  for(const category of Object.keys(groups)) {
+    const localities=new Map();
+    for(const item of groups[category]) {
+      const key=`${item.place.region_code||''}|${item.place.locality_name||''}`;
+      if(!localities.has(key))localities.set(key,[]);
+      localities.get(key).push(item);
+    }
+    const lists=[...localities.values()],ordered=[];
+    for(let i=0;ordered.length<groups[category].length;i++) {
+      for(const list of lists)if(i<list.length)ordered.push(list[i]);
+    }
+    groups[category]=ordered;
+  }
+  const used={tourism:0,food:0,event:0},categories=[];
+  while(categories.length<budget) {
+    const available=Object.keys(groups).filter(c=>used[c]<groups[c].length);
+    if(!available.length)break;
+    const category=available.reduce((best,c)=>used[c]/weights[c]<used[best]/weights[best]?c:best);
+    categories.push(category);
+    used[category]++;
+  }
+  const offsets={tourism:0,food:0,event:0};
+  const selected=categories.map(category=>{
+    const pool=groups[category];
+    return pool[(page*used[category]+offsets[category]++)%pool.length];
+  });
+  if(state.focusedRanking) {
+    const focused=rankings.find(p=>p.poi_id===state.focusedRanking);
+    if(focused&&!selected.some(item=>item.ranking&&item.place.poi_id===focused.poi_id)) {
+      if(selected.length===budget)selected.pop();
+      selected.unshift({place:focused,ranking:true});
+    }
+  }
+  return selected;
+}
+
+function cityMarkerBoundary() {
+  if(!state.selectedCity)return ()=>true;
+  const paths=[];
+  state.geoLayer?.eachLayer(layer=>{
+    const path=layer.getElement?.(),matrix=path?.getScreenCTM?.();
+    if(matrix&&path.isPointInFill)paths.push({path,inverse:matrix.inverse()});
+  });
+  const inside=(x,y)=>paths.some(({path,inverse})=>
+    path.isPointInFill(new DOMPoint(x,y).matrixTransform(inverse)));
+  return marker=>{
+    const icon=marker.getElement()?.querySelector('.category-location-tag');
+    if(!icon||!paths.length)return false;
+    const elements=[icon,marker.getTooltip()?.getElement()].filter(Boolean);
+    return elements.every(element=>{
+      const r=element.getBoundingClientRect();
+      if(!r.width||!r.height)return false;
+      const columns=Math.ceil(r.width/12),rows=Math.ceil(r.height/12);
+      for(let x=0;x<=columns;x++)for(let y=0;y<=rows;y++) {
+        if(!inside(r.left+r.width*x/columns,r.top+r.height*y/rows))return false;
+      }
+      return true;
+    });
+  };
+}
+
+function renderMapPlaces() {
+  const data=state.landmarkData;
+  if(!data||state.favoritesMode||map._animatingZoom)return;
+  state.markerLayer.clearLayers();
+  rankingMarkers.clearLayers();
+  const budget=markerBudget();
+  let selected=sampleMapPlaces(data.places,data.rankings,budget,state.placePage);
+  if(state.selectedCity) {
+    const positions=scatterInCity(selected.length);
+    selected=sampleMapPlaces(data.places,data.rankings,positions.length,state.placePage);
+    selected.forEach((item,i)=>{item.place._displayPosition=positions[i];});
+  } else {
+    const occupied=[];
+    selected=sampleMapPlaces(data.places.filter(p=>{
+      if(p.latitude==null||p.longitude==null)return false;
+      const point=map.latLngToContainerPoint(displayLatLng(p.latitude,p.longitude));
+      return point.x>=50&&point.y>=50&&point.x<=map.getSize().x-50&&point.y<=map.getSize().y-90;
+    }),data.rankings,budget,state.placePage).filter(item=>{
+      const p=item.place;
+      if(p.latitude==null||p.longitude==null)return false;
+      const point=map.latLngToContainerPoint(displayLatLng(p.latitude,p.longitude));
+      if(occupied.some(q=>Math.abs(point.x-q.x)<108&&Math.abs(point.y-q.y)<108))return false;
+      occupied.push(point);return true;
+    });
+  }
+  let places=selected.filter(item=>!item.ranking).map(item=>item.place);
+  let rankings=selected.filter(item=>item.ranking).map(item=>item.place);
+  let markers=places.map((p,i)=>makeMarker(p,i));
+  markers.forEach(marker=>state.markerLayer.addLayer(marker));
+  renderRankingMarkers(rankings);
+  const fits=cityMarkerBoundary();
+  const visible=[];
+  markers.forEach((marker,i)=>{
+    if(fits(marker))visible.push({marker,place:places[i]});
+    else state.markerLayer.removeLayer(marker);
+  });
+  places=visible.map(item=>item.place);
+  markers=visible.map(item=>item.marker);
+  rankings=rankings.filter(place=>{
+    const marker=rankingMarkersByPoi.get(place.poi_id);
+    if(marker&&fits(marker))return true;
+    if(marker)rankingMarkers.removeLayer(marker);
+    rankingMarkersByPoi.delete(place.poi_id);
+    return false;
+  });
+  renderCards(places,markers,rankings);
+  const shown=places.length+rankings.length;
+  const total=data.places.length+data.rankings.length;
+  $('#resultCount').textContent=`${shown} / ${total}`;
+  if(total&&!shown)$('#landmarkList').textContent='지도를 확대하면 이 지역의 장소를 볼 수 있어요.';
+  if(total>shown) {
+    const more=document.createElement('button');
+    more.type='button';more.className='ranking-map-button';more.textContent='다른 장소 보기';
+    more.addEventListener('click',()=>{state.placePage++;state.focusedRanking=null;renderMapPlaces();});
+    $('#landmarkList').append(more);
+  }
+  const area=state.selectedCity?.properties.displayName||state.selectedRegion?.name||'전국';
+  $('#mapTip').textContent=`${area} · 전체 ${total}곳 중 ${shown}곳 표시 · 확대하면 더 볼 수 있어요${state.selectedCity?' · 실제 위치와 다른 지역 안내 태그입니다.':''}`;
+}
+
+let markerRefreshTimer;
+let placePopupOpen=false;
+map.on('popupopen',()=>{placePopupOpen=true;});
+map.on('popupclose',()=>{placePopupOpen=false;});
+map.on('zoomstart',()=>{
+  if(!state.landmarkData||state.favoritesMode)return;
+  map.closePopup();
+  state.markerLayer.clearLayers();
+  rankingMarkers.clearLayers();
+});
+map.on('moveend zoomend resize',()=>{
+  clearTimeout(markerRefreshTimer);
+  markerRefreshTimer=setTimeout(()=>{
+    if(placePopupOpen||!state.landmarkData||state.favoritesMode)return;
+    state.geoLayer?.eachLayer(layer=>layer.redraw?.());
+    cityWatermark?.eachLayer(layer=>layer.setBounds(layer.getBounds()));
+    renderMapPlaces();
+  },180);
+});
 function shortPlaceLabel(title) {
   const letters = Array.from(title || '');
   const label = document.createElement('span');
@@ -929,7 +1152,10 @@ function shortPlaceLabel(title) {
   return label;
 }
 function makeMarker(p, i) {
-  const marker = L.marker(p._displayPosition || (p.latitude != null && p.longitude != null ? displayLatLng(p.latitude, p.longitude) : map.getCenter()), {icon: landmarkIcon(p, i),
+  const exact=p.latitude!=null&&p.longitude!=null;
+  const position=state.selectedCity?p._displayPosition:exact?displayLatLng(p.latitude,p.longitude):null;
+  if(!position)return null;
+  const marker = L.marker(position, {icon: landmarkIcon(p, i),
     title: `${p.title}${window.CityVisits.has(p) ? ' · 방문 완료' : ''}`});
   marker.visitPlace = p;
   marker.bindTooltip(shortPlaceLabel(p.title),{permanent:true,direction:'bottom',offset:[0,24],className:'location-name-tag'});
@@ -967,11 +1193,16 @@ function renderCards(places, markers, rankings = []) {
     card.append(favorite);
     if (/^https?:\/\//.test(p.location_url || '')) {
       const a = document.createElement('a'); a.textContent = '지도에서 위치 확인 ↗';
+      if(p.latitude==null||p.longitude==null)a.textContent='원문 정보 보기 ↗';
       a.href = p.location_url; a.target = '_blank'; a.rel = 'noopener noreferrer';
       a.addEventListener('click', e => e.stopPropagation());
       card.append(a);
     }
     card.addEventListener('click', () => {
+      if(!markers[i]) {
+        toast('정확한 위치가 확인되지 않은 장소입니다. 원문 정보를 확인해 주세요.');
+        return;
+      }
       if (!state.favoritesMode && !state.selectedCity) map.flyTo(displayLatLng(p.latitude, p.longitude), Math.max(map.getZoom(), 12));
       markers[i].openPopup();
     });
@@ -1009,6 +1240,9 @@ async function loadLandmarks(nationwide = false) {
   if (!nationwide && (!state.selectedCity || !state.selectedRegion)) return;
   const token = ++state.fetchToken;
   state.markerLayer.clearLayers();
+  state.landmarkData=null;
+  state.placePage=0;
+  state.focusedRanking=null;
   $('#landmarkList').textContent = '장소를 불러오는 중...';
   $('#resultCount').textContent = '…';
   const params = new URLSearchParams(nationwide ? {
@@ -1022,19 +1256,8 @@ async function loadLandmarks(nationwide = false) {
     const [data] = await Promise.all([fetchJSON(`/api/landmarks?${params.toString()}`), window.CityVisits.ready, window.CityFavorites.ready]);
     if (token !== state.fetchToken) return;
     hideToast();
-    const places = data.landmarks;
-    if (!nationwide && state.selectedCity) {
-      const ranking=data.food_rankings||[],positions=scatterInCity(places.length+ranking.length);
-      places.forEach((p,i)=>{p._displayPosition=positions[i];});
-      ranking.forEach((p,i)=>{p._displayPosition=positions[places.length+i];});
-    }
-    const markers = places.map((p, i) => makeMarker(p, i));
-    markers.forEach(marker => state.markerLayer.addLayer(marker));
-    renderCards(places, markers, data.food_rankings || []);
-    renderRankingMarkers(data.food_rankings || []);
-    if (!nationwide) setTimeout(()=>{if(token===state.fetchToken)$('#mapTip').textContent='태그는 해당 시·군·구 안에 임의 배치한 정보이며 실제 위치가 아닙니다.';},0);
-    const area = nationwide ? '전국' : state.selectedCity.properties.displayName;
-    $('#mapTip').textContent = `${area} · 장소 ${places.length}곳 · 맛집 순위 ${(data.food_rankings || []).length}곳`;
+    state.landmarkData={places:data.landmarks,rankings:data.food_rankings||[]};
+    renderMapPlaces();
   } catch (err) {
     if (token !== state.fetchToken) return;
     $('#resultCount').textContent = '0';
@@ -1064,7 +1287,7 @@ async function showFavorites() {
     $('#filters').classList.add('hidden');
     updateStep('★', '즐겨찾기 장소', `${places.length}곳의 여행지를 모았어요`);
     const markers = places.map((place, index) => makeMarker(place, index));
-    markers.forEach(marker => state.markerLayer.addLayer(marker));
+    markers.filter(Boolean).forEach(marker => state.markerLayer.addLayer(marker));
     renderCards(places, markers);
     $('#placesDrawer').open = false;
     $('#placesDrawer summary span').textContent = '저장한 즐겨찾기 펼쳐보기';
@@ -1076,10 +1299,10 @@ async function showFavorites() {
       const heading = document.createElement('summary');heading.textContent=`나머지 ${places.length-5}곳 더 펼쳐보기`;
       more.append(heading,...cards.slice(5));container.append(more);
     }
-    if (!markers.length) {
+    if (!places.length) {
       $('#landmarkList').textContent = '아직 즐겨찾기가 없습니다. 장소 정보에서 ☆ 즐겨찾기 등록을 눌러 주세요.';
     }
-    $('#mapTip').textContent = `★ 즐겨찾기 ${places.length}곳만 표시하고 있어요`;
+    $('#mapTip').textContent = `★ 즐겨찾기 ${places.length}곳 · 지도 표시 ${markers.filter(Boolean).length}곳`;
   } catch (error) {
     if (token === state.fetchToken) toast(error.message);
   }
@@ -1094,11 +1317,9 @@ function renderRankingMarkers(rows) {
   rankingMarkers.clearLayers();
   rankingMarkersByPoi.clear();
   if (state.favoritesMode || (state.selectedCity && !['all', 'food'].includes(state.selectedCategory))) return;
-  const fallbackPositions = state.selectedCity ? scatterInCity(rows.length) : [];
-  let unknownIndex = 0;
   for (const place of rows) {
     const exact = place.latitude != null && place.longitude != null && Number.isFinite(Number(place.latitude)) && Number.isFinite(Number(place.longitude));
-    const position = state.selectedCity ? (place._displayPosition || fallbackPositions[unknownIndex++]) : exact ? displayLatLng(Number(place.latitude), Number(place.longitude)) : null;
+    const position = state.selectedCity ? place._displayPosition : exact ? displayLatLng(Number(place.latitude), Number(place.longitude)) : null;
     if (!position) continue;
     const visitPlace = {...place,id:place.landmark_id,category:'food'};
     const marker = L.marker(position, {icon:landmarkIcon(visitPlace),title:place.title});
@@ -1117,8 +1338,17 @@ function renderRankingMarkers(rows) {
     rankingMarkersByPoi.set(place.poi_id, marker);
   }
 }
-document.addEventListener('food-ranking-markers', event => renderRankingMarkers(event.detail.rankings));
+document.addEventListener('food-ranking-markers', event => {
+  if(state.landmarkData&&!state.favoritesMode) {
+    state.landmarkData.rankings=['all','food'].includes(state.selectedCategory)?event.detail.rankings:[];
+    renderMapPlaces();
+  }
+});
 document.addEventListener('food-ranking-focus', event => {
+  if(state.landmarkData&&!state.favoritesMode) {
+    state.focusedRanking=event.detail.poi_id;
+    renderMapPlaces();
+  }
   const marker = rankingMarkersByPoi.get(event.detail.poi_id);
   if (!marker) return;
   map.panTo(marker.getLatLng());
@@ -1145,14 +1375,15 @@ $('#filters').addEventListener('click', e => {
   if (state.selectedRegion) {
     const region = state.selectedRegion;
     const request = ++state.fetchToken;
+    state.landmarkData=null;
+    state.placePage=0;
     state.markerLayer.clearLayers();
     rankingMarkers.clearLayers();
     Promise.all([fetchJSON(`/api/landmarks?scope=all&category=${category}`), window.CityVisits.ready]).then(([data]) => {
       if (request !== state.fetchToken) return;
       const places = data.landmarks.filter(place => String(place.region_code) === String(region.code));
-      const markers = places.map((place,index) => makeMarker(place,index));
-      markers.forEach(marker => state.markerLayer.addLayer(marker));
-      renderCards(places,markers);
+      state.landmarkData={places,rankings:[]};
+      renderMapPlaces();
       $('#selectedName').textContent = `${region.name} ${category === 'all' ? '여행 장소' : CATEGORIES[category].label}`;
       $('#selectedCard').classList.remove('hidden');
       $('#placesDrawer').classList.remove('hidden');
