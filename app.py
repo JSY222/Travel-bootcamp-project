@@ -422,7 +422,7 @@ def get_landmarks():
         for kind in chosen:
             where = '' if nationwide else ' WHERE region_code=%s AND locality_name=%s'
             rows = fetch_all(
-                f'SELECT id, title, description, latitude, longitude, location_url, source_name, region_code '
+                f'SELECT id, title, description, latitude, longitude, location_url, source_name, region_code, locality_name '
                 f'FROM `{TABLES[kind]}`{where} ORDER BY id',
                 () if nationwide else (region, locality)
             )

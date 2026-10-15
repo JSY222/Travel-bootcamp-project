@@ -881,6 +881,11 @@ function popupContent(p) {
   const title = document.createElement('p'); title.className = 'popup-title';
   title.textContent = `${CATEGORIES[p.category].emoji} ${p.title}`;
   wrap.append(title);
+  if(p.latitude==null||p.longitude==null){
+    const hint=document.createElement('p');
+    hint.textContent='정확한 좌표가 없어 해당 지역 안의 대표 위치에 표시했습니다. 실제 방문 위치는 원문에서 확인해 주세요.';
+    wrap.append(hint);
+  }
   if (/^https?:\/\//.test(p.location_url || '')) {
     const a = document.createElement('a');
     a.className = 'popup-link'; a.href = p.location_url; a.target = '_blank';
@@ -1079,13 +1084,15 @@ function renderMapPlaces() {
   } else {
     const occupied=[];
     selected=sampleMapPlaces(data.places.filter(p=>{
-      if(p.latitude==null||p.longitude==null)return false;
-      const point=map.latLngToContainerPoint(displayLatLng(p.latitude,p.longitude));
+      const position=placeMapPosition(p);
+      if(!position)return false;
+      const point=map.latLngToContainerPoint(position);
       return point.x>=50&&point.y>=50&&point.x<=map.getSize().x-50&&point.y<=map.getSize().y-90;
     }),data.rankings,budget,state.placePage).filter(item=>{
       const p=item.place;
-      if(p.latitude==null||p.longitude==null)return false;
-      const point=map.latLngToContainerPoint(displayLatLng(p.latitude,p.longitude));
+      const position=placeMapPosition(p);
+      if(!position)return false;
+      const point=map.latLngToContainerPoint(position);
       if(occupied.some(q=>Math.abs(point.x-q.x)<108&&Math.abs(point.y-q.y)<108))return false;
       occupied.push(point);return true;
     });
@@ -1151,9 +1158,24 @@ function shortPlaceLabel(title) {
   label.title = title || '';
   return label;
 }
+const approximatePlacePositions = new Map();
+function placeMapPosition(p) {
+  if(p.latitude!=null&&p.longitude!=null)return displayLatLng(p.latitude,p.longitude);
+  if(p.category!=='tourism')return null;
+  const code=String(p.region_code),key=`${code}:${p.locality_name}`;
+  if(approximatePlacePositions.has(key))return approximatePlacePositions.get(key);
+  const region=state.regions.find(r=>String(r.code)===code);
+  if(!region)return null;
+  const city=groupCities(region).find(f=>f.properties.displayName===p.locality_name);
+  const feature=city||state.provinceFeatures.find(f=>String(f.properties.CTPRVN_CD)===code);
+  if(!feature)return null;
+  const position=regionLabelCenter(smoothDisplayFeature(feature,true));
+  approximatePlacePositions.set(key,position);
+  return position;
+}
 function makeMarker(p, i) {
   const exact=p.latitude!=null&&p.longitude!=null;
-  const position=state.selectedCity?p._displayPosition:exact?displayLatLng(p.latitude,p.longitude):null;
+  const position=state.selectedCity?p._displayPosition:placeMapPosition(p);
   if(!position)return null;
   const marker = L.marker(position, {icon: landmarkIcon(p, i),
     title: `${p.title}${window.CityVisits.has(p) ? ' · 방문 완료' : ''}`});
@@ -1203,7 +1225,7 @@ function renderCards(places, markers, rankings = []) {
         toast('정확한 위치가 확인되지 않은 장소입니다. 원문 정보를 확인해 주세요.');
         return;
       }
-      if (!state.favoritesMode && !state.selectedCity) map.flyTo(displayLatLng(p.latitude, p.longitude), Math.max(map.getZoom(), 12));
+      if (!state.favoritesMode && !state.selectedCity) map.flyTo(markers[i].getLatLng(), Math.max(map.getZoom(), 12));
       markers[i].openPopup();
     });
     container.append(card);
