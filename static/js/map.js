@@ -213,6 +213,12 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let clearRegionLift = () => {};
 let liftedRegion = null;
 map.on('zoomstart', () => clearRegionLift());
+// Filtered polygons must keep their complete outlines. Viewport clipping creates
+// artificial edges that the relief filter turns into visible walls on zoom.
+map.on('zoomstart', () => map.getContainer().classList.add('map-zooming'));
+map.on('zoomend', () => {
+  map.getContainer().classList.remove('map-zooming');
+});
 
 const state = {
   regions: [], provinceFeatures: [], districtFeatures: [],
@@ -251,7 +257,13 @@ function toast(message) {
 }
 function hideToast() { $('#toast').classList.add('hidden'); }
 let cityWatermark = null;
+let geoRenderer = null;
+let countryRenderer = null;
 function clearMap() {
+  // Finish any previous camera movement before replacing its SVG layers.
+  map.stop();
+  map.getContainer().classList.remove('map-zooming');
+  map.closePopup();
   if (cityWatermark) { map.removeLayer(cityWatermark); cityWatermark = null; }
   rankingMarkers.clearLayers();
   rankingMarkersByPoi.clear();
@@ -260,6 +272,8 @@ function clearMap() {
   clearRegionLift();
   if (state.geoLayer) map.removeLayer(state.geoLayer);
   state.geoLayer = null;
+  // Remove the SVG itself, including decorative paths and cached filter output.
+  if (geoRenderer) { map.removeLayer(geoRenderer); geoRenderer = null; }
   state.markerLayer.clearLayers();
 }
 function fit(layer, maxZoom = 10, padding = [28, 28]) {
@@ -286,6 +300,8 @@ function fitSelectedRegion(layer) {
 // 클릭은 위에 별도로 올리는 선택 가능한 행정구역 레이어에서 처리합니다.
 function drawKoreaBackground(detailed = false) {
   if (state.countryLayer) map.removeLayer(state.countryLayer);
+  if (countryRenderer) map.removeLayer(countryRenderer);
+  countryRenderer = L.svg({pane: 'countryRelief'});
   state.islandLabelLayer.clearLayers();
   document.getElementById('map').classList.toggle('map-detail', detailed);
   // Derive province backgrounds from the same district polygons as the active
@@ -303,8 +319,10 @@ function drawKoreaBackground(detailed = false) {
   });
   state.countryLayer = L.geoJSON(background.map(feature => smoothDisplayFeature(feature, detailed)), {
     smoothFactor: 0,
+    noClip: true,
     interactive: false,
     pane: 'countryRelief',
+    renderer: countryRenderer,
     style: feature => ({
       color: '#827a8e', weight: detailed ? 0 : 1.4,
       fillColor: provinceColor(feature), fillOpacity: 1,
@@ -463,9 +481,12 @@ function bounceRegion(layer, feature, onClick) {
   onClick(feature);
 }
 function addGeoLayer(features, onClick) {
+  geoRenderer = L.svg({pane: state.selectedRegion ? 'selectedRelief' : 'overlayPane'});
   state.geoLayer = L.geoJSON(features.map(feature => smoothDisplayFeature(feature, Boolean(state.selectedRegion))), {
     smoothFactor: 0,
+    noClip: true,
     pane: state.selectedRegion ? 'selectedRelief' : 'overlayPane',
+    renderer: geoRenderer,
     style: shapeStyle,
     onEachFeature: (feature, layer) => {
       const name = feature.properties.displayName;

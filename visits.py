@@ -1,6 +1,8 @@
 """Private member visit records, with photos stored transactionally in MariaDB."""
 import io
 import secrets
+from datetime import date
+from rewards import award_stamp_points, total_points
 
 import pymysql
 from flask import jsonify, request, session, send_file
@@ -15,8 +17,9 @@ VISITS_SQL = """CREATE TABLE IF NOT EXISTS member_visits (
     review TEXT NOT NULL,
     photo MEDIUMBLOB NOT NULL,
     photo_mime VARCHAR(30) NOT NULL,
+    visited_on DATE NULL,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_member_place (member_id, category, landmark_id)
+    KEY member_place (member_id, category, landmark_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"""
 
 # Separate ID range for coordinate-free DataLab places; never invent map coordinates.
@@ -69,7 +72,7 @@ def register_visit_routes(app, db_config, tables):
                         for kind, table in tables.items())
                     cur.execute(f'SELECT p.*,r.name AS region_name,v.id AS visit_id FROM ({parts}) p '
                                 'LEFT JOIN regions r ON r.code=p.region_code '
-                                'LEFT JOIN member_visits v ON v.category=p.category AND v.landmark_id=p.id AND v.member_id=%s '
+                                'LEFT JOIN (SELECT member_id,category,landmark_id,MAX(id) AS id FROM member_visits GROUP BY member_id,category,landmark_id) v ON v.category=p.category AND v.landmark_id=p.id AND v.member_id=%s '
                                 'ORDER BY p.region_code,p.locality_name,p.category,p.id', (session['member_id'],))
                     places = cur.fetchall()
                     places += ranking_places(cur)
@@ -95,7 +98,7 @@ def register_visit_routes(app, db_config, tables):
             conn = connection()
             try:
                 with conn.cursor() as cur:
-                    cur.execute('SELECT m.id,m.name,COUNT(v.id) AS stamp_count FROM members m '
+                    cur.execute('SELECT m.id,m.name,COUNT(DISTINCT v.category,v.landmark_id) AS stamp_count FROM members m '
                                 'LEFT JOIN member_visits v ON v.member_id=m.id '
                                 'GROUP BY m.id,m.name ORDER BY stamp_count DESC,m.id')
                     rows = cur.fetchall()
@@ -130,7 +133,9 @@ def register_visit_routes(app, db_config, tables):
                         }
                         if stamp_type != 'white':
                             row['stamp_count'] = sum(bool(required) and required.issubset(owned) for required in targets.values())
-                    rows.sort(key=lambda row: (-row['stamp_count'], row['id']))
+                    for row in rows:
+                        row['points'] = total_points(cur, row['id'], tables)
+                    rows.sort(key=lambda row: (-row['points'], row['id']))
             finally:
                 conn.close()
             ranking = []
@@ -138,13 +143,13 @@ def register_visit_routes(app, db_config, tables):
             previous_count = None
             rank = 0
             for position, row in enumerate(rows, 1):
-                count = int(row['stamp_count'])
+                count = int(row['points'])
                 if count != previous_count:
                     rank = position
                 previous_count = count
                 is_me = row['id'] == session.get('member_id')
                 entry = dict(rank=rank, name='나' if is_me else (row['name'][:1] + '○○'),
-                             stamp_count=count, is_me=is_me, stamps=row['stamps'])
+                             stamp_count=row['stamp_count'], points=count, is_me=is_me, stamps=row['stamps'])
                 if is_me:
                     my_rank = entry
                 if len(ranking) < 5:
@@ -164,7 +169,7 @@ def register_visit_routes(app, db_config, tables):
             conn = connection()
             try:
                 with conn.cursor() as cur:
-                    cur.execute('SELECT id,category,landmark_id,title,locality_name,review,updated_at '
+                    cur.execute('SELECT id,category,landmark_id,title,locality_name,review,visited_on,updated_at '
                                 'FROM member_visits WHERE member_id=%s ORDER BY updated_at DESC,id DESC',
                                 (session['member_id'],))
                     visits = cur.fetchall()
@@ -197,6 +202,7 @@ def register_visit_routes(app, db_config, tables):
                     visit['locality_name'] = place['locality_name']
                 visit['photo_url'] = f"/api/visits/{visit['id']}/photo"
                 visit['updated_at'] = visit['updated_at'].isoformat()
+                visit['visited_on'] = visit['visited_on'].isoformat() if visit.get('visited_on') else None
             response = jsonify(ok=True, visits=visits, totals=totals,
                                regional_totals=list(regional_totals.values()))
             response.headers['Cache-Control'] = 'no-store'
@@ -215,6 +221,12 @@ def register_visit_routes(app, db_config, tables):
         category = request.form.get('category', '')
         landmark_id = request.form.get('landmark_id', '')
         review = request.form.get('review', '').strip()
+        try:
+            visited_on = date.fromisoformat(request.form.get('visited_on', ''))
+            if visited_on > date.today():
+                raise ValueError
+        except ValueError:
+            return jsonify(ok=False, error='방문일을 오늘 또는 이전 날짜로 선택해 주세요.'), 400
         if category not in tables or not landmark_id.isascii() or not landmark_id.isdigit() or not 1 <= len(review) <= 2000:
             return jsonify(ok=False, error='장소와 리뷰(1~2000자)를 확인해 주세요.'), 400
         if len(landmark_id) > 18:
@@ -222,7 +234,7 @@ def register_visit_routes(app, db_config, tables):
         upload = request.files.get('photo')
         photo = upload.read(5 * 1024 * 1024 + 1) if upload and upload.filename else None
         mime = photo_mime(photo) if photo else None
-        if photo is not None and (not mime or len(photo) > 5 * 1024 * 1024):
+        if photo is None or not mime or len(photo) > 5 * 1024 * 1024:
             return jsonify(ok=False, error='사진은 5MB 이하의 JPG, PNG, WebP 파일을 선택해 주세요.'), 400
         try:
             conn = connection()
@@ -235,21 +247,16 @@ def register_visit_routes(app, db_config, tables):
                         place = cur.fetchone()
                     if not place:
                         return jsonify(ok=False, error='존재하지 않는 장소입니다.'), 404
-                    if photo is None:
-                        cur.execute('SELECT photo,photo_mime FROM member_visits WHERE member_id=%s AND category=%s AND landmark_id=%s',
-                                    (session['member_id'], category, int(landmark_id)))
-                        old = cur.fetchone()
-                        if not old:
-                            return jsonify(ok=False, error='방문 사진을 선택해 주세요.'), 400
-                        photo, mime = old['photo'], old['photo_mime']
-                    cur.execute('INSERT INTO member_visits (member_id,category,landmark_id,title,locality_name,review,photo,photo_mime) '
-                                'VALUES (%s,%s,%s,%s,%s,%s,%s,%s) ON DUPLICATE KEY UPDATE '
-                                'title=VALUES(title),locality_name=VALUES(locality_name),review=VALUES(review),photo=VALUES(photo),photo_mime=VALUES(photo_mime)',
-                                (session['member_id'], category, int(landmark_id), place['title'], place['locality_name'], review, photo, mime))
+                    cur.execute('INSERT INTO member_visits (member_id,category,landmark_id,title,locality_name,review,photo,photo_mime,visited_on) '
+                                'VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+                                (session['member_id'], category, int(landmark_id), place['title'], place['locality_name'], review, photo, mime, visited_on))
+                    awarded_stamps = []
+                    points_awarded = award_stamp_points(cur, session['member_id'], tables, awarded_stamps)
+                    points = total_points(cur, session['member_id'], tables)
                 conn.commit()
             finally:
                 conn.close()
-            return jsonify(ok=True)
+            return jsonify(ok=True, points_awarded=points_awarded, points=points, awarded_stamps=awarded_stamps)
         except pymysql.MySQLError:
             app.logger.exception('visit save failed')
             return jsonify(ok=False, error='저장하지 못했습니다. DB 연결을 확인해 주세요.'), 503

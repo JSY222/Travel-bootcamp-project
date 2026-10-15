@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS member_visits (
     review TEXT NOT NULL,
     photo MEDIUMBLOB NOT NULL,
     photo_mime VARCHAR(30) NOT NULL,
+    visited_on DATE NULL,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_member_place (member_id, category, landmark_id)
+    KEY member_place (member_id, category, landmark_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

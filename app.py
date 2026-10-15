@@ -24,7 +24,19 @@ TRAVEL_STYLES = ['힐링/자연', '액티비티/모험', '역사/문화', '감�
 def auth_context():
     if 'csrf_token' not in session:
         session['csrf_token'] = secrets.token_hex(32)
-    return {'csrf_token': session['csrf_token'], 'member_name': session.get('member_name')}
+    points = 0
+    if session.get('member_id'):
+        try:
+            from rewards import total_points
+            conn = pymysql.connect(**DB_CONFIG)
+            try:
+                with conn.cursor() as cur:
+                    points = total_points(cur, session['member_id'], TABLES)
+            finally:
+                conn.close()
+        except pymysql.MySQLError:
+            app.logger.exception('member points query failed')
+    return {'csrf_token': session['csrf_token'], 'member_name': session.get('member_name'), 'member_points': points}
 
 MEMBERS_SQL = """CREATE TABLE IF NOT EXISTS members (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -249,8 +261,17 @@ def update_profile():
     data = auth_payload()
     if data is None:
         return jsonify(ok=False, error='페이지를 새로고침해 주세요.'), 400
-    if any(field in data for field in ('username', 'password', 'password_hash')):
-        return jsonify(ok=False, error='아이디와 비밀번호는 변경할 수 없습니다.'), 400
+    if 'password_hash' in data:
+        return jsonify(ok=False, error='잘못된 요청입니다.'), 400
+    username = data.get('username')
+    password = data.get('password', '')
+    current_password = data.get('current_password', '')
+    if username is not None and (not isinstance(username, str) or not re.fullmatch(r'[A-Za-z0-9_]{4,50}', username)):
+        return jsonify(ok=False, error='아이디는 영문, 숫자, 밑줄로 4~50자 입력해 주세요.'), 400
+    if not isinstance(password, str) or (password and not 8 <= len(password) <= 128):
+        return jsonify(ok=False, error='새 비밀번호는 8~128자 입력해 주세요.'), 400
+    if password != data.get('password_confirmation', ''):
+        return jsonify(ok=False, error='새 비밀번호가 일치하지 않습니다.'), 400
     name = str(data.get('name', '')).strip()
     address = str(data.get('address', '')).strip()
     mbti = str(data.get('mbti', '')).upper()
@@ -267,18 +288,78 @@ def update_profile():
         conn = member_connection()
         try:
             with conn.cursor() as cur:
-                cur.execute('SELECT id FROM members WHERE id=%s', (session['member_id'],))
-                if not cur.fetchone():
+                cur.execute('SELECT id,username,password_hash FROM members WHERE id=%s FOR UPDATE', (session['member_id'],))
+                member = cur.fetchone()
+                if not member:
                     return jsonify(ok=False, error='회원 정보를 찾을 수 없습니다.'), 404
-                cur.execute('UPDATE members SET name=%s,birth_date=%s,address=%s,travel_styles=%s,mbti=%s WHERE id=%s',
-                            (name, birthday, address, json.dumps(list(dict.fromkeys(styles)), ensure_ascii=False), mbti, session['member_id']))
+                username = member['username'] if username is None else username
+                if password or username != member['username']:
+                    if not isinstance(current_password, str) or not 1 <= len(current_password) <= 128 or not check_password_hash(member['password_hash'], current_password):
+                        return jsonify(ok=False, error='현재 비밀번호를 확인해 주세요.'), 400
+                if password and check_password_hash(member['password_hash'], password):
+                    return jsonify(ok=False, code='same_password', error='기존 비밀번호와 같습니다. 다른 비밀번호를 입력해 주세요.'), 400
+                password_hash = generate_password_hash(password) if password else member['password_hash']
+                cur.execute('UPDATE members SET username=%s,password_hash=%s,name=%s,birth_date=%s,address=%s,travel_styles=%s,mbti=%s WHERE id=%s',
+                            (username, password_hash, name, birthday, address, json.dumps(list(dict.fromkeys(styles)), ensure_ascii=False), mbti, session['member_id']))
             conn.commit()
         finally:
             conn.close()
         session['member_name'] = name
         return jsonify(ok=True)
+    except pymysql.IntegrityError:
+        return jsonify(ok=False, error='이미 사용 중인 아이디입니다. 다른 아이디를 입력해 주세요.'), 409
     except pymysql.MySQLError:
         return jsonify(ok=False, error='회원 정보를 수정하지 못했습니다.'), 503
+
+
+@app.get('/points')
+def points_page():
+    if not session.get('member_id'):
+        return redirect(url_for('index'))
+    from rewards import point_history
+    filters = {key: request.args.get(key, '').strip() for key in ('start', 'end', 'region', 'locality')}
+    context = dict(filters=filters, region_options=[], localities={}, page=1, pages=1, result_count=0)
+    try:
+        conn = pymysql.connect(**DB_CONFIG)
+        try:
+            with conn.cursor() as cur:
+                history = point_history(cur, session['member_id'], TABLES)
+                cur.execute('SELECT code,name FROM regions ORDER BY display_order')
+                region_options = cur.fetchall()
+        finally:
+            conn.close()
+        localities = {}
+        for row in history:
+            if row['region_code'] and row['locality_name']:
+                localities.setdefault(str(row['region_code']), set()).add(row['locality_name'])
+        context.update(region_options=region_options, localities={key: sorted(value) for key, value in localities.items()})
+        invalid_date = False
+        try:
+            start = date.fromisoformat(filters['start']) if filters['start'] else None
+            end = date.fromisoformat(filters['end']) if filters['end'] else None
+            if start and end and start > end:
+                raise ValueError
+        except ValueError:
+            invalid_date = True
+        if invalid_date:
+            filtered = []
+            context['error'] = '검색 날짜를 확인해 주세요. 시작일은 종료일보다 늦을 수 없습니다.'
+        else:
+            filtered = [row for row in history
+                        if (not start or (row['last_visited_on'] and row['last_visited_on'] >= start))
+                        and (not end or (row['last_visited_on'] and row['last_visited_on'] <= end))
+                        and (not filters['region'] or str(row['region_code']) == filters['region'])
+                        and (not filters['locality'] or row['locality_name'] == filters['locality'])]
+        pages = max(1, (len(filtered) + 9) // 10)
+        page = min(pages, max(1, request.args.get('page', 1, type=int) or 1))
+        context.update(page=page, pages=pages, result_count=len(filtered),
+                       member_points=sum(row['current_points'] for row in history))
+        response = make_response(render_template('points.html', history=filtered[(page-1)*10:page*10], **context))
+    except pymysql.MySQLError:
+        app.logger.exception('point history query failed')
+        response = make_response(render_template('points.html', history=[], error='포인트 내역을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', **context), 503)
+    response.headers['Cache-Control'] = 'no-store'
+    return response
 
 
 @app.get('/api/recommendations')
@@ -286,33 +367,25 @@ def recommendations():
     if not session.get('member_id'):
         return jsonify(ok=False, error='로그인하면 내 MBTI에 맞춘 추천을 볼 수 있어요.'), 401
     try:
-        members = fetch_all('SELECT mbti FROM members WHERE id=%s', (session['member_id'],))
+        from recommendations import rank_places, STYLE_WORDS
+        members = fetch_all('SELECT mbti,travel_styles FROM members WHERE id=%s', (session['member_id'],))
         mbti = (members[0].get('mbti') or '').upper() if members else ''
         if not re.fullmatch(r'[IE][NS][FT][JP]', mbti):
-            return jsonify(ok=False, error='내 프로필에서 INFP, ESTJ처럼 MBTI를 입력해 주세요.'), 400
-        quiet = ['숲', '산책', '정원', '수목원', '사찰', '서원', '호수', '자연', '휴양', '공원', '북카페', '차', '힐링']
-        lively = ['축제', '페스티벌', '시장', '거리', '공연', '체험', '테마', '놀이', '문화', '먹거리', '골목', '행사']
-        planned = ['박물관', '미술관', '서원', '궁', '유적', '전시', '공원', '관람', '문화재']
-        flexible = ['산책', '거리', '골목', '시장', '카페', '해변', '자연', '호수', '공원']
-        atmosphere = quiet if mbti[0] == 'I' else lively
-        travel = planned if mbti[-1] == 'J' else flexible
-        results = []
+            return jsonify(ok=False, error='내 프로필에 INFP, ESTJ처럼 올바른 MBTI를 입력해 주세요.'), 400
+        styles = members[0].get('travel_styles') or []
+        if isinstance(styles, (str, bytes)):
+            try:
+                styles = json.loads(styles)
+            except (ValueError, TypeError):
+                styles = []
+        styles = list(dict.fromkeys(style for style in styles if isinstance(style, str) and style in STYLE_WORDS)) if isinstance(styles, list) else []
+        candidates = []
         for category, table in TABLES.items():
             places = fetch_all(f'SELECT l.id,l.title,l.description,l.locality_name,l.region_code,l.location_url,l.latitude,l.longitude,r.name AS region_name '
                                f'FROM `{table}` l LEFT JOIN regions r ON r.code=l.region_code')
-            scored = []
-            for place in places:
-                content = place['title'] + ' ' + place['description']
-                hits = [word for word in atmosphere if word in content]
-                style_hits = [word for word in travel if word in content]
-                if not hits:
-                    continue
-                place['category'] = category
-                place['reason'] = f"{', '.join(hits[:2])} · " + ('계획해서 둘러보기 좋은 키워드' if mbti[-1] == 'J' else '자유롭게 둘러보기 좋은 키워드') if style_hits else f"{', '.join(hits[:2])} 분위기 키워드"
-                scored.append((len(hits)*3 + len(style_hits)*2, place))
-            scored.sort(key=lambda item: (-item[0], item[1]['id']))
-            results.extend(place for _, place in scored[:3])
-        return jsonify(ok=True, mbti=mbti, places=results)
+            candidates.extend(dict(place, category=category) for place in places)
+        results = rank_places(candidates, mbti, styles)
+        return jsonify(ok=True, mbti=mbti, travel_styles=styles, places=results)
     except pymysql.MySQLError:
         return jsonify(ok=False, error='추천 장소를 불러오지 못했습니다.'), 503
 

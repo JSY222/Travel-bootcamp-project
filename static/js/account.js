@@ -71,10 +71,14 @@
   document.getElementById('profileEditCancel').addEventListener('click',()=>{form.reset();form.classList.add('hidden');open.classList.remove('hidden');open.setAttribute('aria-expanded','false');message.textContent='';open.focus();});
   form.addEventListener('submit',async event=>{
     event.preventDefault();const fields=new FormData(form),data=Object.fromEntries(fields);data.travel_styles=fields.getAll('travel_styles');
+    message.textContent='';
+    if(data.password!==data.password_confirmation){message.textContent='새 비밀번호가 일치하지 않습니다.';return;}
     const button=form.querySelector('[type="submit"]');button.disabled=true;
     try{
       const response=await fetch('/api/profile',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':document.querySelector('meta[name="csrf-token"]').content},body:JSON.stringify(data)});
-      const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'Save failed');
+      const result=await response.json();
+      if(result.code==='same_password'){window.alert(result.error);form.elements.password.focus();}
+      if(!response.ok||!result.ok)throw new Error(result.error||'저장하지 못했습니다.');
       location.reload();
     }catch(error){message.textContent=error.message;}finally{button.disabled=false;}
   });

@@ -50,6 +50,7 @@
         const content = element('div');
         content.append(element('h4', `? ${visit.title}`),
           element('small', categories[visit.category] || '?? ??'),
+          element('p', `방문일: ${visit.visited_on || '미기록'}`),
           element('p', visit.review, 'visit-review'));
         card.append(image, content);
         section.append(card);
@@ -100,16 +101,17 @@
       button.disabled = true;
       message.textContent = '저장 중입니다…';
       let saved = false;
-      const earnsStamp = !find(current);
       try {
         const response = await fetch('/api/visits', {method: 'POST', body: data,
           headers: {'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content}});
         const result = await response.json();
         if (!response.ok || !result.ok) throw new Error(result.error || '저장하지 못했습니다.');
+        document.querySelectorAll('.member-points').forEach(el => { el.textContent = `${Number(result.points).toLocaleString('ko-KR')}P`; });
         saved = true;
-        await refresh();
-        if (earnsStamp) document.dispatchEvent(new CustomEvent('stamp-earned', {detail: {title: current.title}}));
+        const title = current.title;
         dialog.close();
+        if (result.awarded_stamps?.length) document.dispatchEvent(new CustomEvent('stamp-earned', {detail: {title, stamps: result.awarded_stamps}}));
+        await refresh();
       } catch (error) {
         message.textContent = saved ? '저장은 완료됐지만 지도 갱신에 실패했습니다. 새로고침해 주세요.' : error.message;
       } finally { saving = false; button.disabled = false; }
@@ -119,7 +121,7 @@
     has: place => Boolean(find(place)),
     button(place) {
       if (!signedIn) return element('p', '로그인하면 사진과 리뷰로 방문 기록을 남길 수 있어요.', 'visit-login-hint');
-      const button = element('button', find(place) ? '✓ 방문 기록 보기 / 수정' : '사진·리뷰로 방문 기록 남기기', 'auth-submit visit-open');
+      const button = element('button', find(place) ? '✓ 방문 기록 보기 / 재방문 기록 남기기' : '사진·리뷰로 방문 기록 남기기', 'auth-submit visit-open');
       button.type = 'button';
       button.addEventListener('click', async () => {
         try {
@@ -128,13 +130,26 @@
           current = place;
           form.reset();
           document.getElementById('visitTitle').textContent = place.title;
-          form.elements.review.value = record?.review || '';
-          form.elements.photo.required = !record;
-          const image = document.getElementById('visitExistingPhoto');
-          image.hidden = !record;
-          if (record) image.src = record.photo_url;
-          else image.removeAttribute('src');
-          message.textContent = record ? '새 사진을 선택하지 않으면 기존 사진을 유지합니다.' : '사진과 리뷰를 저장하면 방문한 장소로 표시됩니다.';
+          const today = new Date().toLocaleDateString('sv-SE');
+          form.elements.visited_on.max = today;
+          form.elements.visited_on.value = today;
+          form.elements.photo.required = true;
+          const history = document.getElementById('visitHistory');
+          history.replaceChildren();
+          const previous = records.filter(visit => key(visit) === key(place));
+          if (previous.length) history.append(element('h3', '이전 방문 기록 · 최신 작성순'));
+          previous.forEach(visit => {
+            const card = element('article', '', 'visit-card');
+            const image = element('img');
+            image.src = visit.photo_url;
+            image.alt = `${visit.title} 방문 사진`;
+            image.loading = 'lazy';
+            const content = element('div');
+            content.append(element('p', `방문일: ${visit.visited_on || '미기록'}`), element('p', visit.review, 'visit-review'));
+            card.append(image, content);
+            history.append(card);
+          });
+          message.textContent = record ? '재방문 날짜와 새 사진·리뷰를 입력해 주세요. 이전 기록은 그대로 보존됩니다.' : '방문일과 사진, 리뷰를 저장해 주세요.';
           dialog.showModal();
         } catch (error) { button.textContent = error.message; }
       });

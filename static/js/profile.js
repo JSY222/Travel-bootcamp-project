@@ -26,7 +26,8 @@
     const records = document.getElementById('travelRecordsList');
     const stamps = document.getElementById('profileStampsList');
     stamps.replaceChildren();
-    document.getElementById('profileStampsCount').textContent = visits.length;
+    const seenPlaces = new Set();
+    document.getElementById('profileStampsCount').textContent = new Set(visits.map(v => `${v.category}:${v.landmark_id}`)).size;
     cities.replaceChildren();
     records.replaceChildren();
     const groups = new Map();
@@ -41,8 +42,12 @@
       image.loading = 'lazy';
       card.append(image, node('h3', visit.title),
         node('small', [visit.locality_name, categories[visit.category]].filter(Boolean).join(' · ')),
+        node('p', `방문일: ${visit.visited_on || '미기록'}`),
         node('p', visit.review, 'profile-record-review'));
       records.append(card);
+      const placeKey = `${visit.category}:${visit.landmark_id}`;
+      if (seenPlaces.has(placeKey)) return;
+      seenPlaces.add(placeKey);
       const stamp = node('details', '', 'profile-stamp');
       const heading = node('summary');
       const seal = node('span', '', 'profile-stamp-seal');
@@ -61,7 +66,7 @@
       photo.src = visit.photo_url;
       photo.alt = `${visit.title} 방문 사진`;
       photo.loading = 'lazy';
-      stamp.append(heading, photo, node('p', visit.review, 'profile-record-review'));
+      stamp.append(heading, photo, node('p', `방문일: ${visit.visited_on || '미기록'}`), node('p', visit.review, 'profile-record-review'));
       stamps.append(stamp);
     });
     [...groups.values()].sort((a, b) => a.name.localeCompare(b.name, 'ko')).forEach(city => {
@@ -75,7 +80,7 @@
         row.append(image);
       }
       const caption = node('div', '', 'profile-city-caption');
-      caption.append(node('strong', city.name), node('small', `${city.count}곳 방문`));
+      caption.append(node('strong', city.name), node('small', `${city.count}회 방문`));
       row.append(caption);
       cities.append(row);
     });

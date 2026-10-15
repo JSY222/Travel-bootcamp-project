@@ -19,7 +19,7 @@
     {% if member %}
     <div class="profile-heading">
       <span class="profile-avatar profile-avatar-large" aria-hidden="true">{{ member.name[:1] }}</span>
-      <div><h2>{{ member.name }}님</h2><p>나만의 여행을 만나보세요.</p></div>
+      <div><h2 class="member-name-points">{{ member.name }}님 <a href="{{ url_for('points_page') }}" class="member-points" aria-label="내 포인트 이력 보기" aria-live="polite">{{ '{:,}'.format(member_points) }}P</a></h2><p>나만의 여행을 만나보세요.</p></div>
     </div>
     <div class="profile-dashboard">
       <section class="profile-panel" aria-labelledby="visitedCitiesHeading">
@@ -55,7 +55,11 @@
       </dl>
       <button class="auth-submit profile-edit-button" id="editLoginInfoButton" type="button">로그인 정보 수정</button>
       <form id="profileEditForm" class="signup-form hidden">
-        <p>아이디와 비밀번호는 변경할 수 없습니다.</p>
+        <label>아이디<input name="username" value="{{ member.username }}" minlength="4" maxlength="50" pattern="[A-Za-z0-9_]{4,50}" autocomplete="username" required></label>
+        <p>아이디 또는 비밀번호를 변경하려면 현재 비밀번호를 입력해 주세요. 새 비밀번호를 비워두면 기존 비밀번호를 유지합니다.</p>
+        <label>현재 비밀번호<input name="current_password" type="password" maxlength="128" autocomplete="current-password"></label>
+        <label>새 비밀번호<input name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password"></label>
+        <label>새 비밀번호 확인<input name="password_confirmation" type="password" minlength="8" maxlength="128" autocomplete="new-password"></label>
         <label>이름<input name="name" value="{{ member.name }}" maxlength="50" required></label>
         <label>생년월일<input name="birth_date" type="date" value="{{ member.birth_date }}" required></label>
         <label>주소지<input name="address" value="{{ member.address }}" maxlength="255" required></label>

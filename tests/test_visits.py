@@ -1,6 +1,6 @@
 import io
 import unittest
-from datetime import datetime
+from datetime import date, datetime
 from unittest.mock import MagicMock, patch
 
 from flask import Flask
@@ -22,19 +22,26 @@ class VisitsTests(unittest.TestCase):
         self.rankings = patch('visits.ranking_places', return_value=[])
         self.rankings.start()
         self.addCleanup(self.rankings.stop)
+        self.awards = patch('visits.award_stamp_points', return_value=100)
+        self.awards.start()
+        self.addCleanup(self.awards.stop)
+        self.points = patch('visits.total_points', return_value=100)
+        self.points_mock = self.points.start()
+        self.addCleanup(self.points.stop)
 
     def login(self):
         with self.client.session_transaction() as session:
             session.update(member_id=7, csrf_token='token')
 
     def save(self, **changes):
-        data = dict(category='tourism', landmark_id='4', review='A good visit',
+        data = dict(category='tourism', landmark_id='4', review='A good visit', visited_on='2026-01-01',
                     photo=(io.BytesIO(b'\x89PNG\r\n\x1a\nphoto'), 'photo.png'))
         data.update(changes)
         return self.client.post('/api/visits', data=data, headers={'X-CSRF-Token': 'token'})
 
     def test_stamp_ranking_ties_and_private_fields(self):
         self.login()
+        self.points_mock.side_effect = [500, 500, 200]
         self.cur.fetchall.side_effect = [[dict(id=1, name='Alice', stamp_count=5),
             dict(id=2, name='Bob', stamp_count=5), dict(id=7, name='Mine', stamp_count=2)],
             [dict(id=1, category='food', region_code='11', locality_name='City')],
@@ -73,17 +80,33 @@ class VisitsTests(unittest.TestCase):
         self.cur.fetchone.return_value = dict(title='Real title', locality_name='Seoul')
         self.assertEqual(self.save().status_code, 200)
         sql, args = self.cur.execute.call_args.args
-        self.assertIn('ON DUPLICATE KEY UPDATE', sql)
+        self.assertNotIn('ON DUPLICATE KEY UPDATE', sql)
+        self.assertEqual(args[-1], date(2026, 1, 1))
         self.assertEqual(args[:5], (7, 'tourism', 4, 'Real title', 'Seoul'))
         self.conn.commit.assert_called_once()
 
-    def test_review_update_keeps_previous_photo(self):
+    def test_revisit_requires_own_photo(self):
         self.login()
         self.cur.fetchone.side_effect = [dict(title='Place', locality_name='City'),
                                         dict(photo=b'old-photo', photo_mime='image/png')]
-        self.assertEqual(self.save(photo=(io.BytesIO(b''), '')).status_code, 200)
-        args = self.cur.execute.call_args.args[1]
-        self.assertEqual(args[-2:], (b'old-photo', 'image/png'))
+        self.assertEqual(self.save(photo=(io.BytesIO(b''), '')).status_code, 400)
+        self.conn.commit.assert_not_called()
+
+    def test_revisit_inserts_two_independent_records(self):
+        self.login()
+        self.cur.fetchone.return_value = dict(title='Place', locality_name='City')
+        self.assertEqual(self.save(review='First visit').status_code, 200)
+        self.assertEqual(self.save(review='Second visit', visited_on='2026-02-01').status_code, 200)
+        inserts = [call.args for call in self.cur.execute.call_args_list if call.args[0].startswith('INSERT')]
+        self.assertEqual(len(inserts), 2)
+        self.assertEqual([args[1][5] for args in inserts], ['First visit', 'Second visit'])
+        self.assertTrue(all('UPDATE' not in args[0] for args in inserts))
+
+    def test_visit_date_required_valid_and_not_future(self):
+        self.login()
+        for value in ['', 'invalid', '2026-02-30', '9999-12-31']:
+            self.assertEqual(self.save(visited_on=value).status_code, 400)
+        self.conn.commit.assert_not_called()
 
     def test_first_visit_requires_photo_and_existing_place(self):
         self.login()

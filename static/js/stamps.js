@@ -46,26 +46,30 @@
       data.ranking.slice(0,5).forEach(row => {
         const item = node('li', '', row.is_me ? 'stamp-rank-me' : '');
         item.dataset.rank = row.rank;
-        item.append(node('span', `${row.rank}위`), node('strong', row.name));
+        const rankBadge = node('span', `${row.rank}위`);
+        rankBadge.className = 'ranking-position';
+        if (row.rank <= 3) rankBadge.setAttribute('aria-label', `${row.rank}위 상위 랭커`);
+        item.append(rankBadge, node('strong', row.name));
         const stats = node('div', '', 'ranking-user-stamps');
         ['white','silver','gold'].forEach(type => {
           const value = row.stamps[type];
+          if (!value.earned) return;
           const badge = node('span', '', `ranking-user-stamp user-stamp-${type}`);
-          badge.append(stampPicture(type), node('span', `${value.earned}/${value.total}`));
-          badge.title = `${typeLabels[type]} 스탬프 ${value.earned} / ${value.total}개`;
+          badge.append(stampPicture(type), node('span', `${value.earned}`));
+          badge.title = `${typeLabels[type]} 스탬프 ${value.earned}개 보유`;
           badge.setAttribute('aria-label',badge.title);
           stats.append(badge);
         });
         item.append(stats);
         root.append(item);
       });
-      mine.textContent = data.my_rank ? `내 순위 ${data.my_rank.rank}위 · ${typeLabels[data.stamp_type]} ${data.my_rank.stamp_count}개`
+      mine.textContent = data.my_rank ? `내 순위 ${data.my_rank.rank}위`
         : data.ranking.length ? '로그인하면 내 순위를 볼 수 있어요.' : '첫 여행 스탬프의 주인공이 되어 보세요.';
       const sidebar = document.getElementById('sidebarStampRankingList');
       sidebar.replaceChildren(...Array.from(root.children, child => child.cloneNode(true)));
       document.getElementById('sidebarStampMyRank').textContent = mine.textContent;
       const goal = document.getElementById('rankingNextGoal');
-      const ahead = data.my_rank && data.ranking.filter(row => row.stamp_count > data.my_rank.stamp_count).pop();
+      const ahead = data.my_rank && data.ranking.filter(row => row.points > data.my_rank.points).pop();
       goal.textContent = data.my_rank
         ? data.my_rank.rank <= 5 ? rankMessages[data.my_rank.rank] : `현재 ${data.my_rank.rank}위! 새로운 여행으로 TOP 5에 도전하세요.`
         : '로그인하고 나만의 여행 순위에 도전해 보세요.';
@@ -88,7 +92,7 @@
   } else message.textContent = '스탬프를 불러오는 중…';
   document.addEventListener('visits-updated', event => {
     refreshRanking();
-    const visits = event.detail.visits;
+    const visits = event.detail.visits.filter((visit, i, all) => all.findIndex(v => v.category === visit.category && v.landmark_id === visit.landmark_id) === i);
     list.replaceChildren();
     document.getElementById('stampCount').textContent = visits.length;
     message.textContent = visits.length ? '스탬프를 누르면 사진과 리뷰를 볼 수 있어요.' : '사진과 리뷰를 남기면 장소 스탬프가 생겨요.';
@@ -105,11 +109,10 @@
         image.addEventListener('error', () => { image.remove(); seal.prepend(node('span', '✓')); }, {once: true});
         seal.append(image);
       } else seal.append(node('span', '✓'));
-      seal.append(node('small', categories[visit.category] || '방문'));
       button.append(seal, node('strong', visit.title), node('small', visit.locality_name));
       button.addEventListener('click', () => {
         document.getElementById('stampPlaceTitle').textContent = visit.title;
-        document.getElementById('stampPlaceArea').textContent = [visit.region_name, visit.locality_name].filter(Boolean).join(' · ');
+        document.getElementById('stampPlaceArea').textContent = [...[visit.region_name, visit.locality_name].filter(Boolean), `방문일: ${visit.visited_on || '미기록'}`].join(' · ');
         const photo = document.getElementById('stampPhoto');
         photo.src = visit.photo_url; photo.alt = `${visit.title} 방문 사진`;
         document.getElementById('stampReview').textContent = visit.review;
@@ -118,7 +121,36 @@
       list.append(button);
     });
   });
+  const celebrationQueue = [];
+  let celebrating = false;
+  function showNextCelebration() {
+    if (!celebrationQueue.length) { celebrating = false; return; }
+    celebrating = true;
+    const reward = celebrationQueue.shift();
+    const popup = node('div', '', 'stamp-celebration');
+    popup.setAttribute('role', 'status');
+    popup.setAttribute('aria-live', 'polite');
+    const image = node('img', '', 'stamp-celebration-image');
+    image.src = `/static/images/stamps/${reward.type}.svg`;
+    image.alt = '';
+    popup.append(image, node('strong', `${typeLabels[reward.type]} 스탬프를 획득하였습니다!`),
+      node('span', `+${Number(reward.points).toLocaleString('ko-KR')}P`));
+    const close = node('button', '닫기');
+    close.type = 'button';
+    let timer;
+    const dismiss = () => {
+      clearTimeout(timer);
+      popup.remove();
+      showNextCelebration();
+    };
+    close.addEventListener('click', dismiss, {once: true});
+    popup.append(close);
+    document.body.append(popup);
+    timer = setTimeout(dismiss, 2800);
+  }
   document.addEventListener('stamp-earned', event => {
+    celebrationQueue.push(...(event.detail.stamps || []).filter(reward => typeLabels[reward.type]));
+    if (!celebrating) showNextCelebration();
     message.textContent = `${event.detail.title} 스탬프를 획득했어요!`;
     list.firstElementChild?.classList.add('stamp-new');
   });

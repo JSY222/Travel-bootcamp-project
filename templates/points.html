@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+{% set filters = filters | default({'start': '', 'end': '', 'region': '', 'locality': ''}) %}
+{% set region_options = region_options | default([]) %}
+{% set localities = localities | default({}) %}
+{% set page = page | default(1) %}
+{% set pages = pages | default(1) %}
+{% set result_count = result_count | default(history | length) %}
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>내 포인트 | Cityname</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="signup-page profile-page">
+  <main class="registration-card profile-card">
+    <a href="{{ url_for('profile') }}">← 내 프로필로 돌아가기</a>
+    <p class="eyebrow">MY POINTS</p>
+    <h1>내 포인트</h1>
+    <div class="points-total"><span>현재 보유 포인트</span><strong>{{ '{:,}'.format(member_points) }}P</strong></div>
+    <details class="points-help">
+      <summary aria-label="포인트 적립 및 차감 안내"><span aria-hidden="true">?</span><span class="points-help-label">포인트 안내</span></summary>
+      <div class="points-help-content">
+    <p class="points-policy">최근 방문일부터 14일간 전액 유지됩니다. 15일째부터 하루마다 최초 포인트의 10%씩 차감됩니다. 흰색은 하루 10P씩 최소 10P까지, 금색은 하루 1,000P씩 최소 1,000P까지 차감되어 23일째부터 최소 금액이 유지됩니다. 은색은 최초 지급액과 최소 금액이 모두 500P이므로 차감 없이 500P를 유지합니다.</p>
+    <p class="points-policy">재방문 리뷰는 추가 적립 없이 최신 실제 방문일을 기준으로 기존 포인트를 다시 계산합니다. 은색은 해당 시군구, 금색은 해당 시도의 최신 방문일을 기준으로 합니다. 방문일이 없는 기존 기록은 최초 적립일을 기준으로 계산합니다.</p>
+      </div>
+    </details>
+    {% if error %}<p role="alert">{{ error }}</p>{% endif %}
+    <h2>스탬프 포인트 이력</h2>
+    <form class="point-search" action="{{ url_for('points_page') }}" method="get">
+      <label>최근 방문일 시작<input type="date" name="start" value="{{ filters.start }}"></label>
+      <label>최근 방문일 종료<input type="date" name="end" value="{{ filters.end }}"></label>
+      <label>시도<select name="region" id="pointRegion"><option value="">전체 시도</option>{% for region in region_options %}<option value="{{ region.code }}" {% if filters.region == region.code|string %}selected{% endif %}>{{ region.name }}</option>{% endfor %}</select></label>
+      <label>시군구<select name="locality" id="pointLocality"><option value="">전체 시군구</option>{% for locality in localities.get(filters.region, []) %}<option {% if filters.locality == locality %}selected{% endif %}>{{ locality }}</option>{% endfor %}</select></label>
+      <button type="submit" class="auth-submit">검색</button><a href="{{ url_for('points_page') }}">초기화</a>
+    </form>
+    <p class="point-search-caption">최근 방문일 기준 검색 · 총 {{ result_count }}건 · 페이지당 10건 · 기록을 펼치면 상세 내역을 볼 수 있습니다.</p>
+    {% set labels = {'white': '흰색', 'silver': '은색', 'gold': '금색'} %}
+    <div class="point-history">
+      {% for reward in history %}
+      <details class="point-history-compact point-status-{{ reward.status }}">
+        <summary class="point-history-summary">
+        <img src="{{ url_for('static', filename='images/stamps/' ~ reward.stamp_type ~ '.svg') }}" alt="{{ labels[reward.stamp_type] }} 스탬프">
+          <span class="point-summary-title"><strong>{{ reward.title }}</strong><small>{{ labels[reward.stamp_type] }} · 최근 방문 {{ reward.last_visited_on or '미기록' }}</small></span>
+          <span class="point-status">{{ {'full': '전액 유지', 'decaying': '차감 중', 'minimum': '최소 유지'}[reward.status] }}</span>
+          <strong class="point-summary-amount">{{ '{:,}'.format(reward.current_points) }}P</strong>
+        </summary>
+        <div class="point-history-card">
+        <div><h3>{{ reward.title }}</h3><p>{{ labels[reward.stamp_type] }} 스탬프 획득 · {{ reward.created_at.strftime('%Y-%m-%d') }}</p>
+          <p>최근 방문일: {{ reward.last_visited_on or '미기록' }}</p>
+          <span class="point-status">{{ {'full': '전액 유지 중', 'decaying': '차감 진행 중', 'minimum': '최소 포인트 유지'}[reward.status] }}</span>
+          <div class="point-balance"><strong>{{ '{:,}'.format(reward.current_points) }}P <small>/ 최초 {{ '{:,}'.format(reward.points) }}P</small></strong><span>{{ reward.remaining_percent }}% 보유</span></div>
+          <progress class="point-balance-bar" max="100" value="{{ reward.remaining_percent }}" aria-label="{{ reward.title }} 포인트 보유율">{{ reward.remaining_percent }}%</progress>
+          <div class="point-balance-labels"><span>최소 {{ '{:,}'.format(reward.minimum_points) }}P 유지</span><span>누적 차감 −{{ '{:,}'.format(reward.deducted_points) }}P</span></div>
+          {% if reward.status == 'full' %}
+          <p class="point-next">차감 시작까지 {{ reward.days_until_decay }}일 · {{ reward.decay_starts_on }}부터 하루 −{{ '{:,}'.format(reward.daily_deduction) }}P</p>
+          {% elif reward.status == 'decaying' %}
+          <p class="point-next">차감 {{ reward.decay_days }}/9일째 · 하루 −{{ '{:,}'.format(reward.daily_deduction) }}P · 내일 {{ '{:,}'.format(reward.next_points) }}P</p>
+          <p>{{ reward.minimum_on }}부터 최소 포인트 유지</p>
+          {% else %}
+          <p class="point-next">추가 차감 없이 {{ '{:,}'.format(reward.minimum_points) }}P를 유지합니다.</p>
+          {% endif %}
+          <p>재방문 리뷰를 남기면 최신 방문일 기준으로 다시 계산됩니다.</p>
+          {% if reward.stamp_type != 'white' %}<details><summary>방문 장소 보기</summary><ul>{% for title in reward.place_titles %}<li>{{ title }}</li>{% endfor %}</ul></details>{% endif %}
+        </div>
+        </div>
+      </details>
+      {% else %}<p>표시할 이력이 없습니다. 검색 조건을 변경하거나 방문 기록을 남겨 보세요.</p>{% endfor %}
+    </div>
+    {% if pages > 1 %}<nav class="point-pagination" aria-label="포인트 이력 페이지">
+      {% if page > 1 %}<a href="{{ url_for('points_page', page=page-1, **filters) }}">← 이전</a>{% endif %}
+      <span>{{ page }} / {{ pages }}</span>
+      {% if page < pages %}<a href="{{ url_for('points_page', page=page+1, **filters) }}">다음 →</a>{% endif %}
+    </nav>{% endif %}
+  </main>
+  <script type="application/json" id="pointLocalityOptions">{{ localities | tojson }}</script>
+  <script src="{{ url_for('static', filename='js/points.js') }}"></script>
+</body>
+</html>

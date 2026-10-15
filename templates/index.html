@@ -213,10 +213,10 @@
         <section class="login-card" aria-label="로그인">
           {% if member_name %}
           <div class="member-greeting">
-            <a class="profile-link" href="{{ url_for('profile') }}" aria-label="{{ member_name }}님의 내 프로필 보기">
+            <div class="profile-link">
               <span class="profile-avatar" aria-hidden="true">{{ member_name[:1] }}</span>
-              <span><strong>{{ member_name }}님</strong><small>내 프로필 보기 →</small></span>
-            </a>
+              <span><strong class="member-name-points"><a href="{{ url_for('profile') }}">{{ member_name }}님</a> <a href="{{ url_for('points_page') }}" class="member-points" aria-label="내 포인트 이력 보기" aria-live="polite">{{ '{:,}'.format(member_points) }}P</a></strong><small><a href="{{ url_for('profile') }}">내 프로필 보기 →</a></small></span>
+            </div>
             <button class="auth-submit" id="logoutButton" type="button">로그아웃</button>
           </div>
           {% else %}
@@ -294,12 +294,13 @@
     <p class="eyebrow">MY TRAVEL RECORD</p>
     <h2 id="visitTitle">방문 기록</h2>
     <form class="signup-form" id="visitForm">
-      <img id="visitExistingPhoto" class="visit-existing-photo" alt="기존 방문 사진" hidden>
+      <label>방문일<input name="visited_on" type="date" required><small>오늘 날짜가 기본으로 선택됩니다. 실제 방문한 과거 날짜로 변경할 수 있습니다.</small></label>
       <label>방문 사진<input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required><small>JPG, PNG, WebP · 최대 5MB</small></label>
       <label>나의 리뷰<textarea name="review" maxlength="2000" rows="5" placeholder="방문한 경험을 남겨 주세요." required></textarea></label>
       <p class="auth-message" id="visitMessage" role="status"></p>
       <button class="auth-submit" type="submit">방문 기록 저장</button>
     </form>
+    <section id="visitHistory" aria-label="이전 방문 기록"></section>
   </dialog>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script id="regionIconData" type="application/json">{{ region_icons | tojson }}</script>
