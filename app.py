@@ -3,8 +3,10 @@ import os
 import json
 import re
 import secrets
+import csv
+from pathlib import Path
 from datetime import date
-from flask import Flask, jsonify, render_template, request, session
+from flask import Flask, jsonify, render_template, request, session, redirect, url_for, make_response
 import pymysql
 from dotenv import load_dotenv
 
@@ -32,6 +34,7 @@ MEMBERS_SQL = """CREATE TABLE IF NOT EXISTS members (
     birth_date DATE NOT NULL,
     address VARCHAR(255) NOT NULL,
     travel_styles JSON NOT NULL,
+    mbti CHAR(4) NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"""
 
@@ -70,6 +73,7 @@ def signup():
     password = data.get('password', '')
     address = str(data.get('address', '')).strip()
     styles = data.get('travel_styles', [])
+    mbti = str(data.get('mbti', '')).upper()
     try:
         birthday = date.fromisoformat(str(data.get('birth_date', '')))
     except ValueError:
@@ -79,14 +83,15 @@ def signup():
             and password == data.get('password_confirmation')
             and 1 <= len(address) <= 255 and birthday <= date.today()
             and isinstance(styles, list) and 1 <= len(styles) <= len(TRAVEL_STYLES)
-            and all(isinstance(style, str) and style in TRAVEL_STYLES for style in styles)):
+            and all(isinstance(style, str) and style in TRAVEL_STYLES for style in styles)
+            and re.fullmatch(r'[A-Z]{4}', mbti)):
         return jsonify(ok=False, error='입력 내용을 확인하고 여행 스타일을 하나 이상 선택해 주세요.'), 400
     try:
         conn = member_connection()
         try:
             with conn.cursor() as cur:
-                cur.execute('INSERT INTO members (username,password_hash,name,birth_date,address,travel_styles) VALUES (%s,%s,%s,%s,%s,%s)',
-                            (username, generate_password_hash(password), name, birthday, address, json.dumps(list(dict.fromkeys(styles)), ensure_ascii=False)))
+                cur.execute('INSERT INTO members (username,password_hash,name,birth_date,address,travel_styles,mbti) VALUES (%s,%s,%s,%s,%s,%s,%s)',
+                            (username, generate_password_hash(password), name, birthday, address, json.dumps(list(dict.fromkeys(styles)), ensure_ascii=False), mbti))
             conn.commit()
         finally:
             conn.close()
@@ -148,6 +153,16 @@ DB_CONFIG = {
 
 # 표 이름을 입력값으로 직접 사용하면 SQL 인젝션이 생기므로 화이트리스트로 제한
 TABLES = {'tourism': 'tourist_landmarks', 'food': 'food_landmarks', 'event': 'event_landmarks'}
+from visits import register_visit_routes
+app.config['MAX_CONTENT_LENGTH'] = 6 * 1024 * 1024
+register_visit_routes(app, DB_CONFIG, TABLES)
+from favorites import register_favorite_routes
+register_favorite_routes(app, DB_CONFIG, TABLES, auth_payload)
+
+
+@app.errorhandler(413)
+def upload_too_large(error):
+    return jsonify(ok=False, error='파일이 너무 큽니다. 사진은 5MB 이하로 선택해 주세요.'), 413
 
 
 def fetch_all(sql, args=()):
@@ -160,9 +175,146 @@ def fetch_all(sql, args=()):
         conn.close()
 
 
+from food_rankings import register_food_ranking_routes
+register_food_ranking_routes(app, fetch_all)
+
+
+def load_region_icons():
+    icon_root = Path(app.static_folder) / 'images' / 'regions'
+    icons = []
+    manifest = icon_root / 'manifest.csv'
+    if manifest.is_file():
+        with manifest.open(encoding='utf-8-sig', newline='') as source:
+            for row in csv.DictReader(source):
+                if (icon_root / row['path']).is_file():
+                    svg = (icon_root / row['path']).read_text(encoding='utf-8')
+                    colors = re.findall(r'#[0-9a-fA-F]{6}\b', svg)
+                    accent = '#608a86'
+                    best_score = 0
+                    for color in set(colors):
+                        rgb = [int(color[i:i + 2], 16) for i in (1, 3, 5)]
+                        saturation = max(rgb) - min(rgb)
+                        score = colors.count(color) * saturation
+                        if saturation > 45 and 35 < sum(rgb) / 3 < 220 and score > best_score:
+                            accent, best_score = color, score
+                    icons.append({'name': row['name_ko'], 'parent': row['parent_ko'],
+                                  'accent': accent,
+                                  'region_code': Path(row['path']).parts[0].split('_', 1)[0],
+                                  'level': row['level'],
+                                  'url': url_for('static', filename='images/regions/' + row['path'],
+                                                 v=(icon_root / row['path']).stat().st_mtime_ns)})
+    return icons
+
+
 @app.get('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', region_icons=load_region_icons())
+
+
+@app.get('/profile')
+def profile():
+    if not session.get('member_id'):
+        return redirect(url_for('index'))
+    try:
+        # Only the authenticated member's record is accessible; never fetch passwords.
+        rows = fetch_all(
+            'SELECT username,name,birth_date,address,travel_styles,mbti FROM members WHERE id=%s',
+            (session['member_id'],)
+        )
+    except pymysql.MySQLError:
+        app.logger.exception('profile query failed')
+        response = make_response(render_template('profile.html', member=None,
+            error='프로필을 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.'), 503)
+    else:
+        if not rows:
+            session.clear()
+            return redirect(url_for('index'))
+        member = dict(rows[0])
+        styles = member.get('travel_styles')
+        if isinstance(styles, (str, bytes)):
+            try:
+                styles = json.loads(styles)
+            except (ValueError, TypeError):
+                styles = []
+        member['travel_styles'] = [style for style in styles if isinstance(style, str)] if isinstance(styles, list) else []
+        response = make_response(render_template('profile.html', member=member, region_icons=load_region_icons(), travel_styles=TRAVEL_STYLES))
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
+
+@app.post('/api/profile')
+def update_profile():
+    if not session.get('member_id'):
+        return jsonify(ok=False, error='로그인이 필요합니다.'), 401
+    data = auth_payload()
+    if data is None:
+        return jsonify(ok=False, error='페이지를 새로고침해 주세요.'), 400
+    if any(field in data for field in ('username', 'password', 'password_hash')):
+        return jsonify(ok=False, error='아이디와 비밀번호는 변경할 수 없습니다.'), 400
+    name = str(data.get('name', '')).strip()
+    address = str(data.get('address', '')).strip()
+    mbti = str(data.get('mbti', '')).upper()
+    styles = data.get('travel_styles', [])
+    try:
+        birthday = date.fromisoformat(str(data.get('birth_date', '')))
+    except ValueError:
+        return jsonify(ok=False, error='생년월일을 확인해 주세요.'), 400
+    if not (1 <= len(name) <= 50 and 1 <= len(address) <= 255 and birthday <= date.today()
+            and re.fullmatch(r'[A-Z]{4}', mbti) and isinstance(styles, list) and 1 <= len(styles) <= len(TRAVEL_STYLES)
+            and all(isinstance(style, str) and style in TRAVEL_STYLES for style in styles)):
+        return jsonify(ok=False, error='기본정보와 MBTI(영문자 4글자)를 확인해 주세요.'), 400
+    try:
+        conn = member_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute('SELECT id FROM members WHERE id=%s', (session['member_id'],))
+                if not cur.fetchone():
+                    return jsonify(ok=False, error='회원 정보를 찾을 수 없습니다.'), 404
+                cur.execute('UPDATE members SET name=%s,birth_date=%s,address=%s,travel_styles=%s,mbti=%s WHERE id=%s',
+                            (name, birthday, address, json.dumps(list(dict.fromkeys(styles)), ensure_ascii=False), mbti, session['member_id']))
+            conn.commit()
+        finally:
+            conn.close()
+        session['member_name'] = name
+        return jsonify(ok=True)
+    except pymysql.MySQLError:
+        return jsonify(ok=False, error='회원 정보를 수정하지 못했습니다.'), 503
+
+
+@app.get('/api/recommendations')
+def recommendations():
+    if not session.get('member_id'):
+        return jsonify(ok=False, error='로그인하면 내 MBTI에 맞춘 추천을 볼 수 있어요.'), 401
+    try:
+        members = fetch_all('SELECT mbti FROM members WHERE id=%s', (session['member_id'],))
+        mbti = (members[0].get('mbti') or '').upper() if members else ''
+        if not re.fullmatch(r'[IE][NS][FT][JP]', mbti):
+            return jsonify(ok=False, error='내 프로필에서 INFP, ESTJ처럼 MBTI를 입력해 주세요.'), 400
+        quiet = ['숲', '산책', '정원', '수목원', '사찰', '서원', '호수', '자연', '휴양', '공원', '북카페', '차', '힐링']
+        lively = ['축제', '페스티벌', '시장', '거리', '공연', '체험', '테마', '놀이', '문화', '먹거리', '골목', '행사']
+        planned = ['박물관', '미술관', '서원', '궁', '유적', '전시', '공원', '관람', '문화재']
+        flexible = ['산책', '거리', '골목', '시장', '카페', '해변', '자연', '호수', '공원']
+        atmosphere = quiet if mbti[0] == 'I' else lively
+        travel = planned if mbti[-1] == 'J' else flexible
+        results = []
+        for category, table in TABLES.items():
+            places = fetch_all(f'SELECT l.id,l.title,l.description,l.locality_name,l.region_code,l.location_url,l.latitude,l.longitude,r.name AS region_name '
+                               f'FROM `{table}` l LEFT JOIN regions r ON r.code=l.region_code')
+            scored = []
+            for place in places:
+                content = place['title'] + ' ' + place['description']
+                hits = [word for word in atmosphere if word in content]
+                style_hits = [word for word in travel if word in content]
+                if not hits:
+                    continue
+                place['category'] = category
+                place['reason'] = f"{', '.join(hits[:2])} · " + ('계획해서 둘러보기 좋은 키워드' if mbti[-1] == 'J' else '자유롭게 둘러보기 좋은 키워드') if style_hits else f"{', '.join(hits[:2])} 분위기 키워드"
+                scored.append((len(hits)*3 + len(style_hits)*2, place))
+            scored.sort(key=lambda item: (-item[0], item[1]['id']))
+            results.extend(place for _, place in scored[:3])
+        return jsonify(ok=True, mbti=mbti, places=results)
+    except pymysql.MySQLError:
+        return jsonify(ok=False, error='추천 장소를 불러오지 못했습니다.'), 503
 
 
 @app.get('/api/regions')
@@ -197,7 +349,7 @@ def get_landmarks():
             where = '' if nationwide else ' WHERE region_code=%s AND locality_name=%s'
             limit = '' if nationwide else ' LIMIT 200'
             rows = fetch_all(
-                f'SELECT id, title, description, latitude, longitude, location_url, source_name '
+                f'SELECT id, title, description, latitude, longitude, location_url, source_name, region_code '
                 f'FROM `{TABLES[kind]}`{where} ORDER BY id{limit}',
                 () if nationwide else (region, locality)
             )
@@ -206,7 +358,28 @@ def get_landmarks():
                 row['latitude'] = float(row['latitude'])
                 row['longitude'] = float(row['longitude'])
                 results.append(row)
-        return jsonify({'ok': True, 'landmarks': results})
+        rankings = []
+        if not nationwide and category in {'all', 'food'}:
+            # Ranking records have no coordinates and must never become fake map pins.
+            canonical_region = {'51': '42', '52': '45'}.get(region, region)
+            locality_prefix = locality.replace('!', '!!').replace('%', '!%').replace('_', '!_') + ' %'
+            try:
+                rankings = fetch_all(
+                    'SELECT r.area_rank,r.title,r.subtype,r.poi_id,r.locality_name,r.period_start,r.period_end '
+                    'FROM v_datalab_food_top20 r WHERE r.region_code=%s AND r.audience=%s '
+                    "AND (r.locality_name=%s OR r.locality_name LIKE %s ESCAPE '!') "
+                    'AND NOT EXISTS (SELECT 1 FROM datalab_food_rankings n '
+                    'WHERE n.sigungu_code=r.sigungu_code AND n.audience=r.audience '
+                    'AND (n.period_end>r.period_end OR (n.period_end=r.period_end AND n.period_start>r.period_start))) '
+                    'ORDER BY r.locality_name,r.area_rank,r.poi_id',
+                    (canonical_region, 'all', locality, locality_prefix))
+            except pymysql.MySQLError as error:
+                if error.args[0] != 1146:
+                    raise
+        if rankings:
+            from food_locations import attach_food_locations
+            attach_food_locations(rankings, canonical_region, fetch_all)
+        return jsonify({'ok': True, 'landmarks': results, 'food_rankings': rankings})
     except pymysql.MySQLError:
         app.logger.exception('landmarks query failed')
         return jsonify({'ok': False, 'error': '랜드마크를 조회할 수 없습니다.'}), 500

@@ -1,0 +1,17 @@
+{
+  "source_files": 354,
+  "raw_rows": 35400,
+  "duplicate_rows_removed": 9900,
+  "unique_rows": 25500,
+  "top20_rows": 5100,
+  "localities": 85,
+  "audiences": {
+    "all": 8500,
+    "local": 8500,
+    "nonlocal": 8500
+  },
+  "periods": [
+    "202507-202606",
+    "202510-202609"
+  ]
+}

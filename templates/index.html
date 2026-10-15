@@ -2,16 +2,41 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="signed-in" content="{{ 'true' if member_name else 'false' }}">
   <meta name="csrf-token" content="{{ csrf_token }}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cityname | 국내 여행 지도</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+  <div class="map-cloud-reveal" id="mapCloudReveal" aria-hidden="true"><div class="intro-cloud cloud-left"></div><div class="intro-cloud cloud-right"></div></div>
+  <div class="travel-intro" id="travelIntro" role="status" aria-label="여행서랍">
+    <div class="travel-intro-title" aria-hidden="true"><span data-letter="여">여</span><span data-letter="행">행</span><span data-letter="서">서</span><span data-letter="랍">랍</span></div>
+  </div>
+  <script>
+    // Start independently of map downloads and external scripts.
+    window.addEventListener('DOMContentLoaded', () => {
+      const intro = document.getElementById('travelIntro');
+      const shell = document.querySelector('.app-shell');
+      if (intro && shell) {
+        shell.inert = true;
+        const finish = () => { intro.remove(); };
+        intro.addEventListener('animationend', event => {
+          if (event.target === intro) finish();
+        });
+        setTimeout(finish, 4700);
+        const clouds = document.getElementById('mapCloudReveal');
+        const reveal = () => { clouds?.remove(); shell.inert = false; };
+        clouds?.addEventListener('animationend', event => { if (event.target === clouds) reveal(); });
+        setTimeout(reveal, 6600);
+      }
+    });
+  </script>
   <!-- Shared SVG lighting keeps Leaflet coordinates and hit areas intact. -->
   <svg class="map-filter-defs" aria-hidden="true" width="0" height="0">
     <defs>
@@ -38,6 +63,20 @@
           <feFuncA type="linear" slope=".48"/>
         </feComponentTransfer>
         <feMerge><feMergeNode in="softShadow"/><feMergeNode in="SourceGraphic"/><feMergeNode in="softRim"/><feMergeNode in="brightLip"/><feMergeNode in="gloss"/></feMerge>
+      </filter>
+      <!-- District bevels are clipped inside their original, shared geometry. -->
+      <filter id="district-surface" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+        <feMorphology in="SourceAlpha" operator="erode" radius="3" result="interior"/>
+        <feComposite in="SourceAlpha" in2="interior" operator="out" result="rim"/>
+        <feFlood flood-color="#776686" flood-opacity=".22" result="rimColor"/>
+        <feComposite in="rimColor" in2="rim" operator="in" result="bevel"/>
+        <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="surface"/>
+        <feSpecularLighting in="surface" surfaceScale="9" specularConstant="1.15" specularExponent="28" lighting-color="#fffdf5" result="light">
+          <feDistantLight azimuth="225" elevation="55"/>
+        </feSpecularLighting>
+        <feComposite in="light" in2="interior" operator="in" result="clippedLight"/>
+        <feComponentTransfer in="clippedLight" result="gloss"><feFuncA type="linear" slope=".48"/></feComponentTransfer>
+        <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="bevel"/><feMergeNode in="gloss"/></feMerge>
       </filter>
       <filter id="ocean-ripple" x="-5%" y="-5%" width="110%" height="110%">
         <feTurbulence type="fractalNoise" baseFrequency=".012 .025" numOctaves="1" seed="8" result="waterNoise"/>
@@ -87,38 +126,69 @@
   <div class="app-shell">
     <aside class="sidebar" id="travelSidebar" aria-hidden="true" inert>
       <header class="brand">
-        <div class="brand-symbol">✳</div>
-        <div><div class="brand-name">cityname<span>.</span></div><div class="brand-caption">TRAVEL DISCOVERY MAP</div></div>
+        <div class="brand-symbol" aria-hidden="true">
+          <svg class="drawer-logo" viewBox="0 0 48 48" fill="none">
+            <path d="M13 39v3M35 39v3" stroke="#355b50" stroke-width="3" stroke-linecap="round"/>
+            <rect x="8" y="9" width="32" height="31" rx="7" fill="#527c6c"/>
+            <rect x="11" y="12" width="26" height="11" rx="4" fill="#f6e6bd"/>
+            <path d="M20 17h8" stroke="#b39763" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M10 26h28v8a5 5 0 0 1-5 5H15a5 5 0 0 1-5-5v-8Z" fill="#e7c994"/>
+            <path d="M10 26h28" stroke="#fff2d3" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="19" cy="31" r="1.3" fill="#355b50"/><circle cx="29" cy="31" r="1.3" fill="#355b50"/>
+            <path d="M22 34q2 2 4 0" stroke="#355b50" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="m33 7 1-3M37 9l3-1" stroke="#b39763" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div><div class="brand-name">여행서랍<span>.</span></div></div>
+        <button type="button" id="backBtn" class="sidebar-back-btn" aria-label="이전 지역 선택으로 돌아가기" title="이전 단계로 돌아가기" disabled>←</button>
       </header>
       <div class="sidebar-scroll">
-        <p class="eyebrow">DISCOVER KOREA</p>
-        <h1>지도로 만나는<br><em>우리의 여행</em></h1>
-        <p class="intro">가고 싶은 지역을 클릭해 보세요. 숨어있는 여행 장소들이 지도 위에 나타납니다.</p>
-        <div class="breadcrumb"><button id="homeBtn" type="button">전국</button><span id="crumbRegion"></span><span id="crumbCity"></span></div>
-        <div class="step-title"><span id="stepNum">01</span><div><strong id="stepHeading">지역을 선택하세요</strong><small id="stepDetail">시·도 17개 지역</small></div></div>
-        <div class="region-list" id="regionList"><div class="loading-message">지역 목록을 불러오는 중...</div></div>
-        <section class="nationwide-controls" id="nationwideControls" aria-label="전국 여행 장소 검색">
-          <h2>전국 여행 장소</h2>
-          <p>지역 선택 없이 전국의 장소를 둘러보세요.</p>
-          <div class="filters nationwide-filters" id="nationwideFilters">
-            <button type="button" class="filter" data-category="all" aria-pressed="false">전체</button>
-            <button type="button" class="filter" data-category="tourism" aria-pressed="false">관광지</button>
-            <button type="button" class="filter" data-category="food" aria-pressed="false">맛집</button>
-            <button type="button" class="filter" data-category="event" aria-pressed="false">행사</button>
+        <section class="stamp-ranking sidebar-stamp-ranking" aria-labelledby="sidebarRankingHeading">
+          <button type="button" class="stamp-help-button" data-stamp-help aria-label="스탬프 종류와 역할 안내">?</button>
+          <p class="ranking-challenge-label">Ranking</p>
+          <h3 id="sidebarRankingHeading">🏆 스탬프 랭킹 <small>가장 많은 스탬프를 모아보세요!</small></h3>
+          <div class="stamp-ranking-tabs" aria-label="스탬프 종류별 순위"><button type="button" data-stamp-type="white" aria-pressed="true">흰색</button><button type="button" data-stamp-type="silver" aria-pressed="false">은색</button><button type="button" data-stamp-type="gold" aria-pressed="false">금색</button></div>
+          <ol id="sidebarStampRankingList"></ol>
+          <p id="sidebarStampMyRank" role="status">순위를 불러오는 중…</p>
+          <div id="sidebarStampProgress" class="stamp-progress-board" aria-label="내 스탬프 종류별 진행률"></div>
+          <p class="ranking-next-goal" id="rankingNextGoal">새로운 여행지에서 다음 스탬프를 모아 보세요.</p>
+          <button class="ranking-explore-button" id="rankingExplore" type="button">다음 스탬프 찾으러 가기 →</button>
+        </section>
+        <button id="stampCatalogOpen" class="favorites-sidebar-button" type="button"><span aria-hidden="true">🗃️</span> 스탬프 보관소</button>
+        <hr class="sidebar-ranking-divider">
+          <p class="place-filter-label">어떤 장소를 찾고 있나요?</p>
+          <div class="filters" id="filters" role="group" aria-label="표시할 장소 종류">
+            <button type="button" class="filter active" data-category="all" aria-pressed="true">전체</button>
+            <button type="button" class="filter" data-category="tourism" aria-pressed="false">📷 관광지</button>
+            <button type="button" class="filter" data-category="food" aria-pressed="false">🍜 맛집</button>
+            <button type="button" class="filter" data-category="event" aria-pressed="false">🎉 행사</button>
           </div>
+        <form class="region-search" id="regionSearchForm" role="search" aria-label="지역 검색">
+          <label for="regionSearchInput">어디로 떠나고 싶나요?</label>
+          <div class="region-search-row"><input id="regionSearchInput" type="search" placeholder="예: 강릉, 수원시, 서울 강남구" maxlength="60" required><button type="submit">검색</button></div>
+        </form>
+        <button class="region-expand hidden" id="regionExpand" type="button" aria-expanded="false" aria-controls="regionList">전체 지역 펼치기</button>
+        <p class="region-search-message" id="regionSearchMessage" role="status"></p>
+        <div class="region-search-results" id="regionSearchResults"></div>
+
+        <div class="region-list" id="regionList"><div class="loading-message">지역 목록을 불러오는 중...</div></div>
+        <button id="favoritesBtn" class="favorites-sidebar-button" type="button" aria-pressed="false">★ 즐겨찾기 장소 목록</button>
+        <div id="favoritesListSlot"></div>
+        <section class="personality-recommendations" aria-labelledby="personalityHeading">
+          <h2 id="personalityHeading">나에게 맞는 여행지 추천</h2>
+          <p id="personalitySummary" role="status">내 MBTI에 어울리는 다음 여행지</p>
+          <div id="personalityPlaces"></div>
+          <p class="recommendation-note">장소 이름·설명과 성향 키워드로 고른 참고 추천입니다. 실제 소음·혼잡도나 취향을 보장하지 않으며, J/P는 일정 방식의 참고 기준입니다.</p>
         </section>
         <div class="selected-card hidden" id="selectedCard">
           <p class="eyebrow">YOUR DESTINATION</p>
           <h2 id="selectedName"></h2>
           <p class="selected-hint">어떤 여행을 찾고 있나요?</p>
-          <div class="filters" id="filters">
-            <button type="button" class="filter active" data-category="all">전체</button>
-            <button type="button" class="filter" data-category="tourism">🏞️ 관광지</button>
-            <button type="button" class="filter" data-category="food">🍜 맛집</button>
-            <button type="button" class="filter" data-category="event">🎉 행사</button>
-          </div>
-          <div class="results-head"><span>발견한 장소</span><strong id="resultCount">0</strong></div>
-          <div class="landmark-list" id="landmarkList"></div>
+
+          <details class="places-drawer" id="placesDrawer">
+            <summary class="results-head"><span>발견한 장소</span><strong id="resultCount">0</strong></summary>
+            <div class="landmark-list" id="landmarkList"></div>
+          </details>
           <p class="data-note">장소와 좌표는 시연용 예제입니다. 영업 여부·행사 일정은 방문 전 확인하세요.</p>
         </div>
       </div>
@@ -139,10 +209,16 @@
       </div>
       <div id="map" aria-label="대한민국 지역별 여행 지도"></div>
       <div class="map-top">
-        <div class="map-navigation"><div class="map-tag">✳ EXPLORE KOREA</div><button type="button" id="backBtn" class="back-btn hidden">← 이전 단계</button></div>
+        <div class="map-navigation"><div class="map-tag">✳ EXPLORE KOREA</div></div>
         <section class="login-card" aria-label="로그인">
           {% if member_name %}
-          <div class="member-greeting">{{ member_name }}님, 반갑습니다. <button class="auth-submit" id="logoutButton" type="button">로그아웃</button></div>
+          <div class="member-greeting">
+            <a class="profile-link" href="{{ url_for('profile') }}" aria-label="{{ member_name }}님의 내 프로필 보기">
+              <span class="profile-avatar" aria-hidden="true">{{ member_name[:1] }}</span>
+              <span><strong>{{ member_name }}님</strong><small>내 프로필 보기 →</small></span>
+            </a>
+            <button class="auth-submit" id="logoutButton" type="button">로그아웃</button>
+          </div>
           {% else %}
           <form id="loginForm" class="login-form">
             <div class="login-fields">
@@ -158,14 +234,84 @@
           <p class="auth-message" id="loginMessage" role="status"></p>
         </section>
       </div>
+      <button class="map-corner-back" id="mapCornerBack" type="button" aria-label="이전 지역 선택으로 돌아가기">← 뒤로가기</button>
+      <section class="trip-tray" id="tripTray" aria-labelledby="tripTrayTitle">
+        <h2 id="tripTrayTitle">♡ 찜한 장소 <span id="tripTrayCount">0</span></h2>
+        <p>이번 여행에서 눈여겨본 장소 · 현재 탭의 임시 목록</p>
+        <div id="tripTrayList" class="trip-tray-list"></div>
+        <button id="tripTraySave" type="button">즐겨찾기에 한꺼번에 추가</button>
+        <p id="tripTrayMessage" role="status"></p>
+      </section>
+      <section class="stamp-shelf" aria-labelledby="stampRankingHeading">
+        <button type="button" class="stamp-help-button" data-stamp-help aria-label="스탬프 종류와 역할 안내">?</button>
+        <div class="stamp-ranking">
+          <h3 id="stampRankingHeading">스탬프 랭킹</h3>
+          <div class="stamp-ranking-tabs" aria-label="스탬프 종류별 순위"><button type="button" data-stamp-type="white" aria-pressed="true">흰색</button><button type="button" data-stamp-type="silver" aria-pressed="false">은색</button><button type="button" data-stamp-type="gold" aria-pressed="false">금색</button></div>
+          <ol id="stampRankingList"></ol>
+          <p id="stampMyRank" role="status">순위를 불러오는 중…</p>
+        </div>
+        <details class="my-stamps-drawer">
+          <summary>나의 여행 스탬프 <span id="stampCount">0</span></summary>
+          <p id="stampMessage" role="status">사진과 리뷰를 남기면 장소 스탬프가 생겨요.</p>
+          <div class="stamp-list" id="stampList"></div>
+        </details>
+      </section>
       <div class="map-bottom"><span class="map-tip" id="mapTip">👆 지도에서 시·도를 선택하면 확대됩니다.</span><span class="map-credit">행정구역 GeoJSON · 제주·울릉·독도 확대 표시</span></div>
       <div class="toast hidden" id="toast" role="status"></div>
     </main>
   </div>
 
+  <dialog class="signup-dialog stamp-help-dialog" id="stampHelpDialog" aria-labelledby="stampHelpTitle">
+    <button type="button" class="signup-close" id="stampHelpClose" aria-label="스탬프 안내 닫기">×</button>
+    <div class="stamp-guide"><h2 id="stampHelpTitle">스탬프란?</h2>
+      <p>장소에 방문해 사진과 리뷰를 저장하면 얻는 여행의 기록입니다. 같은 장소에서는 한 개만 얻으며, 스탬프를 누르면 남긴 사진과 리뷰를 다시 볼 수 있습니다.</p>
+      <p><b class="guide-tourism">초록 · 관광지</b>　<b class="guide-food">황토 · 맛집</b>　<b class="guide-event">보라 · 행사</b></p>
+      <p>장소 스탬프는 위 세 종류로 구분합니다. 지역 완성 보상은 별도로 지급합니다.</p>
+      <ul class="stamp-help-types">
+        <li><img src="{{ url_for('static', filename='images/stamps/white.svg') }}" alt="흰색 깃발 스탬프"><span><strong>흰색 스탬프</strong>장소마다 사진과 리뷰를 남기면 한 개 획득합니다.</span></li>
+        <li><img src="{{ url_for('static', filename='images/stamps/silver.svg') }}" alt="은색 메달 스탬프"><span><strong>은색 스탬프</strong>해당 시·군·구의 등록 장소 스탬프를 모두 모으면 한 개 획득합니다.</span></li>
+        <li><img src="{{ url_for('static', filename='images/stamps/gold.svg') }}" alt="금색 왕관 스탬프"><span><strong>금색 스탬프</strong>해당 도·특별시·광역시의 등록 장소 스탬프를 모두 모으면 한 개 획득합니다.</span></li>
+      </ul>
+      <p>진행률과 지역 보상은 현재 지도에 등록된 장소 기준입니다. 새 장소가 추가되면 진행률과 완성 상태가 바뀔 수 있습니다. 실제 위치 인증은 하지 않으며 사진·리뷰 저장으로 집계합니다.</p>
+    </div>
+  </dialog>
+  <dialog class="signup-dialog stamp-catalog-dialog" id="stampCatalogDialog" aria-labelledby="stampCatalogTitle">
+    <button class="signup-close" id="stampCatalogClose" type="button" aria-label="스탬프 보관소 닫기">×</button>
+    <h2 id="stampCatalogTitle">🗃️ 스탬프 보관소</h2>
+
+    <p id="stampCatalogMessage" role="status"></p>
+    <div id="stampCatalogContent"></div>
+  </dialog>
+  <dialog class="signup-dialog stamp-dialog" id="stampDialog" aria-labelledby="stampPlaceTitle">
+    <button class="signup-close" id="stampClose" type="button" aria-label="스탬프 닫기">×</button>
+    <p class="eyebrow">MY TRAVEL STAMP</p>
+    <h2 id="stampPlaceTitle"></h2><p id="stampPlaceArea"></p>
+    <img id="stampPhoto" class="stamp-photo" alt="">
+    <p id="stampReview" class="stamp-review"></p>
+  </dialog>
+  <dialog class="signup-dialog visit-dialog" id="visitDialog" aria-labelledby="visitTitle">
+    <button class="signup-close" id="visitClose" type="button" aria-label="방문 기록 닫기">×</button>
+    <p class="eyebrow">MY TRAVEL RECORD</p>
+    <h2 id="visitTitle">방문 기록</h2>
+    <form class="signup-form" id="visitForm">
+      <img id="visitExistingPhoto" class="visit-existing-photo" alt="기존 방문 사진" hidden>
+      <label>방문 사진<input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required><small>JPG, PNG, WebP · 최대 5MB</small></label>
+      <label>나의 리뷰<textarea name="review" maxlength="2000" rows="5" placeholder="방문한 경험을 남겨 주세요." required></textarea></label>
+      <p class="auth-message" id="visitMessage" role="status"></p>
+      <button class="auth-submit" type="submit">방문 기록 저장</button>
+    </form>
+  </dialog>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script id="regionIconData" type="application/json">{{ region_icons | tojson }}</script>
+  <script src="{{ url_for('static', filename='js/stamps.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/stamp-catalog.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/visits.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/favorites.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/trip-tray.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/recommendations.js') }}"></script>
   <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
   <script src="{{ url_for('static', filename='js/account.js') }}"></script>
   <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/draggable-panels.js') }}"></script>
 </body>
 </html>

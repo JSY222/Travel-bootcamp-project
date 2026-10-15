@@ -1,0 +1,858 @@
+{
+  "tables": [
+    {
+      "name": "datalab_food_rankings",
+      "kind": "BASE TABLE",
+      "columns": [
+        {
+          "Field": "region_code",
+          "Type": "char(2)",
+          "Null": "NO",
+          "Key": "MUL",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "sigungu_code",
+          "Type": "char(5)",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "province_name",
+          "Type": "varchar(50)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "locality_name",
+          "Type": "varchar(100)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "period_start",
+          "Type": "char(6)",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "period_end",
+          "Type": "char(6)",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "audience",
+          "Type": "enum('all','local','nonlocal')",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "poi_id",
+          "Type": "char(32)",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "area_rank",
+          "Type": "smallint(5) unsigned",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "title",
+          "Type": "varchar(255)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "subtype",
+          "Type": "varchar(100)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        }
+      ],
+      "count": 25500
+    },
+    {
+      "name": "event_landmarks",
+      "kind": "BASE TABLE",
+      "columns": [
+        {
+          "Field": "id",
+          "Type": "int(10) unsigned",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": "auto_increment"
+        },
+        {
+          "Field": "region_code",
+          "Type": "char(2)",
+          "Null": "NO",
+          "Key": "MUL",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "locality_name",
+          "Type": "varchar(50)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "title",
+          "Type": "varchar(120)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "description",
+          "Type": "varchar(255)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "latitude",
+          "Type": "decimal(10,6)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "longitude",
+          "Type": "decimal(10,6)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "location_url",
+          "Type": "varchar(500)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "source_name",
+          "Type": "varchar(100)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "locality_id",
+          "Type": "int(10) unsigned",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        }
+      ],
+      "count": 30
+    },
+    {
+      "name": "food_landmarks",
+      "kind": "BASE TABLE",
+      "columns": [
+        {
+          "Field": "id",
+          "Type": "int(10) unsigned",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": "auto_increment"
+        },
+        {
+          "Field": "region_code",
+          "Type": "char(2)",
+          "Null": "NO",
+          "Key": "MUL",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "locality_name",
+          "Type": "varchar(50)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "title",
+          "Type": "varchar(120)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "description",
+          "Type": "varchar(255)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "latitude",
+          "Type": "decimal(10,6)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "longitude",
+          "Type": "decimal(10,6)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "location_url",
+          "Type": "varchar(500)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "source_name",
+          "Type": "varchar(100)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "locality_id",
+          "Type": "int(10) unsigned",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        }
+      ],
+      "count": 44
+    },
+    {
+      "name": "geo_admin_codes",
+      "kind": "BASE TABLE",
+      "columns": [
+        {
+          "Field": "source_level",
+          "Type": "enum('SIG','EMD')",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "source_code",
+          "Type": "varchar(10)",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "locality_id",
+          "Type": "int(10) unsigned",
+          "Null": "NO",
+          "Key": "MUL",
+          "Default": null,
+          "Extra": ""
+        }
+      ],
+      "count": 282
+    },
+    {
+      "name": "localities",
+      "kind": "BASE TABLE",
+      "columns": [
+        {
+          "Field": "id",
+          "Type": "int(10) unsigned",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": "auto_increment"
+        },
+        {
+          "Field": "region_code",
+          "Type": "char(2)",
+          "Null": "NO",
+          "Key": "MUL",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "name",
+          "Type": "varchar(50)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "locality_type",
+          "Type": "enum('city','county','district','town','other')",
+          "Null": "NO",
+          "Key": "",
+          "Default": "other",
+          "Extra": ""
+        }
+      ],
+      "count": 261
+    },
+    {
+      "name": "member_favorites",
+      "kind": "BASE TABLE",
+      "columns": [
+        {
+          "Field": "member_id",
+          "Type": "bigint(20) unsigned",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "category",
+          "Type": "varchar(10)",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "landmark_id",
+          "Type": "bigint(20) unsigned",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "created_at",
+          "Type": "timestamp",
+          "Null": "NO",
+          "Key": "",
+          "Default": "current_timestamp()",
+          "Extra": ""
+        }
+      ],
+      "count": 4
+    },
+    {
+      "name": "member_visits",
+      "kind": "BASE TABLE",
+      "columns": [
+        {
+          "Field": "id",
+          "Type": "bigint(20) unsigned",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": "auto_increment"
+        },
+        {
+          "Field": "member_id",
+          "Type": "bigint(20) unsigned",
+          "Null": "NO",
+          "Key": "MUL",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "category",
+          "Type": "varchar(10)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "landmark_id",
+          "Type": "bigint(20) unsigned",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "title",
+          "Type": "varchar(255)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "locality_name",
+          "Type": "varchar(100)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "review",
+          "Type": "text",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "photo",
+          "Type": "mediumblob",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "photo_mime",
+          "Type": "varchar(30)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "updated_at",
+          "Type": "timestamp",
+          "Null": "NO",
+          "Key": "",
+          "Default": "current_timestamp()",
+          "Extra": "on update current_timestamp()"
+        }
+      ],
+      "count": 22
+    },
+    {
+      "name": "members",
+      "kind": "BASE TABLE",
+      "columns": [
+        {
+          "Field": "id",
+          "Type": "bigint(20) unsigned",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": "auto_increment"
+        },
+        {
+          "Field": "username",
+          "Type": "varchar(50)",
+          "Null": "NO",
+          "Key": "UNI",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "password_hash",
+          "Type": "varchar(255)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "name",
+          "Type": "varchar(50)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "birth_date",
+          "Type": "date",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "address",
+          "Type": "varchar(255)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "travel_styles",
+          "Type": "longtext",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "created_at",
+          "Type": "timestamp",
+          "Null": "NO",
+          "Key": "",
+          "Default": "current_timestamp()",
+          "Extra": ""
+        },
+        {
+          "Field": "mbti",
+          "Type": "char(4)",
+          "Null": "YES",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        }
+      ],
+      "count": 2
+    },
+    {
+      "name": "regions",
+      "kind": "BASE TABLE",
+      "columns": [
+        {
+          "Field": "code",
+          "Type": "char(2)",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "name",
+          "Type": "varchar(50)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "region_type",
+          "Type": "enum('province','metro')",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "display_order",
+          "Type": "tinyint(3) unsigned",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        }
+      ],
+      "count": 17
+    },
+    {
+      "name": "tourist_landmarks",
+      "kind": "BASE TABLE",
+      "columns": [
+        {
+          "Field": "id",
+          "Type": "int(10) unsigned",
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": "auto_increment"
+        },
+        {
+          "Field": "region_code",
+          "Type": "char(2)",
+          "Null": "NO",
+          "Key": "MUL",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "locality_name",
+          "Type": "varchar(50)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "title",
+          "Type": "varchar(120)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "description",
+          "Type": "varchar(255)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "latitude",
+          "Type": "decimal(10,6)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "longitude",
+          "Type": "decimal(10,6)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "location_url",
+          "Type": "varchar(500)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "source_name",
+          "Type": "varchar(100)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "locality_id",
+          "Type": "int(10) unsigned",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        }
+      ],
+      "count": 75
+    },
+    {
+      "name": "v_all_places",
+      "kind": "VIEW",
+      "columns": [],
+      "count": null,
+      "error_code": 1356
+    },
+    {
+      "name": "v_datalab_food_top20",
+      "kind": "VIEW",
+      "columns": [
+        {
+          "Field": "region_code",
+          "Type": "char(2)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "sigungu_code",
+          "Type": "char(5)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "province_name",
+          "Type": "varchar(50)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "locality_name",
+          "Type": "varchar(100)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "period_start",
+          "Type": "char(6)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "period_end",
+          "Type": "char(6)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "audience",
+          "Type": "enum('all','local','nonlocal')",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "poi_id",
+          "Type": "char(32)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "area_rank",
+          "Type": "smallint(5) unsigned",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "title",
+          "Type": "varchar(255)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        },
+        {
+          "Field": "subtype",
+          "Type": "varchar(100)",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": ""
+        }
+      ],
+      "count": 5100
+    },
+    {
+      "name": "v_landmark_counts",
+      "kind": "VIEW",
+      "columns": [],
+      "count": null,
+      "error_code": 1356
+    },
+    {
+      "name": "v_landmarks",
+      "kind": "VIEW",
+      "columns": [],
+      "count": null,
+      "error_code": 1356
+    }
+  ],
+  "foreign_keys": [
+    {
+      "TABLE_NAME": "event_landmarks",
+      "COLUMN_NAME": "region_code",
+      "REFERENCED_TABLE_NAME": "regions",
+      "REFERENCED_COLUMN_NAME": "code"
+    },
+    {
+      "TABLE_NAME": "event_landmarks",
+      "COLUMN_NAME": "region_code",
+      "REFERENCED_TABLE_NAME": "localities",
+      "REFERENCED_COLUMN_NAME": "region_code"
+    },
+    {
+      "TABLE_NAME": "event_landmarks",
+      "COLUMN_NAME": "locality_id",
+      "REFERENCED_TABLE_NAME": "localities",
+      "REFERENCED_COLUMN_NAME": "id"
+    },
+    {
+      "TABLE_NAME": "food_landmarks",
+      "COLUMN_NAME": "region_code",
+      "REFERENCED_TABLE_NAME": "regions",
+      "REFERENCED_COLUMN_NAME": "code"
+    },
+    {
+      "TABLE_NAME": "food_landmarks",
+      "COLUMN_NAME": "region_code",
+      "REFERENCED_TABLE_NAME": "localities",
+      "REFERENCED_COLUMN_NAME": "region_code"
+    },
+    {
+      "TABLE_NAME": "food_landmarks",
+      "COLUMN_NAME": "locality_id",
+      "REFERENCED_TABLE_NAME": "localities",
+      "REFERENCED_COLUMN_NAME": "id"
+    },
+    {
+      "TABLE_NAME": "geo_admin_codes",
+      "COLUMN_NAME": "locality_id",
+      "REFERENCED_TABLE_NAME": "localities",
+      "REFERENCED_COLUMN_NAME": "id"
+    },
+    {
+      "TABLE_NAME": "localities",
+      "COLUMN_NAME": "region_code",
+      "REFERENCED_TABLE_NAME": "regions",
+      "REFERENCED_COLUMN_NAME": "code"
+    },
+    {
+      "TABLE_NAME": "tourist_landmarks",
+      "COLUMN_NAME": "region_code",
+      "REFERENCED_TABLE_NAME": "regions",
+      "REFERENCED_COLUMN_NAME": "code"
+    },
+    {
+      "TABLE_NAME": "tourist_landmarks",
+      "COLUMN_NAME": "region_code",
+      "REFERENCED_TABLE_NAME": "localities",
+      "REFERENCED_COLUMN_NAME": "region_code"
+    },
+    {
+      "TABLE_NAME": "tourist_landmarks",
+      "COLUMN_NAME": "locality_id",
+      "REFERENCED_TABLE_NAME": "localities",
+      "REFERENCED_COLUMN_NAME": "id"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="signed-in" content="{{ 'true' if member_name else 'false' }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>내 프로필 | Cityname</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="signup-page profile-page">
+  <main class="registration-card profile-card">
+    <a href="{{ url_for('index') }}">← 여행 지도로 돌아가기</a>
+    <p class="eyebrow">MY CITYNAME</p>
+    <h1>내 프로필</h1>
+    {% if member %}
+    <div class="profile-heading">
+      <span class="profile-avatar profile-avatar-large" aria-hidden="true">{{ member.name[:1] }}</span>
+      <div><h2>{{ member.name }}님</h2><p>나만의 여행을 만나보세요.</p></div>
+    </div>
+    <div class="profile-dashboard">
+      <section class="profile-panel" aria-labelledby="visitedCitiesHeading">
+        <h2 id="visitedCitiesHeading">방문 도시 <span id="visitedCitiesCount">0</span></h2>
+        <p class="profile-panel-description">발걸음을 남긴 나의 여행지</p>
+        <div id="visitedCitiesList" class="profile-panel-content" aria-live="polite">불러오는 중…</div>
+      </section>
+      <section class="profile-panel" aria-labelledby="travelRecordsHeading">
+        <h2 id="travelRecordsHeading">여행 기록 <span id="travelRecordsCount">0</span></h2>
+        <p class="profile-panel-description">사진과 리뷰로 남긴 순간들</p>
+        <div id="travelRecordsList" class="profile-panel-content" aria-live="polite">불러오는 중…</div>
+      </section>
+      <section class="profile-panel" aria-labelledby="favoritePlacesHeading">
+        <h2 id="favoritePlacesHeading"><span class="profile-star" aria-hidden="true">★</span> 즐겨찾기 <span id="favoritePlacesCount">0</span></h2>
+        <p class="profile-panel-description">마음에 담아 둔 장소</p>
+        <div id="favoritePlacesList" class="profile-panel-content" aria-live="polite">불러오는 중…</div>
+      </section>
+      <section class="profile-panel" aria-labelledby="profileStampsHeading">
+        <h2 id="profileStampsHeading">여행 스탬프 <span id="profileStampsCount">0</span></h2>
+        <p class="profile-panel-description">사진과 리뷰로 모은 여행의 흔적</p>
+        <div id="profileStampsList" class="profile-panel-content profile-stamps" aria-live="polite">불러오는 중…</div>
+      </section>
+    </div>
+    <details class="profile-info-drawer">
+      <summary>내 정보 보기</summary>
+      <dl class="profile-details">
+      <div><dt>이름</dt><dd>{{ member.name }}</dd></div>
+      <div><dt>생년월일</dt><dd>{{ member.birth_date }}</dd></div>
+      <div><dt>아이디</dt><dd>{{ member.username }}</dd></div>
+      <div><dt>주소지</dt><dd>{{ member.address }}</dd></div>
+      <div><dt>MBTI</dt><dd>{{ member.mbti or '미입력' }}</dd></div>
+      <div><dt>여행 스타일</dt><dd class="profile-styles">{% for style in member.travel_styles %}<span>{{ style }}</span>{% else %}선택한 여행 스타일이 없습니다.{% endfor %}</dd></div>
+      </dl>
+      <button class="auth-submit profile-edit-button" id="editLoginInfoButton" type="button">로그인 정보 수정</button>
+      <form id="profileEditForm" class="signup-form hidden">
+        <p>아이디와 비밀번호는 변경할 수 없습니다.</p>
+        <label>이름<input name="name" value="{{ member.name }}" maxlength="50" required></label>
+        <label>생년월일<input name="birth_date" type="date" value="{{ member.birth_date }}" required></label>
+        <label>주소지<input name="address" value="{{ member.address }}" maxlength="255" required></label>
+        <label>MBTI<input name="mbti" value="{{ member.mbti or '' }}" minlength="4" maxlength="4" pattern="[A-Za-z]{4}" placeholder="영문자 4글자" required></label>
+        <fieldset class="travel-style-fieldset"><legend>여행 스타일</legend><div class="travel-style-options">
+          {% for style in travel_styles %}<label class="travel-style-option"><input type="checkbox" name="travel_styles" value="{{ style }}" {% if style in member.travel_styles %}checked{% endif %}><span>{{ style }}</span></label>{% endfor %}
+        </div></fieldset>
+        <p id="profileEditMessage" class="auth-message" role="status"></p>
+        <div class="profile-edit-actions">
+          <button class="auth-submit" type="submit">변경사항 저장</button>
+          <button type="button" id="profileEditCancel">취소</button>
+        </div>
+      </form>
+    </details>
+    {% else %}
+    <p class="auth-message" role="alert">{{ error }}</p>
+    {% endif %}
+    <p class="auth-message" id="loginMessage" role="status"></p>
+  </main>
+  <script src="{{ url_for('static', filename='js/account.js') }}"></script>
+  {% if member %}
+  <script id="profileRegionIcons" type="application/json">{{ region_icons | default([]) | tojson }}</script>
+  <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+  {% endif %}
+</body>
+</html>

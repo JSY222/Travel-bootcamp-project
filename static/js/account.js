@@ -58,3 +58,24 @@
     finally { button.disabled = false; }
   });
 })();
+
+(() => {
+  const form=document.getElementById('profileEditForm');
+  document.querySelectorAll('input[name="mbti"]').forEach(input=>input.addEventListener('input',()=>{input.value=input.value.replace(/[^A-Za-z]/g,'').slice(0,4).toUpperCase();}));
+  if(!form)return;
+  const open=document.getElementById('editLoginInfoButton');
+  const message=document.getElementById('profileEditMessage');
+  form.elements.birth_date.max=new Date().toLocaleDateString('sv-SE');
+  open.setAttribute('aria-expanded','false');open.setAttribute('aria-controls','profileEditForm');
+  open.addEventListener('click',()=>{form.classList.remove('hidden');open.classList.add('hidden');open.setAttribute('aria-expanded','true');form.elements.name.focus();});
+  document.getElementById('profileEditCancel').addEventListener('click',()=>{form.reset();form.classList.add('hidden');open.classList.remove('hidden');open.setAttribute('aria-expanded','false');message.textContent='';open.focus();});
+  form.addEventListener('submit',async event=>{
+    event.preventDefault();const fields=new FormData(form),data=Object.fromEntries(fields);data.travel_styles=fields.getAll('travel_styles');
+    const button=form.querySelector('[type="submit"]');button.disabled=true;
+    try{
+      const response=await fetch('/api/profile',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':document.querySelector('meta[name="csrf-token"]').content},body:JSON.stringify(data)});
+      const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'Save failed');
+      location.reload();
+    }catch(error){message.textContent=error.message;}finally{button.disabled=false;}
+  });
+})();

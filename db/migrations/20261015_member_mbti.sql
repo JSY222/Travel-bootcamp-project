@@ -1,0 +1,3 @@
+USE cityname;
+SET NAMES utf8mb4;
+ALTER TABLE members ADD COLUMN IF NOT EXISTS mbti CHAR(4) NULL;

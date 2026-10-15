@@ -15,11 +15,55 @@ const REGION_ORDER = ['41', '42', '51', '43', '44', '45', '52', '46', '47', '48'
 let sejongEmdCache = null;
 
 const CATEGORIES = {
-  tourism: {emoji: '🏞️', label: '관광지'},
+  tourism: {emoji: '📷', label: '관광지'},
   food: {emoji: '🍜', label: '맛집'},
   event: {emoji: '🎉', label: '행사'}
 };
 const $ = (selector) => document.querySelector(selector);
+const regionIconAliases = {'강원도': '강원특별자치도', '전라북도': '전북특별자치도', '제주도': '제주특별자치도'};
+const canonicalRegionName = name => regionIconAliases[name] || name || '';
+const regionIconEntries = JSON.parse($('#regionIconData').textContent);
+const canonicalIconCode = code => ({'51': '42', '52': '45'}[String(code)] || String(code || ''));
+const provinceIconsByCode = new Map(regionIconEntries.filter(icon => icon.level === '시·도')
+  .map(icon => [canonicalIconCode(icon.region_code), icon.url]));
+const localIconsByCode = new Map(regionIconEntries.filter(icon => icon.parent)
+  .map(icon => [`${canonicalIconCode(icon.region_code)}|${canonicalRegionName(icon.name)}`, icon.url]));
+const regionIcons = new Map(regionIconEntries.map(icon =>
+  [`${canonicalRegionName(icon.parent)}|${canonicalRegionName(icon.name)}`, icon.url]));
+function regionImageUrl(feature) {
+  const name = feature.properties.displayName;
+  const parent = state.selectedRegion?.name || '';
+  const isProvince = Boolean(feature.properties.CTP_KOR_NM);
+  const code = canonicalIconCode(feature.properties.regionCode || feature.properties.CTPRVN_CD || state.selectedRegion?.code);
+  const codedIcon = isProvince ? provinceIconsByCode.get(code)
+    : localIconsByCode.get(`${code}|${canonicalRegionName(name)}`);
+  if (codedIcon) return codedIcon;
+  return regionIcons.get(`${isProvince ? '' : canonicalRegionName(parent)}|${canonicalRegionName(name)}`);
+}
+function regionLabel(feature) {
+  const name = feature.properties.displayName;
+  const url = regionImageUrl(feature);
+  const label = document.createElement('span');
+  label.className = 'region-map-label';
+  if (url) {
+    const image = document.createElement('img');
+    image.src = url;
+    image.alt = '';
+    image.className = 'region-map-icon';
+    image.decoding = 'async';
+    image.addEventListener('error', () => image.remove(), {once: true});
+    label.append(image);
+  }
+  const caption = document.createElement('span');
+  caption.className = 'region-map-caption';
+  caption.textContent = name;
+  label.append(caption);
+  return label;
+}
+function showHomeView() {
+  const width = document.getElementById('map').clientWidth;
+  map.setView([36.7, 128.3], width >= 1200 ? 7.5 : width >= 700 ? 7.25 : 6.75, {animate: false});
+}
 // Scattered, deterministic wavelets avoid an obvious repeating ocean tile.
 function decorateOcean() {
   const ocean = $('.ocean-waves');
@@ -119,8 +163,12 @@ function roundCoastline(points, radius, tolerance) {
   }
   return rounded;
 }
-function smoothDisplayFeature(feature) {
+function smoothDisplayFeature(feature, detailed = false) {
   const polygons = asPolygons(feature.geometry);
+  // Detail must retain shared vertices exactly; independent simplification or
+  // rounding opens gaps where two administrative polygons meet.
+  if (detailed) return {...feature, geometry: {type: 'MultiPolygon',
+    coordinates: polygons.map(polygon => polygon.map(ring => ring.map(displayCoordinate)))}};
   const area = ring => Math.abs(ring.reduce((sum, p, i) => {
     const q = ring[(i + 1) % ring.length];
     return sum + p[0] * q[1] - q[0] * p[1];
@@ -154,11 +202,13 @@ const map = L.map('map', {
   maxZoom: 18,
   zoomSnap: .25,
   maxBoundsViscosity: 1.0
-}).setView([36.4, 127.9], 7);
+}).setView([36.7, 128.3], 7.5);
 L.control.zoom({position: 'bottomright'}).addTo(map);
 map.createPane('countryRelief');
 map.getPane('countryRelief').style.zIndex = '390';
 map.getPane('countryRelief').style.pointerEvents = 'none';
+map.createPane('selectedRelief');
+map.getPane('selectedRelief').style.zIndex = '410';
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let clearRegionLift = () => {};
 let liftedRegion = null;
@@ -200,7 +250,13 @@ function toast(message) {
   el.classList.remove('hidden');
 }
 function hideToast() { $('#toast').classList.add('hidden'); }
+let cityWatermark = null;
 function clearMap() {
+  if (cityWatermark) { map.removeLayer(cityWatermark); cityWatermark = null; }
+  rankingMarkers.clearLayers();
+  rankingMarkersByPoi.clear();
+  state.favoritesMode = false;
+  $('#favoritesBtn').setAttribute('aria-pressed', 'false');
   clearRegionLift();
   if (state.geoLayer) map.removeLayer(state.geoLayer);
   state.geoLayer = null;
@@ -211,17 +267,46 @@ function fit(layer, maxZoom = 10, padding = [28, 28]) {
     map.fitBounds(layer.getBounds(), {padding, maxZoom, animate: true});
   }
 }
+function fitSelectedRegion(layer) {
+  if (!layer || !layer.getBounds().isValid()) return;
+  const size = map.getSize();
+  const sidebarOpen = document.querySelector('.app-shell').classList.contains('sidebar-open');
+  const sidebarWidth = sidebarOpen ? document.getElementById('travelSidebar').getBoundingClientRect().width : 0;
+  const puzzleView = Boolean(state.selectedCity);
+  const horizontal = puzzleView ? Math.max(14, size.x * .02) : Math.max(28, size.x * .06);
+  const vertical = puzzleView ? Math.max(30, size.y * .06) : Math.max(45, size.y * .12);
+  map.fitBounds(layer.getBounds(), {
+    paddingTopLeft: [Math.min(sidebarWidth, size.x * .4) + horizontal, vertical],
+    paddingBottomRight: [horizontal, vertical],
+    maxZoom: puzzleView ? 18 : 16,
+    animate: !puzzleView
+  });
+}
 // 전국 17개 행정구역 윤곽을 배경으로 표시합니다.
 // 클릭은 위에 별도로 올리는 선택 가능한 행정구역 레이어에서 처리합니다.
-function drawKoreaBackground() {
+function drawKoreaBackground(detailed = false) {
   if (state.countryLayer) map.removeLayer(state.countryLayer);
   state.islandLabelLayer.clearLayers();
-  state.countryLayer = L.geoJSON(state.provinceFeatures.map(smoothDisplayFeature), {
+  document.getElementById('map').classList.toggle('map-detail', detailed);
+  // Derive province backgrounds from the same district polygons as the active
+  // layer. Province and district datasets can have different outer boundaries.
+  const districtsByProvince = new Map();
+  if (detailed) state.districtFeatures.forEach(feature => {
+    const code = String(feature.properties.CTPRVN_CD);
+    if (!districtsByProvince.has(code)) districtsByProvince.set(code, []);
+    districtsByProvince.get(code).push(...asPolygons(feature.geometry));
+  });
+  const background = state.provinceFeatures.map(feature => {
+    const polygons = districtsByProvince.get(String(feature.properties.CTPRVN_CD));
+    return polygons?.length ? {...feature,
+      geometry: {type: 'MultiPolygon', coordinates: polygons}} : feature;
+  });
+  state.countryLayer = L.geoJSON(background.map(feature => smoothDisplayFeature(feature, detailed)), {
     smoothFactor: 0,
     interactive: false,
     pane: 'countryRelief',
     style: feature => ({
-      color: '#827a8e', weight: 1.4,
+      color: '#827a8e', weight: detailed ? 0 : 1.4,
       fillColor: provinceColor(feature), fillOpacity: 1,
       className: 'country-relief'
     })
@@ -378,8 +463,9 @@ function bounceRegion(layer, feature, onClick) {
   onClick(feature);
 }
 function addGeoLayer(features, onClick) {
-  state.geoLayer = L.geoJSON(features.map(smoothDisplayFeature), {
+  state.geoLayer = L.geoJSON(features.map(feature => smoothDisplayFeature(feature, Boolean(state.selectedRegion))), {
     smoothFactor: 0,
+    pane: state.selectedRegion ? 'selectedRelief' : 'overlayPane',
     style: shapeStyle,
     onEachFeature: (feature, layer) => {
       const name = feature.properties.displayName;
@@ -410,48 +496,70 @@ function addGeoLayer(features, onClick) {
           }
         });
       });
-      layer.bindTooltip(name, {permanent: true, direction: 'center', className: 'place-tooltip', opacity: .94});
+      layer.bindTooltip(regionLabel(feature), {permanent: true, direction: 'center',
+        className: 'place-tooltip region-icon-tooltip', opacity: .98});
     }
   }).addTo(map);
   return state.geoLayer;
 }
 
 function updateStep(number, heading, detail) {
-  $('#stepNum').textContent = number;
-  $('#stepHeading').textContent = heading;
-  $('#stepDetail').textContent = detail;
+  $('#stepHeading') && ($('#stepHeading').textContent = heading);
+  $('#stepDetail') && ($('#stepDetail').textContent = detail);
 }
 function updateBreadcrumb() {
-  $('#crumbRegion').textContent = state.selectedRegion?.name || '';
-  $('#crumbCity').textContent = state.selectedCity?.properties.displayName || '';
-  $('#backBtn').classList.toggle('hidden', !state.selectedRegion);
+  document.dispatchEvent(new CustomEvent('map-region-changed', {detail: {
+    region: state.selectedRegion?.code || null,
+    city: state.selectedCity?.properties.displayName || null
+  }}));
+  if ($('#crumbRegion')) $('#crumbRegion').textContent = state.selectedRegion?.name || '';
+  if ($('#crumbCity')) $('#crumbCity').textContent = state.selectedCity?.properties.displayName || '';
+  $('#backBtn').disabled = !state.selectedRegion && !state.favoritesMode;
 }
 function addRegionButton(container, label, onClick) {
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'region-button';
-  btn.textContent = label;
+  const province = regionIconEntries.find(icon => !icon.parent && canonicalRegionName(icon.name) === canonicalRegionName(label));
+  const local = regionIconEntries.find(icon => icon.parent && (
+    `${icon.parent} ${icon.name}` === label ||
+    (canonicalRegionName(icon.parent) === canonicalRegionName(state.selectedRegion?.name) && icon.name === label)
+  ));
+  const icon = province || local;
+  if (icon) {
+    const image = document.createElement('img');
+    image.src = icon.url;
+    image.alt = '';
+    image.className = 'region-button-logo';
+    image.loading = 'lazy';
+    image.addEventListener('error', () => image.remove(), {once: true});
+    btn.append(image);
+    btn.style.setProperty('--region-accent', icon.accent || '#608a86');
+  }
+  const caption = document.createElement('span');
+  caption.textContent = label;
+  btn.append(caption);
   btn.addEventListener('click', onClick);
   container.appendChild(btn);
 }
 
 function goHome() {
+  state.favoritesMode = false;
+  $('#favoritesBtn').setAttribute('aria-pressed', 'false');
+  if ($('#placesDrawer').parentElement === $('#favoritesListSlot')) $('#placesDrawer').classList.add('hidden');
   state.fetchToken++;
   state.selectedRegion = null;
   state.selectedCity = null;
   clearMap(); hideToast();
+  drawKoreaBackground();
   $('#selectedCard').classList.add('hidden');
-  $('#nationwideControls').classList.remove('hidden');
   $('#filters').classList.remove('hidden');
-  $('#nationwideFilters').querySelectorAll('.filter').forEach(btn => {
-    btn.classList.remove('active');
-    btn.setAttribute('aria-pressed', 'false');
-  });
   updateStep('01', '지역을 선택하세요', `시·도 ${state.regions.length}개 지역`);
   updateBreadcrumb();
   $('#mapTip').textContent = '👆 지도에서 시·도를 선택하면 확대됩니다.';
   const list = $('#regionList'); list.replaceChildren();
-  state.regions.forEach(r => addRegionButton(list, r.name, () => selectRegion(r.code)));
+  $('#regionExpand').classList.remove('hidden');
+  renderHomeRegions(false);
 
   const codes = new Map(state.regions.map(r => [r.code, r]));
   const features = state.provinceFeatures
@@ -461,7 +569,10 @@ function goHome() {
       displayName: codes.get(f.properties.CTPRVN_CD).name,
       colorIndex: i
     }}));
-  if (features.length) fit(addGeoLayer(features, f => selectRegion(f.properties.CTPRVN_CD)), 8.5, [44, 60]);
+  if (features.length) {
+    addGeoLayer(features, f => selectRegion(f.properties.CTPRVN_CD));
+    showHomeView();
+  }
   else toast('행정구역 지도 데이터를 받지 못했습니다. 인터넷 연결을 확인하세요.');
 }
 
@@ -524,13 +635,77 @@ async function getSejongCities() {
   return groupSejongEmd(await sejongEmdCache);
 }
 
+function renderHomeRegions(expanded) {
+  const list = $('#regionList');
+  list.replaceChildren();
+  const regions = expanded ? state.regions : [];
+  regions.forEach(r => addRegionButton(list, r.name, () => selectRegion(r.code)));
+  $('#regionExpand').setAttribute('aria-expanded', String(expanded));
+  $('#regionExpand').textContent = expanded ? '전체 지역 접기 −' : `전체 ${state.regions.length}개 지역 펼치기 +`;
+  updateStep('01', '지역 선택', '지역을 검색하거나 전체 지역을 펼쳐 선택하세요');
+}
+
+$('#regionExpand').addEventListener('click', () => {
+  renderHomeRegions($('#regionExpand').getAttribute('aria-expanded') !== 'true');
+});
+
+const normalizeRegionSearch = value => value.replace(/\s+/g, '').replace(/특별자치도|특별자치시|특별시|광역시/g, '').replace(/전라북도/g, '전북').replace(/강원도/g, '강원');
+let regionSearchVersion = 0;
+$('#regionSearchForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  const requestedCategory = state.selectedCategory;
+  const version = ++regionSearchVersion;
+  const query = normalizeRegionSearch($('#regionSearchInput').value.trim());
+  const message = $('#regionSearchMessage');
+  const results = $('#regionSearchResults');
+  results.replaceChildren();
+  if (!query) { message.textContent = '찾고 싶은 지역 이름을 입력해 주세요.'; return; }
+  if (!state.regions.length) { message.textContent = '지도 자료를 불러온 뒤 다시 검색해 주세요.'; return; }
+  const matches = [];
+  state.regions.forEach(region => {
+    const province = normalizeRegionSearch(region.name);
+    if (province.includes(query)) matches.push({region, city: null, label: region.name, exact: province === query});
+    groupCities(region).forEach(city => {
+      const name = city.properties.displayName;
+      const normalized = normalizeRegionSearch(name);
+      if (normalized.includes(query) || (province + normalized).includes(query)) {
+        matches.push({region, city: name, label: `${region.name} ${name}`, exact: normalized === query || province + normalized === query});
+      }
+    });
+  });
+  const exact = matches.filter(match => match.exact);
+  const found = exact.length ? exact : matches;
+  async function openMatch(match) {
+    message.textContent = `${match.label}(으)로 이동하고 있어요…`;
+    results.replaceChildren();
+    await selectRegion(match.region.code);
+    if (version !== regionSearchVersion || state.selectedRegion?.code !== match.region.code) return;
+    if (match.city) await selectCity(match.city, requestedCategory);
+    if (version === regionSearchVersion) message.textContent = `${match.label} 지도를 확대했습니다.`;
+  }
+  if (found.length === 1) {
+    try { await openMatch(found[0]); }
+    catch (error) { message.textContent = '지역을 불러오지 못했습니다. 다시 검색해 주세요.'; }
+  } else if (found.length) {
+    message.textContent = `${found.length}개 지역을 찾았습니다. 원하는 지역을 선택해 주세요.`;
+    found.forEach(match => addRegionButton(results, match.label, () => {
+      openMatch(match).catch(() => { message.textContent = '지역을 불러오지 못했습니다. 다시 검색해 주세요.'; });
+    }));
+  } else {
+    message.textContent = '일치하는 지역이 없습니다. 시·도 또는 시·군·구 이름으로 검색해 주세요.';
+  }
+});
+
 async function selectRegion(code) {
+  if ($('#placesDrawer').parentElement === $('#favoritesListSlot')) $('#placesDrawer').classList.add('hidden');
   const region = state.regions.find(r => r.code === code);
   if (!region) return;
+  $('#regionExpand').classList.add('hidden');
   const token = ++state.fetchToken;
   state.selectedRegion = region;
   state.selectedCity = null;
   clearMap(); hideToast();
+  drawKoreaBackground(true);
   $('#selectedCard').classList.add('hidden');
   updateBreadcrumb();
 
@@ -577,21 +752,74 @@ async function selectRegion(code) {
   list.replaceChildren();
   cities.forEach(city => addRegionButton(list, city.properties.displayName,
     () => selectCity(city.properties.displayName)));
-  if (cities.length) fit(addGeoLayer(cities, f => selectCity(f.properties.displayName)), 10);
+  if (cities.length) fitSelectedRegion(addGeoLayer(cities, f => selectCity(f.properties.displayName)));
   else {
     toast('이 지역의 행정구역 경계가 없습니다. GeoJSON을 확인하세요.');
     list.textContent = '하위 행정구역 데이터가 없습니다.';
   }
 }
 
-async function selectCity(cityName) {
+async function selectCity(cityName, category = state.selectedCategory) {
+  $('#selectedCard').insertBefore($('#placesDrawer'), $('#selectedCard .data-note'));
+  $('#placesDrawer').classList.remove('hidden');
+  $('#placesDrawer summary span').textContent = '발견한 장소';
   const city = state.cityFeatures.find(f => f.properties.displayName === cityName);
   if (!city) return;
+  $('#placesDrawer').open = false;
   state.selectedCity = city;
-  state.selectedCategory = 'all';
+  state.selectedCategory = category;
   clearMap(); hideToast();
   const one = addGeoLayer([city], () => {});
-  fit(one, 12);
+  fitSelectedRegion(one);
+  const logoUrl = regionImageUrl(city);
+  if (logoUrl) {
+    if (!map.getPane('cityWatermark')) {
+      map.createPane('cityWatermark');
+      map.getPane('cityWatermark').style.zIndex = '420';
+      map.getPane('cityWatermark').style.pointerEvents = 'none';
+    }
+    const bounds = one.getBounds();
+    const nw = map.project(bounds.getNorthWest(), 0), se = map.project(bounds.getSouthEast(), 0);
+    const rings = asPolygons(smoothDisplayFeature(city,true).geometry).map(p=>p.map(r=>r.map(([lng,lat])=>map.project([lat,lng],0))));
+    function inRing(point,ring) {
+      let inside=false;
+      for(let i=0,j=ring.length-1;i<ring.length;j=i++) {
+        const a=ring[i],b=ring[j];
+        if((a.y>point.y)!==(b.y>point.y)&&point.x<(b.x-a.x)*(point.y-a.y)/(b.y-a.y)+a.x)inside=!inside;
+      }
+      return inside;
+    }
+    const contains=p=>rings.some(r=>inRing(p,r[0])&&!r.slice(1).some(h=>inRing(p,h)));
+    const middle=nw.add(se).divideBy(2);
+    let center=null,half;
+    for(let scale=.30;scale>=.02&&!center;scale*=.82) {
+      half=se.subtract(nw).multiplyBy(scale/2);
+      let distance=Infinity;
+      for(let y=0;y<=24;y++)for(let x=0;x<=24;x++) {
+        const candidate=L.point(nw.x+(se.x-nw.x)*x/24,nw.y+(se.y-nw.y)*y/24);
+        let fits=true;
+        for(let k=0;k<=16&&fits;k++) {
+          const f=k/16*2-1;
+          for(const p of [L.point(candidate.x+half.x*f,candidate.y-half.y),L.point(candidate.x+half.x*f,candidate.y+half.y),L.point(candidate.x-half.x,candidate.y+half.y*f),L.point(candidate.x+half.x,candidate.y+half.y*f)])if(!contains(p)){fits=false;break;}
+        }
+        if(fits&&contains(candidate)&&candidate.distanceTo(middle)<distance){center=candidate;distance=candidate.distanceTo(middle);}
+      }
+    }
+    if(center) {
+      const top=center.subtract(half),bottom=center.add(half);
+      const logoBottom=L.point(bottom.x,top.y+(bottom.y-top.y)*.76);
+      const logoBounds=L.latLngBounds(map.unproject(top,0),map.unproject(logoBottom,0));
+      const labelBounds=L.latLngBounds(map.unproject(L.point(top.x,logoBottom.y),0),map.unproject(bottom,0));
+      const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg'),text=document.createElementNS(ns,'text');
+      svg.setAttribute('viewBox','0 0 200 40');
+      text.setAttribute('x','100');text.setAttribute('y','28');text.setAttribute('text-anchor','middle');text.setAttribute('font-size',Math.min(25,170/cityName.length));text.setAttribute('font-weight','700');text.setAttribute('fill','#476656');text.textContent=cityName;svg.append(text);
+      cityWatermark=L.layerGroup([
+        L.imageOverlay(logoUrl,logoBounds,{pane:'cityWatermark',opacity:.24,interactive:false,className:'city-logo-watermark'}),
+        L.svgOverlay(svg,labelBounds,{pane:'cityWatermark',interactive:false,opacity:.55})
+      ]).addTo(map);
+    }
+    one.eachLayer(layer => layer.unbindTooltip());
+  }
   updateStep('03', '여행 장소를 탐색하세요', '아래 버튼으로 종류를 바꿀 수 있어요');
   updateBreadcrumb();
   $('#selectedName').textContent = `${state.selectedRegion.name} ${cityName}`;
@@ -600,43 +828,105 @@ async function selectCity(cityName) {
   $('#mapTip').textContent = `✨ ${cityName}의 여행 장소를 찾고 있어요.`;
   $('#regionList').replaceChildren();
   $('#filters').querySelectorAll('.filter').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.category === 'all');
+    btn.classList.toggle('active', btn.dataset.category === state.selectedCategory);
+    btn.setAttribute('aria-pressed', String(btn.dataset.category === state.selectedCategory));
   });
   await loadLandmarks();
 }
 
 function popupContent(p) {
   const wrap = document.createElement('div');
+  wrap.className = 'place-popup-content';
+  wrap.append(window.TripTray.button(p));
   const title = document.createElement('p'); title.className = 'popup-title';
   title.textContent = `${CATEGORIES[p.category].emoji} ${p.title}`;
-  const desc = document.createElement('p'); desc.className = 'popup-desc';
-  desc.textContent = p.description || '자세한 사항은 방문 전에 확인하세요.';
-  wrap.append(title, desc);
-  const source = document.createElement('p');
-  source.className = 'source-meta';
-  source.textContent = `자료: ${p.source_name || '출처 정보 없음'}`;
-  wrap.append(source);
+  wrap.append(title);
   if (/^https?:\/\//.test(p.location_url || '')) {
     const a = document.createElement('a');
     a.className = 'popup-link'; a.href = p.location_url; a.target = '_blank';
     a.rel = 'noopener noreferrer'; a.textContent = '위치 지도 열기 ↗';
     wrap.appendChild(a);
   }
+  if (p.id != null) {
+    wrap.append(window.CityVisits.button(p));
+    if (!p.datalab_place) wrap.append(window.CityFavorites.button(p));
+  } else {
+    const note = document.createElement('p');
+    note.textContent = `데이터랩 맛집 ${p.area_rank}위 · 방문 기록 연결 전`;
+    wrap.append(note);
+  }
   return wrap;
 }
-function makeMarker(p, i) {
+function landmarkIcon(p, i = 0) {
   const cat = CATEGORIES[p.category];
   const safeType = p.category;
-  const icon = L.divIcon({
-    html: `<div class="landmark-pin" style="animation-delay:${Math.min(i * 65, 700)}ms"><div class="pin-bubble pin-${safeType}"><span>${cat.emoji}</span></div></div>`,
-    className: '', iconSize: [36, 40], iconAnchor: [18, 38]
+  return L.divIcon({
+    html: `<span class="category-location-tag tag-${safeType}" style="--tag-delay:${Math.min(i*55,900)}ms" role="img" aria-label="${cat.label}"><span class="category-tag-emoji" aria-hidden="true">${cat.emoji}</span>${window.CityVisits.has(p) ? '<span class="category-tag-check" aria-label="방문 완료">✓</span>' : ''}</span>`,
+    className: 'category-tag-marker', iconSize: [48, 48], iconAnchor: [24, 24]
   });
-  return L.marker(displayLatLng(p.latitude, p.longitude), {icon}).bindPopup(popupContent(p));
 }
-function renderCards(places, markers) {
+function scatterInCity(count) {
+  if (!count || !state.selectedCity) return [];
+  const rendered = smoothDisplayFeature(state.selectedCity, true);
+  const polygons=asPolygons(rendered.geometry);
+  const points=polygons.flat(2),xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);
+  const west=Math.min(...xs),east=Math.max(...xs),south=Math.min(...ys),north=Math.max(...ys);
+  function contains(x,y,r) {
+    let hit=false;
+    for(let i=0,j=r.length-1;i<r.length;j=i++) {
+      const a=r[i],b=r[j];
+      if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])hit=!hit;
+    }
+    return hit;
+  }
+  const candidates=[];
+  const inside=(x,y)=>polygons.some(p=>contains(x,y,p[0])&&!p.slice(1).some(r=>contains(x,y,r)));
+  const zoom=map.getZoom();
+  for(let n=0;n<12000&&candidates.length<Math.max(200,count*8);n++) {
+    const x=west+Math.random()*(east-west),y=south+Math.random()*(north-south);
+    if(!inside(x,y))continue;
+    const pixel=map.project(L.latLng(y,x),zoom);
+    const fits=[[-44,-20],[0,-20],[44,-20],[-44,0],[44,0],[-44,20],[0,20],[44,20]].every(([dx,dy])=>{
+      const p=map.unproject(pixel.add(L.point(dx,dy)),zoom);return inside(p.lng,p.lat);
+    });
+    if(fits)candidates.push({x,y,d:Infinity});
+  }
+  const result=[];
+  while(result.length<count&&candidates.length) {
+    let best=0;
+    for(let i=1;i<candidates.length;i++)if(candidates[i].d>candidates[best].d)best=i;
+    const p=candidates.splice(best,1)[0];result.push(L.latLng(p.y,p.x));
+    candidates.forEach(c=>{c.d=Math.min(c.d,((c.x-p.x)/(east-west))**2+((c.y-p.y)/(north-south))**2);});
+  }
+  return result;
+}
+function shortPlaceLabel(title) {
+  const letters = Array.from(title || '');
+  const label = document.createElement('span');
+  label.textContent = letters.length > 5 ? letters.slice(0, 5).join('') + '...' : letters.join('');
+  label.title = title || '';
+  return label;
+}
+function makeMarker(p, i) {
+  const marker = L.marker(p._displayPosition || (p.latitude != null && p.longitude != null ? displayLatLng(p.latitude, p.longitude) : map.getCenter()), {icon: landmarkIcon(p, i),
+    title: `${p.title}${window.CityVisits.has(p) ? ' · 방문 완료' : ''}`});
+  marker.visitPlace = p;
+  marker.bindTooltip(shortPlaceLabel(p.title),{permanent:true,direction:'bottom',offset:[0,24],className:'location-name-tag'});
+  return marker.bindPopup(() => popupContent(p));
+}
+document.addEventListener('visits-updated', () => {
+  if (state.selectedCity && !state.favoritesMode) loadLandmarks();
+  state.markerLayer.eachLayer(marker => {
+    if (!marker.visitPlace) return;
+    marker.setIcon(landmarkIcon(marker.visitPlace));
+    const element = marker.getElement();
+    if (element) element.title = `${marker.visitPlace.title}${window.CityVisits.has(marker.visitPlace) ? ' · 방문 완료' : ''}`;
+  });
+});
+function renderCards(places, markers, rankings = []) {
   const container = $('#landmarkList'); container.replaceChildren();
-  $('#resultCount').textContent = String(places.length);
-  if (!places.length) {
+  $('#resultCount').textContent = String(places.length + rankings.length);
+  if (!places.length && !rankings.length) {
     const empty = document.createElement('div'); empty.className = 'empty-message';
     empty.textContent = '등록된 장소가 없습니다. 다른 버튼을 누르거나 다른 지역을 선택해 보세요.';
     container.append(empty); return;
@@ -651,6 +941,9 @@ function renderCards(places, markers) {
     source.className = 'source-meta';
     source.textContent = `자료: ${p.source_name || '출처 정보 없음'}`;
     card.append(source);
+    const favorite = window.CityFavorites.button(p);
+    favorite.addEventListener('click', event => event.stopPropagation());
+    card.append(favorite);
     if (/^https?:\/\//.test(p.location_url || '')) {
       const a = document.createElement('a'); a.textContent = '지도에서 위치 확인 ↗';
       a.href = p.location_url; a.target = '_blank'; a.rel = 'noopener noreferrer';
@@ -658,11 +951,37 @@ function renderCards(places, markers) {
       card.append(a);
     }
     card.addEventListener('click', () => {
-      map.flyTo(displayLatLng(p.latitude, p.longitude), Math.max(map.getZoom(), 12));
+      if (!state.favoritesMode && !state.selectedCity) map.flyTo(displayLatLng(p.latitude, p.longitude), Math.max(map.getZoom(), 12));
       markers[i].openPopup();
     });
     container.append(card);
   });
+  if (rankings.length) {
+    const heading = document.createElement('div');
+    heading.className = 'ranking-results-heading';
+    heading.textContent = '🍜 데이터랩 인기 맛집 · 전체 방문자 기준';
+    container.prepend(heading);
+    const cards = document.createDocumentFragment();
+    rankings.forEach(place => {
+      const card = document.createElement('article');
+      card.className = 'landmark-card ranking-result-card';
+      const title = document.createElement('div');
+      title.className = 'landmark-card-title';
+      title.textContent = `${place.area_rank}위 · ${place.title}`;
+      const detail = document.createElement('p');
+      detail.textContent = `${place.locality_name} · ${place.subtype} · ${place.period_start}~${place.period_end}`;
+      const note = document.createElement('small');
+      note.className = 'source-meta';
+      note.textContent = '한국관광 데이터랩 · 좌표가 없으면 지역 안에 임의 표시합니다.';
+      card.append(title, detail, note);
+      const locate = document.createElement('button');
+      locate.type = 'button'; locate.className = 'ranking-map-button'; locate.textContent = '지도에서 보기';
+      locate.addEventListener('click', () => document.dispatchEvent(new CustomEvent('food-ranking-focus', {detail: place})));
+      card.append(locate);
+      cards.append(card);
+    });
+    heading.after(cards);
+  }
 }
 
 async function loadLandmarks(nationwide = false) {
@@ -679,15 +998,22 @@ async function loadLandmarks(nationwide = false) {
     category: state.selectedCategory
   });
   try {
-    const data = await fetchJSON(`/api/landmarks?${params.toString()}`);
+    const [data] = await Promise.all([fetchJSON(`/api/landmarks?${params.toString()}`), window.CityVisits.ready, window.CityFavorites.ready]);
     if (token !== state.fetchToken) return;
     hideToast();
     const places = data.landmarks;
+    if (!nationwide && state.selectedCity) {
+      const ranking=data.food_rankings||[],positions=scatterInCity(places.length+ranking.length);
+      places.forEach((p,i)=>{p._displayPosition=positions[i];});
+      ranking.forEach((p,i)=>{p._displayPosition=positions[places.length+i];});
+    }
     const markers = places.map((p, i) => makeMarker(p, i));
-    markers.forEach(m => state.markerLayer.addLayer(m));
-    renderCards(places, markers);
+    markers.forEach(marker => state.markerLayer.addLayer(marker));
+    renderCards(places, markers, data.food_rankings || []);
+    renderRankingMarkers(data.food_rankings || []);
+    if (!nationwide) setTimeout(()=>{if(token===state.fetchToken)$('#mapTip').textContent='태그는 해당 시·군·구 안에 임의 배치한 정보이며 실제 위치가 아닙니다.';},0);
     const area = nationwide ? '전국' : state.selectedCity.properties.displayName;
-    $('#mapTip').textContent = `✨ ${area} · ${places.length}개 장소 표시 중`;
+    $('#mapTip').textContent = `${area} · 장소 ${places.length}곳 · 맛집 순위 ${(data.food_rankings || []).length}곳`;
   } catch (err) {
     if (token !== state.fetchToken) return;
     $('#resultCount').textContent = '0';
@@ -696,35 +1022,131 @@ async function loadLandmarks(nationwide = false) {
   }
 }
 
-$('#homeBtn').addEventListener('click', goHome);
-$('#nationwideFilters').addEventListener('click', e => {
-  const btn = e.target.closest('[data-category]');
-  if (!btn) return;
-  const category = btn.dataset.category;
-  goHome();
-  state.selectedCategory = category;
-  $('#nationwideFilters').querySelectorAll('.filter').forEach(el => {
-    const active = el.dataset.category === category;
-    el.classList.toggle('active', active);
-    el.setAttribute('aria-pressed', String(active));
-  });
-  $('#selectedName').textContent = category === 'all' ? '전국의 여행 장소' : `전국 ${CATEGORIES[category].label}`;
-  $('#selectedCard').classList.remove('hidden');
-  $('#filters').classList.add('hidden');
-  loadLandmarks(true);
+async function showFavorites() {
+  const token = ++state.fetchToken;
+  try {
+    const [places] = await Promise.all([window.CityFavorites.refresh(), window.CityVisits.ready]);
+    if (token !== state.fetchToken) return;
+    clearMap(); hideToast();
+    state.favoritesMode = true;
+    state.selectedRegion = null;
+    state.selectedCity = null;
+    drawKoreaBackground();
+    updateBreadcrumb();
+    $('#backBtn').disabled = false;
+    $('#favoritesBtn').setAttribute('aria-pressed', 'true');
+    $('#regionList').replaceChildren();
+    $('#selectedName').textContent = '나의 즐겨찾기 장소';
+    $('#selectedCard').classList.add('hidden');
+    $('#favoritesListSlot').append($('#placesDrawer'));
+    $('#placesDrawer').classList.remove('hidden');
+    $('#filters').classList.add('hidden');
+    updateStep('★', '즐겨찾기 장소', `${places.length}곳의 여행지를 모았어요`);
+    const markers = places.map((place, index) => makeMarker(place, index));
+    markers.forEach(marker => state.markerLayer.addLayer(marker));
+    renderCards(places, markers);
+    $('#placesDrawer').open = false;
+    $('#placesDrawer summary span').textContent = '저장한 즐겨찾기 펼쳐보기';
+    const container = $('#landmarkList');
+    const cards = [...container.children];
+    if (places.length > 5) {
+      container.replaceChildren(...cards.slice(0,5));
+      const more = document.createElement('details');more.className='favorite-more';
+      const heading = document.createElement('summary');heading.textContent=`나머지 ${places.length-5}곳 더 펼쳐보기`;
+      more.append(heading,...cards.slice(5));container.append(more);
+    }
+    if (!markers.length) {
+      $('#landmarkList').textContent = '아직 즐겨찾기가 없습니다. 장소 정보에서 ☆ 즐겨찾기 등록을 눌러 주세요.';
+    }
+    $('#mapTip').textContent = `★ 즐겨찾기 ${places.length}곳만 표시하고 있어요`;
+  } catch (error) {
+    if (token === state.fetchToken) toast(error.message);
+  }
+}
+$('#favoritesBtn').addEventListener('click', showFavorites);
+document.addEventListener('favorites-updated', () => {
+  if (state.favoritesMode) showFavorites();
 });
+const rankingMarkers = L.layerGroup().addTo(map);
+const rankingMarkersByPoi = new Map();
+function renderRankingMarkers(rows) {
+  rankingMarkers.clearLayers();
+  rankingMarkersByPoi.clear();
+  if (state.favoritesMode || (state.selectedCity && !['all', 'food'].includes(state.selectedCategory))) return;
+  const fallbackPositions = state.selectedCity ? scatterInCity(rows.length) : [];
+  let unknownIndex = 0;
+  for (const place of rows) {
+    const exact = place.latitude != null && place.longitude != null && Number.isFinite(Number(place.latitude)) && Number.isFinite(Number(place.longitude));
+    const position = state.selectedCity ? (place._displayPosition || fallbackPositions[unknownIndex++]) : exact ? displayLatLng(Number(place.latitude), Number(place.longitude)) : null;
+    if (!position) continue;
+    const visitPlace = {...place,id:place.landmark_id,category:'food'};
+    const marker = L.marker(position, {icon:landmarkIcon(visitPlace),title:place.title});
+    const content = document.createElement('div');
+    content.className = 'place-popup-content';
+    content.append(window.TripTray.button(visitPlace));
+    marker.bindTooltip(shortPlaceLabel(place.title),{permanent:true,direction:'bottom',offset:[0,24],className:'location-name-tag'});
+    const title = document.createElement('strong'); title.textContent = `${place.area_rank}위 · ${place.title}`;
+    const subtitle = document.createElement('p'); subtitle.textContent = `${place.locality_name} · ${place.subtype}`;
+    const source = document.createElement('small'); source.textContent = '한국관광 데이터랩 · 기존 맛집 DB의 위치';
+    if (place.road_address) { const address = document.createElement('p'); address.textContent = place.road_address; content.append(address); }
+    content.append(title, subtitle, source);
+    content.append(window.CityVisits.button(visitPlace));
+    source.textContent = state.selectedCity ? '지역 안에 임의 배치한 태그이며 실제 위치가 아닙니다.' : exact ? '기존 맛집 DB의 위치입니다.' : '좌표가 확인되지 않은 장소입니다.';
+    marker.bindPopup(content).addTo(rankingMarkers);
+    rankingMarkersByPoi.set(place.poi_id, marker);
+  }
+}
+document.addEventListener('food-ranking-markers', event => renderRankingMarkers(event.detail.rankings));
+document.addEventListener('food-ranking-focus', event => {
+  const marker = rankingMarkersByPoi.get(event.detail.poi_id);
+  if (!marker) return;
+  map.panTo(marker.getLatLng());
+  marker.openPopup();
+});
+
 $('#backBtn').addEventListener('click', () => {
   if (state.selectedCity) selectRegion(state.selectedRegion.code);
   else goHome();
 });
 $('#filters').addEventListener('click', e => {
   const btn = e.target.closest('[data-category]');
-  if (!btn || !state.selectedCity) return;
+  if (!btn) return;
   state.selectedCategory = btn.dataset.category;
   $('#filters').querySelectorAll('.filter').forEach(el => {
     el.classList.toggle('active', el === btn);
+    el.setAttribute('aria-pressed', String(el === btn));
   });
-  loadLandmarks();
+  const category = btn.dataset.category;
+  if (state.selectedCity) {
+    loadLandmarks();
+    return;
+  }
+  if (state.selectedRegion) {
+    const region = state.selectedRegion;
+    const request = ++state.fetchToken;
+    state.markerLayer.clearLayers();
+    rankingMarkers.clearLayers();
+    Promise.all([fetchJSON(`/api/landmarks?scope=all&category=${category}`), window.CityVisits.ready]).then(([data]) => {
+      if (request !== state.fetchToken) return;
+      const places = data.landmarks.filter(place => String(place.region_code) === String(region.code));
+      const markers = places.map((place,index) => makeMarker(place,index));
+      markers.forEach(marker => state.markerLayer.addLayer(marker));
+      renderCards(places,markers);
+      $('#selectedName').textContent = `${region.name} ${category === 'all' ? '여행 장소' : CATEGORIES[category].label}`;
+      $('#selectedCard').classList.remove('hidden');
+      $('#placesDrawer').classList.remove('hidden');
+    }).catch(error => toast(error.message));
+    return;
+  }
+  goHome();
+  state.selectedCategory = category;
+  $('#selectedCard').insertBefore($('#placesDrawer'), $('#selectedCard .data-note'));
+  $('#selectedName').textContent = category === 'all' ? '전국 여행 장소' : `전국 ${CATEGORIES[category].label}`;
+  $('#placesDrawer summary span').textContent = '발견한 장소';
+  $('#placesDrawer').classList.remove('hidden');
+  $('#selectedCard').classList.remove('hidden');
+  loadLandmarks(true);
+
 });
 
 (async function init() {
@@ -736,7 +1158,6 @@ $('#filters').addEventListener('click', e => {
     indexProvinceBorders(provinces);
     state.districtFeatures = districts;
     state.regions = buildAllRegions(regionData.regions, provinces);
-    drawKoreaBackground();
     goHome();
   } catch (error) {
     $('#regionList').textContent = '초기화 실패: ' + error.message;
