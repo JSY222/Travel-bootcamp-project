@@ -204,6 +204,9 @@ const map = L.map('map', {
   minZoom: 6,
   maxZoom: 18,
   zoomSnap: .25,
+  zoomAnimation: false,
+  markerZoomAnimation: false,
+  fadeAnimation: false,
   maxBoundsViscosity: 1.0
 }).setView([36.7, 128.3], 7.5);
 L.control.zoom({position: 'bottomright'}).addTo(map);
@@ -1255,6 +1258,56 @@ function renderCards(places, markers, rankings = []) {
       cards.append(card);
     });
     heading.after(cards);
+  }
+}
+
+function renderLandmarkBatch(allPlaces, allRankings = [], page = 0) {
+  state.markerLayer.clearLayers();
+  rankingMarkers.clearLayers();
+  const city = Boolean(state.selectedCity);
+  const bounds = city && state.geoLayer ? map.latLngToContainerPoint(state.geoLayer.getBounds().getNorthEast()).subtract(map.latLngToContainerPoint(state.geoLayer.getBounds().getSouthWest())) : null;
+  let budget = city ? Math.max(1, Math.min(28, Math.floor(Math.abs((bounds?.x || 600) * (bounds?.y || 600)) / 26000))) : 40;
+  const positions = city ? scatterInCity(budget) : [];
+  if (city) budget = positions.length;
+  const visible = allPlaces.filter(p => city || (p.latitude != null && p.longitude != null));
+  const ordered = items => {
+    const groups = new Map();
+    items.forEach(item => {
+      const key = `${item.place.region_code}/${item.place.locality_name || ''}`;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(item);
+    });
+    const queues = [...groups.values()], result = [];
+    for (let i = 0; result.length < items.length; i++) queues.forEach(q => { if (q[i]) result.push(q[i]); });
+    return result;
+  };
+  const groups = Object.fromEntries(['tourism','event','food'].map(kind => [kind, ordered([
+    ...visible.filter(p => p.category === kind).map(place => ({place, ranking:false})),
+    ...(kind === 'food' ? allRankings.filter(p => city || (p.latitude != null && p.longitude != null)).map(place => ({place, ranking:true})) : [])
+  ])]));
+  const weights = {tourism: .5, event: .3, food: .2}, used = {tourism:0,event:0,food:0}, kinds = [];
+  while (kinds.length < budget) {
+    const available = Object.keys(groups).filter(kind => used[kind] < groups[kind].length);
+    if (!available.length) break;
+    available.sort((a,b) => (used[a]+1)/weights[a] - (used[b]+1)/weights[b]);
+    kinds.push(available[0]); used[available[0]]++;
+  }
+  const offsets = {tourism:0,event:0,food:0};
+  const selected = kinds.map(kind => groups[kind][(page * used[kind] + offsets[kind]++) % groups[kind].length]);
+  selected.forEach((item,i) => { if (city) item.place._displayPosition = positions[i]; });
+  const places = selected.filter(item => !item.ranking).map(item => item.place);
+  const rankings = selected.filter(item => item.ranking).map(item => item.place);
+  const markers = places.map((place,index) => makeMarker(place,index));
+  markers.filter(Boolean).forEach(marker => state.markerLayer.addLayer(marker));
+  renderCards(places,markers,rankings);
+  renderRankingMarkers(rankings);
+  const total = allPlaces.length + allRankings.length;
+  $('#resultCount').textContent = `${selected.length} / ${total}`;
+  if (total > selected.length) {
+    const more = document.createElement('button');
+    more.type = 'button'; more.className = 'filter'; more.textContent = '다른 장소 보기';
+    more.addEventListener('click', () => renderLandmarkBatch(allPlaces,allRankings,page+1));
+    $('#landmarkList').append(more);
   }
 }
 
