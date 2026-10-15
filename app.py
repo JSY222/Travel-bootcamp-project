@@ -208,7 +208,8 @@ def load_region_icons():
 
 @app.get('/')
 def index():
-    return render_template('index.html', region_icons=load_region_icons())
+    map_version = (Path(app.static_folder) / 'js' / 'map.js').stat().st_mtime_ns
+    return render_template('index.html', region_icons=load_region_icons(), map_version=map_version)
 
 
 @app.get('/profile')
@@ -347,16 +348,15 @@ def get_landmarks():
         # 테이블 이름은 검증된 코드 상수만 삽입, 사용자가 전달한 값은 바인딩
         for kind in chosen:
             where = '' if nationwide else ' WHERE region_code=%s AND locality_name=%s'
-            limit = '' if nationwide else ' LIMIT 200'
             rows = fetch_all(
                 f'SELECT id, title, description, latitude, longitude, location_url, source_name, region_code '
-                f'FROM `{TABLES[kind]}`{where} ORDER BY id{limit}',
+                f'FROM `{TABLES[kind]}`{where} ORDER BY id',
                 () if nationwide else (region, locality)
             )
             for row in rows:
                 row['category'] = kind
-                row['latitude'] = float(row['latitude'])
-                row['longitude'] = float(row['longitude'])
+                row['latitude'] = float(row['latitude']) if row['latitude'] is not None else None
+                row['longitude'] = float(row['longitude']) if row['longitude'] is not None else None
                 results.append(row)
         rankings = []
         if not nationwide and category in {'all', 'food'}:

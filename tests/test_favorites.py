@@ -82,6 +82,20 @@ class FavoritesTests(unittest.TestCase):
             self.assertIn('JOIN', call.args[0])
             self.assertEqual(call.args[1], (7, category))
 
+    def test_event_without_coordinates_remains_in_favorites(self):
+        self.login()
+        self.cur.fetchall.side_effect = [[], [], [
+            dict(id=90, title='Popup', description='Period and venue', latitude=None,
+                 longitude=None, location_url='https://example.com/event',
+                 source_name='Private event', locality_name='City')], []]
+        response = self.client.get('/api/favorites')
+        self.assertEqual(response.status_code, 200)
+        event = response.json['landmarks'][0]
+        self.assertEqual(event['category'], 'event')
+        self.assertEqual(event['title'], 'Popup')
+        self.assertIsNone(event['latitude'])
+        self.assertIsNone(event['longitude'])
+
 
 if __name__ == '__main__':
     unittest.main()
