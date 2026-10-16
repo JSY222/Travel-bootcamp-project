@@ -71,20 +71,77 @@
 
 ## ▶️ 실행 방법
 
-### 1. 저장소와 Python 환경 준비
+### 1. 필수 프로그램 확인
 
-Python 3와 MariaDB가 설치되어 있어야 합니다. 아래 명령은 Windows PowerShell 기준입니다.
+Python 3.9 이상, Git, MariaDB가 필요합니다. 아래 명령은 Windows PowerShell 기준입니다.
+
+```powershell
+py --version
+git --version
+mariadb --version
+```
+
+`mariadb` 명령을 찾을 수 없다면 MariaDB의 `bin` 폴더를 Windows `PATH`에 추가한 뒤 PowerShell을 다시 실행합니다. MariaDB 서버도 실행 중이어야 합니다.
+
+### 2. 저장소와 가상환경 준비
 
 ```powershell
 git clone https://github.com/JSY222/Travel-bootcamp-project.git
 cd Travel-bootcamp-project
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
+```
+
+명령줄 앞에 `(.venv)`가 표시되면 가상환경이 활성화된 상태입니다. PowerShell 실행 정책 때문에 활성화가 막히면 현재 창에서만 정책을 완화한 뒤 다시 실행합니다.
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+```
+
+### 3. Python 패키지 설치
+
+가상환경이 활성화된 상태에서 패키지를 설치합니다.
+
+```powershell
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-### 2. 환경변수 설정
+| 패키지 | 용도 |
+|---|---|
+| `Flask` | 웹 서버, 화면 렌더링, 세션과 API 처리 |
+| `PyMySQL` | Flask와 MariaDB 연결 |
+| `python-dotenv` | 프로젝트 루트의 `.env` 설정 읽기 |
+
+설치 여부는 다음 명령으로 확인할 수 있습니다.
+
+```powershell
+python -c "import flask, pymysql, dotenv; print('Python packages: OK')"
+```
+
+### 4. MariaDB 접속 확인
+
+MariaDB 설치 시 만든 관리자 계정으로 접속합니다. `-p` 뒤에는 비밀번호를 붙이지 않고, 안내가 나오면 직접 입력합니다.
+
+```powershell
+mariadb -u root -p
+```
+
+접속되면 MariaDB 콘솔에서 서버 버전과 `cityname` DB를 확인합니다.
+
+```sql
+SELECT VERSION();
+SHOW DATABASES;
+CREATE DATABASE IF NOT EXISTS cityname
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+EXIT;
+```
+
+`Access denied`가 표시되면 `.env`에 사용할 계정명과 비밀번호가 실제 MariaDB 계정과 일치하는지 먼저 확인합니다.
+
+### 5. 환경변수 설정
 
 프로젝트 루트에 `.env` 파일을 만들고 MariaDB 접속 정보를 입력합니다. `.env`는 Git에 포함되지 않습니다.
 
@@ -96,21 +153,37 @@ DB_PASSWORD=MariaDB_비밀번호
 SECRET_KEY=충분히_긴_임의의_문자열
 ```
 
-> 앱이 사용하는 데이터베이스 이름은 현재 `cityname`으로 고정되어 있습니다. 운영 또는 팀 공용 DB에서는 안정적인 `SECRET_KEY`를 반드시 설정하세요.
+`SECRET_KEY`는 다음 명령으로 생성할 수 있습니다. 출력된 값을 `.env`에 복사합니다.
 
-### 3. 데이터베이스 준비
+```powershell
+python -c "import secrets; print(secrets.token_hex(32))"
+```
 
-이미 팀에서 사용 중인 `cityname` DB가 있다면 데이터를 초기화하지 말고 필요한 마이그레이션만 적용하세요. 새 로컬 환경에서 샘플 데이터로 시작하려면 다음 순서로 준비합니다.
+| 환경변수 | 설명 | 기본값 |
+|---|---|---|
+| `DB_HOST` | MariaDB 서버 주소 | `127.0.0.1` |
+| `DB_PORT` | MariaDB 포트 | `3306` |
+| `DB_USER` | MariaDB 접속 계정 | `root` |
+| `DB_PASSWORD` | MariaDB 접속 비밀번호 | 코드 기본값이 있으나 `.env` 설정 권장 |
+| `SECRET_KEY` | 로그인 세션 서명 키 | 미설정 시 실행할 때마다 임의 생성 |
+
+> 앱이 사용하는 데이터베이스 이름은 현재 `cityname`으로 고정되어 있습니다. 팀 공용 또는 배포 환경에서는 모든 실행 환경에 동일하고 충분히 긴 `SECRET_KEY`를 설정해야 합니다.
+
+### 6. 데이터베이스 준비
+
+#### 새 로컬 DB에서 샘플 데이터로 시작하는 경우
+
+프로젝트 루트에서 다음 명령을 순서대로 실행합니다. `SOURCE`를 사용하므로 PowerShell에서도 SQL 파일을 정상적으로 읽을 수 있습니다.
 
 ```powershell
 # 주의: 아래 첫 SQL은 cityname의 기존 일반 테이블을 삭제하고 샘플 데이터로 다시 만듭니다.
-mariadb -u root -p < db/current/cityname_landmarks_1013.sql
+mariadb -u root -p -e "SOURCE db/current/cityname_landmarks_1013.sql"
 
 # 회원, 방문 기록, 즐겨찾기 테이블과 현재 컬럼을 준비합니다.
-mariadb -u root -p cityname < db/members.sql
-mariadb -u root -p < db/migrations/20261015_member_mbti.sql
-mariadb -u root -p cityname < db/member_visits.sql
-mariadb -u root -p cityname < db/member_favorites.sql
+mariadb -u root -p cityname -e "SOURCE db/members.sql"
+mariadb -u root -p -e "SOURCE db/migrations/20261015_member_mbti.sql"
+mariadb -u root -p cityname -e "SOURCE db/member_visits.sql"
+mariadb -u root -p cityname -e "SOURCE db/member_favorites.sql"
 
 # 스탬프 보상 테이블과 기존 방문 기록의 포인트를 준비합니다.
 python db/migrate_stamp_rewards.py
@@ -119,9 +192,19 @@ python db/migrate_stamp_rewards.py
 python db/apply_datalab_food_sql.py
 ```
 
-MariaDB 설치 환경에 따라 `mariadb` 대신 `mysql` 명령을 사용해야 할 수 있습니다. 빈 DB를 직접 구성하거나 기존 데이터를 이전하는 방법은 [db/README.md](db/README.md)를 참고하세요.
+#### 기존 팀 DB를 사용하는 경우
 
-### 4. 서버 실행
+`db/current/cityname_landmarks_1013.sql`은 기존 일반 테이블을 삭제하므로 실행하지 않습니다. 먼저 DB를 백업한 뒤 현재 DB 상태에 필요한 `db/migrations/` 파일과 Python 마이그레이션만 적용합니다. 자세한 구조와 주의사항은 [db/README.md](db/README.md)를 참고하세요.
+
+MariaDB 설치 환경에 따라 `mariadb` 대신 `mysql` 명령을 사용해야 할 수 있습니다.
+
+준비가 끝나면 주요 테이블을 확인합니다.
+
+```powershell
+mariadb -u root -p cityname -e "SHOW TABLES;"
+```
+
+### 7. 서버 실행
 
 ```powershell
 python app.py
@@ -129,11 +212,23 @@ python app.py
 
 브라우저에서 [http://127.0.0.1:5000](http://127.0.0.1:5000)을 엽니다.
 
-### 5. 테스트 실행
+정상 실행되면 PowerShell에 `Running on http://127.0.0.1:5000`이 표시됩니다. 서버를 종료할 때는 해당 PowerShell에서 `Ctrl+C`를 누릅니다.
+
+### 8. 테스트 실행
 
 ```powershell
 python -m unittest discover -s tests -v
 ```
+
+### 자주 발생하는 실행 오류
+
+| 오류 | 확인할 내용 |
+|---|---|
+| `ModuleNotFoundError` | 가상환경 활성화 여부와 `pip install -r requirements.txt` 실행 여부 |
+| `Access denied for user` | `.env`의 `DB_USER`, `DB_PASSWORD`와 MariaDB 계정 정보 |
+| `Unknown database 'cityname'` | 데이터베이스 생성 및 초기 SQL 실행 여부 |
+| `Table ... doesn't exist` | 기본 SQL과 필요한 마이그레이션 적용 여부 |
+| 지도·글꼴이 보이지 않음 | Leaflet, Google Fonts, 지도 타일 등 외부 리소스의 인터넷 연결 상태 |
 
 > [!WARNING]
 > `db/current/cityname_landmarks_1013.sql`과 일부 마이그레이션은 기존 테이블이나 데이터를 변경합니다. 기존 DB에 적용하기 전 반드시 백업하고 [DB 안내](db/README.md)의 주의사항을 확인하세요.
