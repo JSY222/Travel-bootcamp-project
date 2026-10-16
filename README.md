@@ -38,9 +38,16 @@
 
 | | 기능 | 설명 |
 |:-:|---|---|
-| 🧭 | **단계별 지역 선택** | 지도에서 시·도 → 시·군·구 순서로 지역 선택 |
-| 🏷️ | **카테고리별 표시** | 선택한 지역의 랜드마크를 관광지 · 맛집 · 행사로 구분 |
-| 📍 | **마커 & 상세 정보** | 마커 클릭 시 상세 정보 팝업, 목록 카드 제공 |
+| 🧭 | **단계별 지역 탐색** | 대한민국 지도에서 시·도 → 시·군·구 순서로 이동하고 이전 단계로 돌아가기 |
+| 🏷️ | **여행 정보 분류** | 선택한 지역의 관광지 · 맛집 · 행사를 카테고리별 목록과 지도 마커로 표시 |
+| 🍽️ | **지역 맛집 랭킹** | 한국관광 데이터랩 기반 TOP 20을 전체 · 현지인 · 외지인 기준으로 조회 |
+| 📍 | **장소 상세 정보** | 장소 설명, 위치, 출처와 외부 위치 링크를 팝업 및 카드에서 확인 |
+| 🔐 | **회원 기능** | CSRF 보호가 적용된 회원가입 · 로그인 · 로그아웃과 개인 프로필 관리 |
+| 🧠 | **맞춤 장소 추천** | 프로필의 MBTI와 여행 스타일을 바탕으로 관광지 · 맛집 · 행사를 추천 |
+| ♡ | **여행서랍과 즐겨찾기** | 현재 탐색 중인 장소를 임시 여행서랍에 담고, 로그인 후 즐겨찾기로 일괄 저장 |
+| 📷 | **방문 기록** | 방문 날짜, 후기, 사진을 장소별로 등록하고 나의 방문 내역에서 확인 |
+| 🏅 | **스탬프와 랭킹** | 방문 범위에 따라 흰색 · 은색 · 금색 스탬프를 발급하고 회원별 순위와 도감을 제공 |
+| 💰 | **포인트 내역** | 스탬프 보상 포인트, 날짜별 차감 상태, 지역·기간 필터와 페이지별 내역을 제공 |
 
 <!-- 기능별 스크린샷을 넣어보세요 -->
 <!--
@@ -50,14 +57,6 @@
   <img src="docs/images/popup.png" width="32%">
 </p>
 -->
-
-**🚀 향후 계획**
-
-- [ ] 🔐 로그인
-- [ ] ✅ 방문 인증과 스탬프
-- [ ] ⭐ 리뷰 기능
-
-<br>
 
 ## 🛠️ 기술 스택
 
@@ -72,38 +71,72 @@
 
 ## ▶️ 실행 방법
 
-**1️⃣ 저장소를 받고 패키지를 설치합니다.**
+### 1. 저장소와 Python 환경 준비
 
-```bash
+Python 3와 MariaDB가 설치되어 있어야 합니다. 아래 명령은 Windows PowerShell 기준입니다.
+
+```powershell
 git clone https://github.com/JSY222/Travel-bootcamp-project.git
 cd Travel-bootcamp-project
-pip install -r requirements.txt
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
-**2️⃣ 프로젝트 루트에 `.env` 파일을 만들어 DB 접속 정보를 적습니다.**
-이 파일은 `.gitignore`에 포함되어 저장소에 올라가지 않습니다.
+### 2. 환경변수 설정
+
+프로젝트 루트에 `.env` 파일을 만들고 MariaDB 접속 정보를 입력합니다. `.env`는 Git에 포함되지 않습니다.
 
 ```env
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_USER=사용자명
-DB_PASSWORD=비밀번호
+DB_USER=root
+DB_PASSWORD=MariaDB_비밀번호
+SECRET_KEY=충분히_긴_임의의_문자열
 ```
 
-**3️⃣ `db/` 폴더의 SQL로 DB를 준비합니다.**
-자세한 내용은 [db/README.md](https://github.com/JSY222/Travel-bootcamp-project/blob/main/db/README.md)를 참고하세요.
+> 앱이 사용하는 데이터베이스 이름은 현재 `cityname`으로 고정되어 있습니다. 운영 또는 팀 공용 DB에서는 안정적인 `SECRET_KEY`를 반드시 설정하세요.
 
-**4️⃣ 서버를 실행하고 브라우저에서 `http://127.0.0.1:5000`을 엽니다.**
+### 3. 데이터베이스 준비
 
-```bash
+이미 팀에서 사용 중인 `cityname` DB가 있다면 데이터를 초기화하지 말고 필요한 마이그레이션만 적용하세요. 새 로컬 환경에서 샘플 데이터로 시작하려면 다음 순서로 준비합니다.
+
+```powershell
+# 주의: 아래 첫 SQL은 cityname의 기존 일반 테이블을 삭제하고 샘플 데이터로 다시 만듭니다.
+mariadb -u root -p < db/current/cityname_landmarks_1013.sql
+
+# 회원, 방문 기록, 즐겨찾기 테이블과 현재 컬럼을 준비합니다.
+mariadb -u root -p cityname < db/members.sql
+mariadb -u root -p < db/migrations/20261015_member_mbti.sql
+mariadb -u root -p cityname < db/member_visits.sql
+mariadb -u root -p cityname < db/member_favorites.sql
+
+# 스탬프 보상 테이블과 기존 방문 기록의 포인트를 준비합니다.
+python db/migrate_stamp_rewards.py
+
+# 선택: 한국관광 데이터랩 맛집 TOP 20을 추가합니다.
+python db/apply_datalab_food_sql.py
+```
+
+MariaDB 설치 환경에 따라 `mariadb` 대신 `mysql` 명령을 사용해야 할 수 있습니다. 빈 DB를 직접 구성하거나 기존 데이터를 이전하는 방법은 [db/README.md](db/README.md)를 참고하세요.
+
+### 4. 서버 실행
+
+```powershell
 python app.py
 ```
 
-> [!NOTE]
-> DB 접속 정보 같은 비밀값은 코드에 직접 쓰지 않고 환경변수로 받습니다.
+브라우저에서 [http://127.0.0.1:5000](http://127.0.0.1:5000)을 엽니다.
+
+### 5. 테스트 실행
+
+```powershell
+python -m unittest discover -s tests -v
+```
 
 > [!WARNING]
-> DB 준비용 SQL은 기존 테이블을 삭제하고 새로 만들 수 있으니, 실행 전에 백업하세요.
+> `db/current/cityname_landmarks_1013.sql`과 일부 마이그레이션은 기존 테이블이나 데이터를 변경합니다. 기존 DB에 적용하기 전 반드시 백업하고 [DB 안내](db/README.md)의 주의사항을 확인하세요.
 
 <br>
 
@@ -111,14 +144,16 @@ python app.py
 
 ```
 .
-├── app.py                 Flask 서버와 API
-├── templates/             HTML 템플릿
-├── static/                CSS, JavaScript
-├── db/                    DB 관련 SQL과 설명
+├── app.py                 Flask 서버와 기능별 API
+├── templates/             화면별 HTML 템플릿
+├── static/                CSS, JavaScript, 이미지
+├── db/                    DB 스키마와 초기 데이터
 ├── docs/                  프로젝트 문서
 ├── requirements.txt       Python 패키지 목록
 └── README.md
 ```
+
+위 구조는 웹 실행과 사용자 기능 구현에 직접 연결되는 큰 구성만 표시합니다. 세부 기능 모듈, 테스트, 데이터 생성 도구와 이전 자료는 생략했습니다.
 
 <br>
 
